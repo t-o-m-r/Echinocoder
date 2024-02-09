@@ -9,7 +9,7 @@
 #
 
 from math import prod
-from itertools import combinations, tee
+from itertools import combinations
 
 def encode(data):
     data=list(data)
