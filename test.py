@@ -11,9 +11,10 @@ def some_random_data( mn=(1,1) ):
 
 data = some_random_data(mn=(1,3))
 
-print(data)
-print(encoder.encode(data))
-
+print("DATA is ",data)
+er = encoder.encode(data)
+for i in er:
+    print("ERN : ",list(i))
 
 
 

@@ -15,7 +15,17 @@ def encode(data):
     if m!=1:
         throw("Supplied data is not encodable by this encoder.")
 
-    from itertools import combinations
-    import numpy as np
+    import math
 
-    return [ sum( ( np.prod(c)  for c in combinations(data, r+1) )     ) for r in range(n)] 
+    from itertools import combinations
+    #from math import prod
+    def prod(x):
+       import math
+       print("MOO: ",x)
+       print("COW: ",math.prod(x))
+       return math.prod(x)
+
+    def flatten(xss):
+        return [x for xs in xss for x in xs]
+
+    return [ ( prod(c)  for c in combinations([d[0] for d in data], r+1)      ) for r in range(n) ] 
