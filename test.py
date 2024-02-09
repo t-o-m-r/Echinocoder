@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import analytic_encoder_for_list_of_reals as encoder
+import analytic_encoder_for_list_of_real_or_complex_numbers as encoder
 import data_sources
 
 
