@@ -13,5 +13,4 @@ from itertools import combinations, tee
 
 def encode(data):
     data=list(data)
-    n=len(data)
-    return [ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(n) ] 
+    return [ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(len(data)) ] 
