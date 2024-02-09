@@ -1,31 +1,21 @@
+# Encode list of real or comlpex numbers treated as multiset.
+# E.g. this method can encode things like:
+#
+#        [3,4,-2,]
+#
+# or
+#
+#        [complex(3,4), complex(1,-2), complex(-5,8), ]
+#
 
-# Encode multiset of reals
+from math import prod
+from itertools import combinations, tee
 
 def can_encode(m=0, n=0):
     return m==1
 
-
 def encode(data):
+    data=list(data)
     n=len(data)
-    if n==0:
-        return []
 
-    m=len(data[0])
-
-    if m!=1:
-        throw("Supplied data is not encodable by this encoder.")
-
-    import math
-
-    from itertools import combinations
-    #from math import prod
-    def prod(x):
-       import math
-       print("MOO: ",x)
-       print("COW: ",math.prod(x))
-       return math.prod(x)
-
-    def flatten(xss):
-        return [x for xs in xss for x in xs]
-
-    return [ ( prod(c)  for c in combinations([d[0] for d in data], r+1)      ) for r in range(n) ] 
+    return [ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(n) ] 
