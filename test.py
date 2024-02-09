@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import analytic_encoder_for_list_of_real_or_complex_numbers as encoder_Cinf
+import Cinf_encoder_for_list_of_real_or_complex_numbers as encoder_Cinf
 import C0_encoder_for_list_of_real_numbers as encoder_C0
 import data_sources
 
