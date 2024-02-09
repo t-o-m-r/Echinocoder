@@ -4,5 +4,7 @@
 #        [3,4,-2,]
 #
 
+name="C0_sorting_encoder"
+
 def encode(data):
     return sorted(data)
