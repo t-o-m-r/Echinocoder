@@ -6,7 +6,7 @@ import data_sources
 
 def test_encoder(data, encoder, number_of_shuffled_copies=3):
     import random
-    data = list(data)
+    data=list(data)
     # shuffled_copies = [ random.shuffle(data.copy()) for i in range(number_of_shuffled_copies) ]
     shuffled_copies = [ random.sample(data, len(data)) for i in range(number_of_shuffled_copies) ]
     print("DATA is",data)
