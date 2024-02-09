@@ -11,11 +11,7 @@
 from math import prod
 from itertools import combinations, tee
 
-def can_encode(m=0, n=0):
-    return m==1
-
 def encode(data):
     data=list(data)
     n=len(data)
-
     return [ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(n) ] 
