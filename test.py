@@ -16,15 +16,15 @@ def test_encoder(data, encoder, number_of_shuffled_copies=3):
 
 def test_various_encoders():
 
-    # test_encoder(
-    #    data=data_sources.random_real_1D_data(n=4),
-    #    encoder=encoder_Cinf,
-    # )
+    test_encoder(
+       data=data_sources.random_real_1D_data(n=4),
+       encoder=encoder_Cinf,
+    )
 
-    # test_encoder(
-    #    data=data_sources.random_complex_1D_data(n=4),
-    #    encoder=encoder_Cinf,
-    # )
+    test_encoder(
+       data=data_sources.random_complex_1D_data(n=4),
+       encoder=encoder_Cinf,
+    )
 
     test_encoder(
        data=data_sources.random_real_1D_data(n=4),
