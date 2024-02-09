@@ -6,22 +6,34 @@ import data_sources
 
 
 
+def test(data, encoder, encoder_name, number_of_shuffled_copies=3):
+    import random
+    data = list(data)
+    # shuffled_copies = [ random.shuffle(data.copy()) for i in range(number_of_shuffled_copies) ]
+    shuffled_copies = [ random.sample(data, len(data)) for i in range(number_of_shuffled_copies) ]
+    print("DATA is ",data)
+    for shuffled_data in shuffled_copies:
+        #print("SHUFF DATA is ",shuffled_data)
+        encoding = list(encoder.encode(shuffled_data))
+        print("ENCH ",encoder_name," is ",encoding)
+    print()
+
 for i in range(10):
-    data = list(data_sources.random_real_1D_data(n=3))
-    print("DATA is ",data)
-    encoding = list(encoder_Cinf.encode(data))
-    print("Cinf ENCH is ",encoding)
-    print()
 
-    data = list(data_sources.random_complex_1D_data(n=3))
-    print("DATA is ",data)
-    encoding = list(encoder_Cinf.encode(data))
-    print("Cinf ENCH is ",encoding)
-    print()
+    test(
+       data=data_sources.random_real_1D_data(n=3),
+       encoder=encoder_Cinf,
+       encoder_name="Cinf",
+    )
 
-    data = list(data_sources.random_real_1D_data(n=3))
-    print("DATA is ",data)
-    encoding = list(encoder_C0.encode(data))
-    print("C0   ENCH is ",encoding)
-    print()
+    test(
+       data=data_sources.random_complex_1D_data(n=3),
+       encoder=encoder_Cinf,
+       encoder_name="Cinf",
+    )
 
+    test(
+       data=data_sources.random_real_1D_data(n=3),
+       encoder=encoder_C0,
+       encoder_name="C0",
+    )
