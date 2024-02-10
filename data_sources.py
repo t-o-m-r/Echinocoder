@@ -9,17 +9,17 @@
 
 import numpy as np
 
-def random_real_2D_data(mn=(1,1) ):
+def random_real_array_data(mn=(1,1) ):
     m,n = mn
     return np.random.rabdint(low=-9,high=10,size=(n,m))
 
 # some random data that is a length-n list of reals
-def random_real_1D_data(n=1):
+def random_real_linear_data(n=1):
     return np.random.randint(low=-9,high=10,size=n)
 
 # some random data that is a length-n list of complex numbers
-def random_complex_1D_data(n=1):
-    return random_real_1D_data(n) + complex(0,1)*random_real_1D_data(n)
+def random_complex_linear_data(n=1):
+    return random_real_linear_data(n) + complex(0,1)*random_real_linear_data(n)
 
 
 
