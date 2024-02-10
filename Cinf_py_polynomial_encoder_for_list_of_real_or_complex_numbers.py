@@ -14,7 +14,8 @@ name="Cinf_py_polynomial_encoder_for_list_of_real_or_complex_numbers"
 
 from math import prod
 from itertools import combinations
+import numpy as np
 
 def encode(data):
-    return [ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(len(data)) ] 
+    return np.array([ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(len(data)) ])
 

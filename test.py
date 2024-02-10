@@ -15,7 +15,7 @@ def test_encoder(data, encoder=None, encoders=None, number_of_shuffled_copies=3)
         for encoder in encoders:
             encoding = encoder.encode(shuffled_data)
             print("ENCH",encoder.name,"generates",encoding,"from",shuffled_data)
-            numpy.random.shuffle(shuffled_data) 
+        numpy.random.shuffle(shuffled_data) 
     print()
 
 def test_various_encoders():
