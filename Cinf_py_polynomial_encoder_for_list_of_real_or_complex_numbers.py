@@ -8,7 +8,7 @@
 #        [complex(3,4), complex(1,-2), complex(-5,8), ]
 #
 
-name="Cinf_polynomial_encoder_for_list_of_real_or_complex_numbers"
+name="Cinf_py_polynomial_encoder_for_list_of_real_or_complex_numbers"
 
 from math import prod
 from itertools import combinations
