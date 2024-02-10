@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import Cinf_py_polynomial_encoder_for_list_of_real_or_complex_numbers as encoder_Cinf_py
-import Cinf_np_polynomial_encoder_for_list_of_real_or_complex_numbers as encoder_Cinf_np
-import C0_sorting_encoder_for_list_of_real_numbers as encoder_C0
+import Cinf_python_polynomial_encoder_for_list_of_reals as encoder_Cinf_py
+import  Cinf_numpy_polynomial_encoder_for_list_of_reals as encoder_Cinf_np
+import             C0_sorting_encoder_for_list_of_reals as encoder_C0
 import data_sources
 
 def test_encoder(data, encoder=None, encoders=None, number_of_shuffled_copies=3):
