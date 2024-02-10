@@ -21,7 +21,7 @@ def test_encoder(data, encoder=None, encoders=None, number_of_shuffled_copies=3)
 def test_various_encoders():
 
     test_encoder(
-       data=data_sources.random_real_1D_data(n=25),
+       data=data_sources.random_real_1D_data(n=147),
        encoders=[ encoder_Cinf_np, encoder_Cinf_py, ],
     )
 
