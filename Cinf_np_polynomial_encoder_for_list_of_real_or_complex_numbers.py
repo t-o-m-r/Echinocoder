@@ -10,7 +10,14 @@
 
 name="Cinf_np_polynomial_encoder_for_list_of_real_or_complex_numbers"
 
-from numpy import polynomial
+import numpy as np
+import tools
 
 def encode(data):
-    return polynomial.polynomial.polyfromroots(-data)[-2::-1] # The -1 in [-2::-1] reverses the order of the list so that the terms linear in the roots come first. The -2 at the front forced the list to start from the coeffient for x^(n-1). (The coefficient of x^n is always 1 and we dont need it!)
+    ans = np.polynomial.polynomial.polyfromroots(-data)[-2::-1] # The -1 in [-2::-1] reverses the order of the list so that the terms linear in the roots come first. The -2 at the front forced the list to start from the coeffient for x^(n-1). (The coefficient of x^n is always 1 and we dont need it!)
+
+    # All encoders have to output lists of real numbers (at least for now) so:
+    if np.iscomplexobj(ans):
+      ans=tools.expand_complex_to_real_pairs(ans)
+    
+    return ans
