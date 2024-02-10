@@ -11,7 +11,7 @@ import numpy as np
 
 def random_real_array_data(mn=(1,1) ):
     m,n = mn
-    return np.random.rabdint(low=-9,high=10,size=(n,m))
+    return np.random.randint(low=-9,high=10,size=(n,m))
 
 # some random data that is a length-n list of reals
 def random_real_linear_data(n=1):
