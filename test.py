@@ -15,7 +15,7 @@ def test_encoder(data, encoder=None, encoders=None, number_of_shuffled_copies=3)
     for i in range(number_of_shuffled_copies):
         for encoder in encoders:
             encoding = encoder.encode(shuffled_data)
-            print("ENCH",encoder.name,"generates",encoding,"from",shuffled_data)
+            print("ENCH",encoder.name,"generates",encoding,"when encoding",shuffled_data,"with (m,n)=",shuffled_data.shape[::-1],".")
         np.random.shuffle(shuffled_data) 
     print()
 
@@ -48,6 +48,11 @@ def test_various_encoders():
 
     test_encoder(
        data=data_sources.random_real_array_data(mn=(3,3)),
+       encoders=[ encoder_Cinf_np_ar, ],
+    )
+
+    test_encoder(
+       data=data_sources.random_real_array_data(mn=(4,3)),
        encoders=[ encoder_Cinf_np_ar, ],
     )
 

@@ -16,7 +16,7 @@ import tools
 def encode(data):
 
     n,m = data.shape
-    print(f"Size (m,n)=({m},{n})")
+    #print(f"Size (m,n)=({m},{n})")
 
     # We need to do different things depending on the shape of the input:
 
@@ -39,13 +39,13 @@ def encode(data):
     current_encoding_index = 0 
     for row1_index, row2_index in itertools.combinations(range(m), 2):
         pair_of_rows = data[:,[row1_index, row2_index]]
-        print("About to request coding for",pair_of_rows)
+        #print("About to request coding for",pair_of_rows)
         encoding_for_pair = encode(pair_of_rows)
         if current_encoding_index == 0:
             # Allocate array of appropriate type for all the pairs that will come later:
             # Get encoding size.  This SHOULD be 2*n but safer to get from data for future proofing
             pair_encoding_size = len(encoding_for_pair)
-            print("pes",pair_encoding_size,"nop",number_of_pairs)
+            #print("pes",pair_encoding_size,"nop",number_of_pairs)
             total_encoding_size = pair_encoding_size * number_of_pairs
             real_encoding = np.empty(total_encoding_size, dtype = encoding_for_pair.dtype)
         real_encoding[current_encoding_index:current_encoding_index+pair_encoding_size] = encoding_for_pair
