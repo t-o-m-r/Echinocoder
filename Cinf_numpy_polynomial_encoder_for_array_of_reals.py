@@ -10,6 +10,7 @@ name="Cinf_numpy_polynomial_encoder_for_array_of_reals"
 
 import numpy as np
 import Cinf_numpy_polynomial_encoder_for_list_of_reals
+import itertools
 import tools
 
 def encode(data):
@@ -30,4 +31,24 @@ def encode(data):
         real_encoding = tools.expand_complex_to_real_pairs(complex_encoding)
         return real_encoding
 
-    pass
+    # The "vectors" are 3-or-more-long, so need to take all m-choose-2 pairings of elements in them, and send them out.
+    # We can use the m==2 case code above for that.
+    number_of_pairs = m*(m-1)//2
+    # pair_encoding_size = 2*n 
+    # total_encoding_size = m*(m-1)*n
+    current_encoding_index = 0 
+    for row1_index, row2_index in itertools.combinations(range(m), 2):
+        pair_of_rows = data[:,[row1_index, row2_index]]
+        print("About to request coding for",pair_of_rows)
+        encoding_for_pair = encode(pair_of_rows)
+        if current_encoding_index == 0:
+            # Allocate array of appropriate type for all the pairs that will come later:
+            # Get encoding size.  This SHOULD be 2*n but safer to get from data for future proofing
+            pair_encoding_size = len(encoding_for_pair)
+            print("pes",pair_encoding_size,"nop",number_of_pairs)
+            total_encoding_size = pair_encoding_size * number_of_pairs
+            real_encoding = np.empty(total_encoding_size, dtype = encoding_for_pair.dtype)
+        real_encoding[current_encoding_index:current_encoding_index+pair_encoding_size] = encoding_for_pair
+        current_encoding_index += pair_encoding_size
+    return real_encoding
+
