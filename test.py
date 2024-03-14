@@ -54,7 +54,12 @@ def test_various_encoders():
 
     test_encoder(
        data=data_sources.random_real_array_data(mn=(4,3)),
-       encoders=[ encoder_Cinf_np_ar, encoder_Cinf_py_bur_ar, ],
+       encoders=[ encoder_Cinf_np_ar, ],
+    )
+
+    test_encoder(
+       data=np.array(((3,1,4),(2,2,5))),
+       encoders=[ encoder_Cinf_py_bur_ar, ],
     )
 
 test_various_encoders()

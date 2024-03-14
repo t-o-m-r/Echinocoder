@@ -1,14 +1,10 @@
 # Encode list of real numbers treated as multiset.
 # E.g. this method can encode things like:
 #
-#        [3,4,-2,]
+#        [[3,2],[4,1],[-2,1]]
 #
-# Although this implementation claims to only do reals, it does in fact (privately) encode complex lists, albeit to complex outputs.
+# Although this implementation claims to only operate on arrays of reals, it does in fact (privately) encode complex arrays, albeit to complex outputs.
 #
-# This implementation as it has TERRIBLE run-time scaling with the length of the imput list, so don't 
-# use it unless your your input list has at most ~15 elements.  Use the Cinf_numpy_... version for long lists.
-# This implementation can work with arbitrary precision integers, however, which the Cinf_numpy_.... implementation cannot.
-
 name="Cinf_python_bursar_encoder_for_array_of_reals"
 
 from math import prod
@@ -18,7 +14,17 @@ import numpy as np
 
 
 def encode(data):
+    
+    print("Data is")
+    print(data)
+    xPolys = [ np.polynomial.Polynomial(vector) for vector in data ] 
+    print("x polynomials are: ")
+    for xPoly in xPolys:
+        print (xPoly)
+    
     return [ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(len(data)) ]
+
+    # return [ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(len(data)) ]
     
     # Alternative
     # 
