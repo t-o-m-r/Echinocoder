@@ -3,13 +3,18 @@
 #
 #        [[3,2],[4,1],[-2,1]]
 #
-# Although this implementation claims to only operate on arrays of reals, it does in fact (privately) encode complex arrays, albeit to complex outputs.
+# Although this implementation claims to only operate on arrays of reals, 
+# it can, in fact (privately) encode complex arrays, albeit to complex 
+# outputs. This could be used by a complexly compressed method (see below).
 # 
 # The number of outputs shoud be 
 #
-#          ORDER == n + (m-1)*n*(n+1)/2 
+#          ORDER(m,n) == n + (m-1)*n*(n+1)/2 
 #
-# where n is the number of vectors in the set, and m is the dimension of each of those vectors.
+# where n is the number of vectors in the set, and m is the dimension of each of those vectors. 
+# This order has leading term 
+#
+#                m*n*n/2.
 #
 # Here is an $m=3$, $n=2$ example:
 # Encoding  $\{(3,1,4),(2,2,5)\}$ should generate
@@ -25,9 +30,21 @@
 #       $y^2 + y^1 (9 x^2 + 3 x + 5) + y^0 (20 x^4 + 13 x^3 + 25 x^2 + 8 x + 6)$
 #
 # .
+# Note that if $m$ were even we could set up the vectors as being complex but of 
+# dimension $m/2$.  This would lead to the COMPRESSED_ORDER being 
+#
+#       COMPRESSED_ORDER = 2*ORDER(m/2, n)
+#                        = 2*( n + (m/2-1)*n*(n+1)/2 )
+#                        = 2*n + (m-2)*n*(n+1)/2
+#                        = 2*n + (m-1)*n*(n+1)/2 - n*(n+1)/2
+#                        = ORDER(m,n) + n - n*(n+1)/2
+#                        = ORDER(m,n) - ( n*(n+1)/2 - n )
+#                        = ORDER(m,n) - n*( (n+1)/2 - 1 )
+#                        = ORDER(m,n) - n*(n-1)/2
+#
+# which is less than ORDER(m,n) by n*(n-1)/2 ... but still has leading term m*n*n/2.
 
-
-name="Cinf_python_bursar_encoder_for_array_of_reals"
+name="Cinf_sympy_bursar_encoder_for_array_of_reals"
 
 from math import prod
 #from itertools import combinations

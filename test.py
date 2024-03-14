@@ -2,7 +2,7 @@
 
 import Cinf_python_polynomial_encoder_for_list_of_reals as encoder_Cinf_py_li
 import Cinf_numpy_polynomial_encoder_for_array_of_reals as encoder_Cinf_np_ar
-import    Cinf_python_bursar_encoder_for_array_of_reals as encoder_Cinf_py_bur_ar
+import     Cinf_sympy_bursar_encoder_for_array_of_reals as encoder_Cinf_sp_bur_ar
 import  Cinf_numpy_polynomial_encoder_for_list_of_reals as encoder_Cinf_np_li
 import             C0_sorting_encoder_for_list_of_reals as encoder_C0_li
 import data_sources
@@ -54,12 +54,12 @@ def test_various_encoders():
 
     test_encoder(
        data=data_sources.random_real_array_data(mn=(4,3)),
-       encoders=[ encoder_Cinf_np_ar, encoder_Cinf_py_bur_ar, ],
+       encoders=[ encoder_Cinf_np_ar, encoder_Cinf_sp_bur_ar, ],
     )
 
     test_encoder(
        data=np.array(((3,1,4),(2,2,5))),
-       encoders=[ encoder_Cinf_py_bur_ar, ],
+       encoders=[ encoder_Cinf_sp_bur_ar, ],
     )
 
 test_various_encoders()
