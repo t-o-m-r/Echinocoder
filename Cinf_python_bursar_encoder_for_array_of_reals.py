@@ -10,6 +10,22 @@
 #          ORDER == n + (m-1)*n*(n+1)/2 
 #
 # where n is the number of vectors in the set, and m is the dimension of each of those vectors.
+#
+# Here is an $m=3$, $n=2$ example:
+# Encoding  $\{(3,1,4),(2,2,5)\}$ should generate
+# 
+#       [9, 3, 5,     20, 13, 25, 8, 6]
+#
+# since the polynomial
+#
+#       $(y + (3+1x+4x^2))(y+(2+2x+5x^2))$
+#
+# is equal to 
+#
+#       $y^2 + y^1 (9x^2 + 3x + 5) + y^0 (20x^4 + 13 x^3 + 25 x^2 + 8x + 6)$
+#
+# .
+
 
 name="Cinf_python_bursar_encoder_for_array_of_reals"
 
