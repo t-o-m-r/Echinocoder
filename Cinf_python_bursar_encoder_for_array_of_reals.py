@@ -21,8 +21,8 @@ from sympy import Poly, abc
 
 def __encode_without_flattening(data):
     
-    print("Data is")
-    print(data)
+    #print("Data is")
+    #print(data)
 
     n = len(data)
     if n==0:
@@ -34,10 +34,10 @@ def __encode_without_flattening(data):
 
     polys = [ Poly(vector, abc.x)+Poly(abc.y) for vector in data ]
 
-    print("polys",polys)
+    #print("polys",polys)
 
     product = prod(polys)
-    print ("Product",product)
+    #print ("Product",product)
 
     # # extract coeffs from product slowly:
     # for c in range(1,n+1):
@@ -52,7 +52,7 @@ def __encode_without_flattening(data):
                for xPower in range(c*(m-1)+1) ]
                for c in range(1,n+1) ]
 
-    print("Coeffs",coeffs)
+    #print("Coeffs",coeffs)
     
     return coeffs
 
