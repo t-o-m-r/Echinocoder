@@ -1,9 +1,8 @@
-# Encode list of real numbers treated as multiset.
+# Encode array of real numbers treated as multiset.
 # E.g. this method can encode things like:
 #
-#        [3,4,-2,]
+#        [[3,4],[4,2],[-2,1]]
 #
-# Although this implementation claims to only do reals, it does in fact (privately) encode complex lists, albeit to complex outputs.
 
 
 name="Cinf_numpy_polynomial_encoder_for_array_of_reals"

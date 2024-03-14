@@ -15,7 +15,7 @@ def test_encoder(data, encoder=None, encoders=None, number_of_shuffled_copies=3)
     for i in range(number_of_shuffled_copies):
         for encoder in encoders:
             encoding = encoder.encode(shuffled_data)
-            print("ENCH",encoder.name,"generates",encoding,"when encoding",shuffled_data,"with (m,n)=",shuffled_data.shape[::-1],".")
+            print("ENCH",encoder.name,"generates",encoding,"of length",len(encoding),"when encoding",shuffled_data,"with (m,n)=",shuffled_data.shape[::-1],".")
         np.random.shuffle(shuffled_data) 
     print()
 

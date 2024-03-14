@@ -4,3 +4,5 @@ Internally, some may use complex representations, however such routines should b
 
 
 ./test.py is the example/test script.
+
+Note to self: could complexify the bursar's idea.
