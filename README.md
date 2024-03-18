@@ -1,4 +1,4 @@
-This is a library for continuous encodings of multisets of vectors in $\mathbb{R}^m$.  
+This is a library for continuous bijective encodings of multisets of vectors in $\mathbb{R}^m$.  
 The number of elements in each multiset is denoted $n$.
 
 In principle, all encoders expect only reals or real vectors and generate only reals.
