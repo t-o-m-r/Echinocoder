@@ -3,6 +3,9 @@
 #
 #        [[3,4],[4,2],[-2,1]]
 #
+# total_encoding_size = m*(m-1)*n
+#
+# where n is the number of vectors and m is their dimension. E.g in the example above m=2 and n=3.
 
 
 name="Cinf_numpy_polynomial_encoder_for_array_of_reals"
