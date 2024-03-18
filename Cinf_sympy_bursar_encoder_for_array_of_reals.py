@@ -4,7 +4,7 @@
 #        [[3,2],[4,1],[-2,1]]
 #
 # Although this implementation claims to only operate on arrays of reals, 
-# it can, in fact (privately) encode complex arrays, albeit to complex 
+# it it might be able to encode complex arrays, albeit to complex 
 # outputs. This could be used by a complexly compressed method (see below).
 # 
 # The number of outputs shoud be 
