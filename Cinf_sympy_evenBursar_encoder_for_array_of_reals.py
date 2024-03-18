@@ -27,7 +27,7 @@
 #
 # is equal to 
 #
-#       $ + 1 y^2 + 9 x0 y + 20 x2^2 + 3 x2 y + 13 x1 x2 + 2 x1^2 + 5 x1 y + 23 x0 x2 + 8 x0 x1 + 6 x0^2 $
+#       $y^2 + 9 x0 y + 20 x2^2 + 3 x2 y + 13 x1 x2 + 2 x1^2 + 5 x1 y + 23 x0 x2 + 8 x0 x1 + 6 x0^2 $
 #
 # . Note that the coeff of y^n is skipped (not encoded) as it is always 1.
 
