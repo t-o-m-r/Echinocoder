@@ -9,7 +9,7 @@
 # 
 # The number of outputs shoud be 
 #
-#          ORDER(m,n) == Binom(m+m, m) - 1 
+#          ORDER(m,n) == Binom(m+n, n) - 1 
 #
 # where n is the number of vectors in the set, and m is the dimension of each of those vectors. 
 # It is called "evenBursar" to contrast it from "bursar" since the former treats all elements 
