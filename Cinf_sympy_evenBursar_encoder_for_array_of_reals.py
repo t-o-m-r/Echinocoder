@@ -75,7 +75,7 @@ def encode(data):
     #print("****** polys",polys)
 
     product = prod(polys)
-    print ("**** Product",product)
+    #print ("**** Product",product)
 
     # # extract coeffs from product slowly:
     # for c in range(1,n+1):
@@ -92,7 +92,7 @@ def encode(data):
     firstCoeff = product.coeff_monomial(firstMonomial)
     if firstCoeff!=1:
         print("Expecfted 1 for coeffiecient of y^n term but got ",firstCoeff)
-        raise Exception("Bug in implementation of Bursar's method!")
+        raise Exception("Bug in implementation of evenBursar's method!")
     # Now that we skipped that term:    
     coeffs = [ product.coeff_monomial( monomial ) for monomial in itermonomials ]
 
@@ -102,7 +102,13 @@ def encode(data):
     #            for xPower in range(c*(m-1)+1) ]
     #            for c in range(1,n+1) ]
 
-    print("**** Coeffs",coeffs)
+    #print("**** Coeffs",coeffs)
+
+    EXPECTED_ORDER = sympy.binomial(m+n,n)-1
+    ACTUAL_ORDER = len(coeffs)
+    if ACTUAL_ORDER != EXPECTED_ORDER:
+        print("Expecfted ",EXPECTED_ORDER," for length of encoding but got ",ACTUAL_ORDER)
+        raise Exception("Bug in implementation of evenBursar's method!")
     
     return coeffs
 

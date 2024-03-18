@@ -60,7 +60,13 @@ def test_various_encoders():
 
     test_encoder(
        data=np.array(((3,1,4),(2,2,5))),
-       encoders=[ encoder_Cinf_sp_bur_ar, encoder_Cinf_sp_evenBur_ar, ],
+       encoders=[ encoder_Cinf_sp_bur_ar, ],
+    )
+
+    test_encoder(
+       data=np.array(((3,1,4),(2,2,5))),
+       encoders=[ encoder_Cinf_sp_evenBur_ar, ],
+       number_of_shuffled_copies=10,
     )
 
 test_various_encoders()
