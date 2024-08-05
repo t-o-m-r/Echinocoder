@@ -62,6 +62,12 @@ def test_various_encoders():
     )
 
     test_encoder(
+       data=np.array(((-7,-8,-1,-9),(9,-7,-6,5),(-9,4,9,-7))),
+       encoders=[ encoder_Cinf_sp_bur_ar, ],
+       expected_encoding = [-11, 2, -11, -7, -17, 62, 55, -202, 110, 120, -81, 315, -748, 58, 1289, -1497, 457, 1139, -1460, -45, 567],
+    )
+
+    test_encoder(
        data=data_sources.random_real_array_data(mn=(4,3)),
        encoders=[ encoder_Cinf_np_ar, encoder_Cinf_sp_bur_ar, ],
     )
