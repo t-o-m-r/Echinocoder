@@ -20,7 +20,7 @@ def test_encoder(data, encoder=None, encoders=None, number_of_shuffled_copies=3,
     for i in range(number_of_shuffled_copies):
         for encoder in encoders:
             encoding = encoder.encode(shuffled_data)
-            encoding_fails = expected_encoding is not None and encoding != expected_encoding
+            encoding_fails = expected_encoding is not None and not np.array_equal(np.asarray(encoding),np.asarray(expected_encoding))
             if encoding_fails:
                 fail_count += 1
                 print("FAIL! Expected "+str(expected_encoding)+" ... ", end='')
@@ -62,14 +62,20 @@ def test_various_encoders():
     )
 
     test_encoder(
+       data=data_sources.random_real_array_data(mn=(4,3)),
+       encoders=[ encoder_Cinf_np_ar, encoder_Cinf_sp_bur_ar, ],
+    )
+
+    test_encoder(
        data=np.array(((-7,-8,-1,-9),(9,-7,-6,5),(-9,4,9,-7))),
        encoders=[ encoder_Cinf_sp_bur_ar, ],
        expected_encoding = [-11, 2, -11, -7, -17, 62, 55, -202, 110, 120, -81, 315, -748, 58, 1289, -1497, 457, 1139, -1460, -45, 567],
     )
 
     test_encoder(
-       data=data_sources.random_real_array_data(mn=(4,3)),
-       encoders=[ encoder_Cinf_np_ar, encoder_Cinf_sp_bur_ar, ],
+       data=np.array(((8,-1,-4,3),(-8,-5,9,7),(8,2,7,-7))),
+       encoders=[ encoder_Cinf_np_ar, ],
+       expected_encoding = [   8,   -4,  -57,  -80, -488, -394,    8,   12,  -63,  144, -952,  636, 8,    3,  -15,  112, -456,  851,   -4,   12,   -6,  -21,    5,  309, -4,    3,   42,   40, -186,   68,   12,    3,   48,   34, -406,  392], 
     )
 
     test_encoder(
