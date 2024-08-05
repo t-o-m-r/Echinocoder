@@ -9,7 +9,10 @@ import             C0_sorting_encoder_for_list_of_reals as encoder_C0_li
 import data_sources
 import numpy as np
 
-def test_encoder(data, encoder=None, encoders=None, number_of_shuffled_copies=3):
+fail_count = 0
+
+def test_encoder(data, encoder=None, encoders=None, number_of_shuffled_copies=3, expected_encoding=None):
+    global fail_count
     print("ORIGINAL DATA is",data)
     shuffled_data = data.copy()
     if encoders is None:
@@ -17,7 +20,12 @@ def test_encoder(data, encoder=None, encoders=None, number_of_shuffled_copies=3)
     for i in range(number_of_shuffled_copies):
         for encoder in encoders:
             encoding = encoder.encode(shuffled_data)
+            encoding_fails = expected_encoding is not None and encoding != expected_encoding
+            if encoding_fails:
+                fail_count += 1
+                print("FAIL! Expected "+str(expected_encoding)+" ... ", end='')
             print("ENCH",encoder.name,"generates",encoding,"of length",len(encoding),"when encoding",shuffled_data,"with (m,n)=",shuffled_data.shape[::-1],".")
+            
         np.random.shuffle(shuffled_data) 
     print()
 
@@ -67,6 +75,9 @@ def test_various_encoders():
        data=np.array(((3,1,4),(2,2,5))),
        encoders=[ encoder_Cinf_sp_evenBur_ar, ],
        number_of_shuffled_copies=10,
+       expected_encoding = [9, 20, 3, 13, 2, 5, 23, 8, 6],
     )
+
+    print(str(fail_count)+" failures")
 
 test_various_encoders()
