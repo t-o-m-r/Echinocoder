@@ -69,6 +69,7 @@ def test_various_encoders():
     test_encoder(
        data=np.array(((3,1,4),(2,2,5))),
        encoders=[ encoder_Cinf_sp_bur_ar, ],
+       expected_encoding =  [9, 3, 5, 20, 13, 25, 8, 6],
     )
 
     test_encoder(
