@@ -11,7 +11,7 @@ import numpy as np
 
 fail_count = 0
 
-def test_encoder(data, encoder=None, encoders=None, number_of_shuffled_copies=3, expected_encoding=None):
+def test_multiset_encoder(data, encoder=None, encoders=None, number_of_shuffled_copies=3, expected_encoding=None):
     global fail_count
     print("ORIGINAL DATA is",data)
     shuffled_data = data.copy()
@@ -31,60 +31,60 @@ def test_encoder(data, encoder=None, encoders=None, number_of_shuffled_copies=3,
 
 def test_various_encoders():
 
-    test_encoder(
+    test_multiset_encoder(
        data=data_sources.random_real_linear_data(n=4),
        encoder=encoder_C0_li,
     )
 
-    test_encoder(
+    test_multiset_encoder(
        data=data_sources.random_complex_linear_data(n=4),
        encoders=[ encoder_Cinf_np_li, encoder_Cinf_py_li, ],
     )
 
-    test_encoder(
+    test_multiset_encoder(
        data=data_sources.random_real_linear_data(n=4),
        encoders=[ encoder_Cinf_np_li, encoder_Cinf_py_li, ],
     )
 
-    test_encoder(
+    test_multiset_encoder(
        data=data_sources.random_real_array_data(mn=(1,4)),
        encoders=[ encoder_Cinf_np_ar, ],
     )
 
-    test_encoder(
+    test_multiset_encoder(
        data=data_sources.random_real_array_data(mn=(2,3)),
        encoders=[ encoder_Cinf_np_ar, ],
     )
 
-    test_encoder(
+    test_multiset_encoder(
        data=data_sources.random_real_array_data(mn=(3,3)),
        encoders=[ encoder_Cinf_np_ar, ],
     )
 
-    test_encoder(
+    test_multiset_encoder(
        data=data_sources.random_real_array_data(mn=(4,3)),
        encoders=[ encoder_Cinf_np_ar, encoder_Cinf_sp_bur_ar, ],
     )
 
-    test_encoder(
+    test_multiset_encoder(
        data=np.array(((-7,-8,-1,-9),(9,-7,-6,5),(-9,4,9,-7))),
        encoders=[ encoder_Cinf_sp_bur_ar, ],
        expected_encoding = [-11, 2, -11, -7, -17, 62, 55, -202, 110, 120, -81, 315, -748, 58, 1289, -1497, 457, 1139, -1460, -45, 567],
     )
 
-    test_encoder(
+    test_multiset_encoder(
        data=np.array(((8,-1,-4,3),(-8,-5,9,7),(8,2,7,-7))),
        encoders=[ encoder_Cinf_np_ar, ],
        expected_encoding = [   8,   -4,  -57,  -80, -488, -394,    8,   12,  -63,  144, -952,  636, 8,    3,  -15,  112, -456,  851,   -4,   12,   -6,  -21,    5,  309, -4,    3,   42,   40, -186,   68,   12,    3,   48,   34, -406,  392], 
     )
 
-    test_encoder(
+    test_multiset_encoder(
        data=np.array(((3,1,4),(2,2,5))),
        encoders=[ encoder_Cinf_sp_bur_ar, ],
        expected_encoding =  [9, 3, 5, 20, 13, 25, 8, 6],
     )
 
-    test_encoder(
+    test_multiset_encoder(
        data=np.array(((3,1,4),(2,2,5))),
        encoders=[ encoder_Cinf_sp_evenBur_ar, ],
        number_of_shuffled_copies=10,
