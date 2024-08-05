@@ -13,7 +13,7 @@
 #
 # where n is the number of vectors in the set, and m is the dimension of each of those vectors. 
 # It is called "evenBursar" to contrast it from "bursar" since the former treats all elements 
-# of the R^m vectors even-handedly, whereas the latter treats the top and bottom compoents of
+# of the R^m vectors even-handedly, whereas the latter treats the top and bottom componets of
 # R^m vectors specially.
 #
 # Here is an $m=3$, $n=2$ example:
