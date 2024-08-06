@@ -7,7 +7,7 @@ import Cinf_sympy_evenBursar_encoder_for_array_of_reals_as_multiset as encoder_C
 import  Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset as encoder_Cinf_np_li
 import             C0_sorting_encoder_for_list_of_reals_as_multiset as encoder_C0_li
 
-import Cinf_python_regular_encoder_for_list_of_reals_as_realprojectiveplane as encoder_Cinf_rpp_1
+import Cinf_python_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectiveplane as encoder_Cinf_rcpp_1
 
 import data_sources
 import numpy as np
@@ -125,19 +125,19 @@ def test_various_encoders():
 
     test_realprojectiveplane_encoder(
        data=np.asarray([3,4,-2,5]),
-       encoders=[ encoder_Cinf_rpp_1 ],
+       encoders=[ encoder_Cinf_rcpp_1 ],
        expected_encoding = [9, 24, 4, 14, 44, -20, 25],
     )
 
     test_realprojectiveplane_encoder(
        data=np.asarray([3+2j,4,-2,5-4j]),
-       encoders=[ encoder_Cinf_rpp_1 ],
+       encoders=[ encoder_Cinf_rcpp_1 ],
        expected_encoding =[(5+12j), (24+16j), (4-8j), (30-4j), (44-32j), (-20+16j), (9-40j)],
     )
 
     test_realprojectiveplane_encoder(
        data=np.asarray([3+2j,4+1j,-2,5-4j]),
-       encoders=[ encoder_Cinf_rpp_1 ],
+       encoders=[ encoder_Cinf_rcpp_1 ],
        expected_encoding =[(5+12j), (20+22j), (3+0j), (30-8j), (52-22j), (-20+16j), (9-40j)],
     )
 
