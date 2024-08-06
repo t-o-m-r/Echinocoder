@@ -3,13 +3,17 @@
 #
 #        [3,4,-2,]
 #
+# representing the multiset
+#
+#        {{ 3,4,-2 }}
+#
 # Although this implementation claims to only do reals, it does in fact (privately) encode complex lists, albeit to complex outputs.
 #
 # This implementation as it has TERRIBLE run-time scaling with the length of the imput list, so don't 
 # use it unless your your input list has at most ~15 elements.  Use the Cinf_numpy_... version for long lists.
 # This implementation can work with arbitrary precision integers, however, which the Cinf_numpy_.... implementation cannot.
 
-name="Cinf_python_polynomial_encoder_for_list_of_reals"
+name="Cinf_python_polynomial_encoder_for_list_of_reals_as_multiset"
 
 from math import prod
 from itertools import combinations

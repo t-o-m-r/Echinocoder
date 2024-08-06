@@ -3,6 +3,10 @@
 #
 #        [[3,2],[4,1],[-2,1]]
 #
+# representing the n=3 m=2 multiset
+#
+#        {{ [3,2],[4,1],[-2,1] }}
+#
 # Although this implementation claims to only operate on arrays of reals, 
 # it might also be able to encode complex arrays, albeit to complex 
 # outputs. This could be used by a complexly compressed method later?
@@ -31,7 +35,7 @@
 #
 # . Note that the coeff of y^n is skipped (not encoded) as it is always 1.
 
-name="Cinf_sympy_evenBursar_encoder_for_array_of_reals"
+name="Cinf_sympy_evenBursar_encoder_for_array_of_reals_as_multiset"
 
 from math import prod
 #from itertools import combinations

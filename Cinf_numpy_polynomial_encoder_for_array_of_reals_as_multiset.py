@@ -12,10 +12,10 @@
 # where n is the number of vectors in the multiset and m is their dimension. E.g in the example above m=2 and n=3.
 
 
-name="Cinf_numpy_polynomial_encoder_for_array_of_reals"
+name="Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset"
 
 import numpy as np
-import Cinf_numpy_polynomial_encoder_for_list_of_reals
+import Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset
 import itertools
 import tools
 
@@ -28,12 +28,12 @@ def encode(data):
 
     if m==1:
         # The "vectors" are 1-long, so reduce the thing to a list.
-        return Cinf_numpy_polynomial_encoder_for_list_of_reals.encode(data[:,0])
+        return Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset.encode(data[:,0])
 
     if m==2:
         # The "vectors" are 2-long, so turn them into complex numbers, encode, and expand:
         complex_list = data[:,0]+complex(0,1)*data[:,1]
-        complex_encoding = Cinf_numpy_polynomial_encoder_for_list_of_reals.encode(complex_list) # Yes, this is explopiting a secret private feature ...
+        complex_encoding = Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset.encode(complex_list) # Yes, this is explopiting a secret private feature ...
         real_encoding = tools.expand_complex_to_real_pairs(complex_encoding)
         return real_encoding
 

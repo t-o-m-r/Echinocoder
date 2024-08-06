@@ -3,6 +3,10 @@
 #
 #        [[3,2],[4,1],[-2,1]]
 #
+# when the above represents the size n=3 multiset of m=2-vectors:
+#
+#        {{ [3,2],[4,1],[-2,1] }}
+#
 # Although this implementation claims to only operate on arrays of reals, 
 # it might be able to encode complex arrays, albeit to complex outputs.
 # This could be used by a complexly compressed method (see below).
@@ -44,7 +48,7 @@
 #
 # which is less than ORDER(m,n) by n*(n-1)/2 ... but still has leading term m*n*n/2.
 
-name="Cinf_sympy_bursar_encoder_for_array_of_reals"
+name="Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset"
 
 from math import prod
 #from itertools import combinations
