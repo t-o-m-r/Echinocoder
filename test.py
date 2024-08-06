@@ -7,8 +7,8 @@ import Cinf_sympy_evenBursar_encoder_for_array_of_reals_as_multiset as encoder_C
 import  Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset as encoder_Cinf_np_li
 import             C0_sorting_encoder_for_list_of_reals_as_multiset as encoder_C0_li
 
-import Cinf_python_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectiveplane as encoder_Cinf_rcpp_1
-import Cinf_python_complexPacked_encoder_for_list_of_reals_as_realprojectiveplane as encoder_Cinf_rpp_1
+import Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectiveplane as encoder_Cinf_rcpp_1
+import Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectiveplane as encoder_Cinf_rpp_1
 
 import data_sources
 import numpy as np
@@ -32,6 +32,10 @@ def test_multiset_encoder(data, encoder=None, encoders=None, number_of_shuffled_
             
         np.random.shuffle(shuffled_data) 
     print()
+
+def self_test_realprojectiveplane_encoder(encoder):
+    for inp, out in encoder.unit_test_input_output_pairs:
+       test_realprojectiveplane_encoder(inp, encoder=encoder, expected_encoding=out)
 
 def test_realprojectiveplane_encoder(data, encoder=None, encoders=None, expected_encoding=None):
     global fail_count
@@ -200,6 +204,8 @@ def test_various_encoders():
        encoders=[ encoder_Cinf_rpp_1 ],
        expected_encoding =[ -7,  24, -12, -16, 4,],
     )
+
+    self_test_realprojectiveplane_encoder(encoder_Cinf_rpp_1)
 
 def test_everything():
     test_various_encoders()

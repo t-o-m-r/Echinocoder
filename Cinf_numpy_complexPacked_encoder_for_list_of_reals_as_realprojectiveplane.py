@@ -20,7 +20,7 @@
 
 import numpy as np
 import tools
-import Cinf_python_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectiveplane as underlying_encoder
+import Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectiveplane as underlying_encoder
 
 def encode(data):
     # data=np.asarray(data)
@@ -31,7 +31,14 @@ def encode(data):
     if len(data)%2 == 1:
         real_encoding = real_encoding[:-1]
     return real_encoding
-    
+
+unit_test_input_output_pairs = [
+                    ( np.asarray([  ]),       [ ] ),
+                    ( np.asarray([-3]),       [9] ), 
+                    ( np.asarray([3,4,-2,5]), [ -7, 24, -52, 14, -21, -20] ),
+                    ( np.asarray([3,4,-2  ]), [ -7, 24, -12, -16, 4] ),
+                    ]
+
 # Just for testing/debug:
 if __name__ == "__main__":
   for data in (np.asarray([3,4,-2,5]), np.asarray([3,4,-2])):
