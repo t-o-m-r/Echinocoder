@@ -25,7 +25,12 @@
 #        xn*xn,
 #       ]
 #
-# which is of length 2n-1. 
+# which is of length 2n-1.  The reason that this is a valid encoding may be seen by considering the 
+# (vanilla) bursar multiset encoding for {{ x, -x }}. That particular encoding pulls out the
+# non-trivial coefficients of powers of y and z from the polynomial:
+#
+#    ( y - (x1 z^0 + x2 z^1 + x3 z^2 + ... + xn z^(n-1)) )*
+#    ( y + (x1 z^0 + x2 z^1 + x3 z^2 + ... + xn z^(n-1)) ).
 #
 
 import numpy as np
