@@ -205,6 +205,7 @@ def test_various_encoders():
        expected_encoding =[ -7,  24, -12, -16, 4,],
     )
 
+    self_test_realprojectiveplane_encoder(encoder_Cinf_rcpp_1)
     self_test_realprojectiveplane_encoder(encoder_Cinf_rpp_1)
 
 def test_everything():
