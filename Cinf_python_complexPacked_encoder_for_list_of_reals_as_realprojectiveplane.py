@@ -24,7 +24,13 @@ import Cinf_python_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexpr
 
 def encode(data):
     # data=np.asarray(data)
-    return np.asarray([ np.trace(np.flipud(np.outer(data,data)),diag) for diag in range(1-len(data),len(data)) ])
+    complex_data = tools.real_pairs_to_complex_zip(data)
+    complex_encoding = underlying_encoder.encode(complex_data)
+    real_encoding = tools.expand_complex_to_real_pairs(complex_encoding)
+    # Now trim off last entry but ONLY IF we know it will be zero by construction -- this is when the data has an odd length
+    if len(data)%2 == 1:
+        real_encoding = real_encoding[:-1]
+    return real_encoding
     
 # Just for testing/debug:
 if __name__ == "__main__":

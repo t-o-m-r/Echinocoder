@@ -8,6 +8,7 @@ import  Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset as encoder_C
 import             C0_sorting_encoder_for_list_of_reals_as_multiset as encoder_C0_li
 
 import Cinf_python_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectiveplane as encoder_Cinf_rcpp_1
+import Cinf_python_complexPacked_encoder_for_list_of_reals_as_realprojectiveplane as encoder_Cinf_rpp_1
 
 import data_sources
 import numpy as np
@@ -174,6 +175,30 @@ def test_various_encoders():
        data=np.asarray([3+2j,4+1j,-2,5-4j]),
        encoders=[ encoder_Cinf_rcpp_1 ],
        expected_encoding =[(5+12j), (20+22j), (3+0j), (30-8j), (52-22j), (-20+16j), (9-40j)],
+    )
+
+    test_realprojectiveplane_encoder(
+       data=np.asarray([ ]),
+       encoders=[ encoder_Cinf_rcpp_1, encoder_Cinf_rpp_1 ],
+       expected_encoding =[ ],
+    )
+
+    test_realprojectiveplane_encoder(
+       data=np.asarray([-3 ]),
+       encoders=[ encoder_Cinf_rcpp_1, encoder_Cinf_rpp_1 ],
+       expected_encoding =[ 9],
+    )
+
+    test_realprojectiveplane_encoder(
+       data=np.asarray([3,4,-2,5]),
+       encoders=[ encoder_Cinf_rpp_1 ],
+       expected_encoding =[ -7,  24, -52,  14, -21, -20,],
+    )
+
+    test_realprojectiveplane_encoder(
+       data=np.asarray([3,4,-2]),
+       encoders=[ encoder_Cinf_rpp_1 ],
+       expected_encoding =[ -7,  24, -12, -16, 4,],
     )
 
 def test_everything():
