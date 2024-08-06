@@ -48,8 +48,6 @@
 #
 # which is less than ORDER(m,n) by n*(n-1)/2 ... but still has leading term m*n*n/2.
 
-name="Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset"
-
 from math import prod
 #from itertools import combinations
 #import numpy as np

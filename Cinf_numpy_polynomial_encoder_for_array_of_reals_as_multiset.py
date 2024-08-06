@@ -11,9 +11,6 @@
 #
 # where n is the number of vectors in the multiset and m is their dimension. E.g in the example above m=2 and n=3.
 
-
-name="Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset"
-
 import numpy as np
 import Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset
 import itertools

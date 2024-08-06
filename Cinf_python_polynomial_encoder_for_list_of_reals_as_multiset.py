@@ -13,8 +13,6 @@
 # use it unless your your input list has at most ~15 elements.  Use the Cinf_numpy_... version for long lists.
 # This implementation can work with arbitrary precision integers, however, which the Cinf_numpy_.... implementation cannot.
 
-name="Cinf_python_polynomial_encoder_for_list_of_reals_as_multiset"
-
 from math import prod
 from itertools import combinations
 import numpy as np

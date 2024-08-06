@@ -11,7 +11,5 @@
 #
 #        [-2, 3, 4].
 
-name="C0_sorting_encoder_for_lists_of_reals_as_multiset"
-
 def encode(data):
     return sorted(data)

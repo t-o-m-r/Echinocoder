@@ -24,12 +24,18 @@ def test_multiset_encoder(data, encoder=None, encoders=None, number_of_shuffled_
             if encoding_fails:
                 fail_count += 1
                 print("FAIL! Expected "+str(expected_encoding)+" ... ", end='')
-            print("ENCH",encoder.name,"generates",encoding,"of length",len(encoding),"when encoding",shuffled_data,"with (m,n)=",shuffled_data.shape[::-1],". Expectation was "+str(expected_encoding))
+            print("ENCH",encoder.__name__,"generates",encoding,"of length",len(encoding),"when encoding",shuffled_data,"with (m,n)=",shuffled_data.shape[::-1],". Expectation was "+str(expected_encoding))
             
         np.random.shuffle(shuffled_data) 
     print()
 
+def make_randoms_reproducable():
+    import random
+    random.seed(1)
+    np.random.seed(1)
+
 def test_various_encoders():
+    make_randoms_reproducable()
 
     test_multiset_encoder(
        data=np.asarray([9,-4,21,-8,5]),

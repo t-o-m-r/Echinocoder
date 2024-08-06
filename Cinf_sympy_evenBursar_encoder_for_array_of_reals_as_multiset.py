@@ -35,8 +35,6 @@
 #
 # . Note that the coeff of y^n is skipped (not encoded) as it is always 1.
 
-name="Cinf_sympy_evenBursar_encoder_for_array_of_reals_as_multiset"
-
 from math import prod
 #from itertools import combinations
 #import numpy as np
