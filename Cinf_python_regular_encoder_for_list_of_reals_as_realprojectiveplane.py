@@ -1,4 +1,4 @@
-# Encode list of real numbers treated as an element of a realprojectiveplane
+# Encode list of n real (or complex) numbers treated as an element of a realprojectiveplane.  Encoding is length 2n-1 list of real (or complex) numbers.
 # E.g. this method can encode ordered lists like this
 #
 #        x = [3,4,-2,5]
@@ -25,7 +25,8 @@
 #        xn*xn,
 #       ]
 #
-# 
+# which is of length 2n-1. 
+#
 
 import numpy as np
 
@@ -36,6 +37,8 @@ def encode(data):
 # Just for testing/debug:
 if __name__ == "__main__":
     data=[3,4,-2,5]
+    #data=[3+2j,4,-2,5-4j]
+    #data=[3+2j,4+1j,-2,5-4j]
     npd = np.asarray(data)
     outer = np.flipud(np.outer(npd, npd))
     traces = [ np.trace(outer,diag) for diag in range(1-len(data),len(data)) ]

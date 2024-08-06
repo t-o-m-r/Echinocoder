@@ -129,6 +129,18 @@ def test_various_encoders():
        expected_encoding = [9, 24, 4, 14, 44, -20, 25],
     )
 
+    test_realprojectiveplane_encoder(
+       data=np.asarray([3+2j,4,-2,5-4j]),
+       encoders=[ encoder_Cinf_rpp_1 ],
+       expected_encoding =[(5+12j), (24+16j), (4-8j), (30-4j), (44-32j), (-20+16j), (9-40j)],
+    )
+
+    test_realprojectiveplane_encoder(
+       data=np.asarray([3+2j,4+1j,-2,5-4j]),
+       encoders=[ encoder_Cinf_rpp_1 ],
+       expected_encoding =[(5+12j), (20+22j), (3+0j), (30-8j), (52-22j), (-20+16j), (9-40j)],
+    )
+
     print(str(fail_count)+" failures")
 
 test_various_encoders()
