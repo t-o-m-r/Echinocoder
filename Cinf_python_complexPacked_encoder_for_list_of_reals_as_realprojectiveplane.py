@@ -19,6 +19,7 @@
 #
 
 import numpy as np
+import tools
 import Cinf_python_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectiveplane as underlying_encoder
 
 def encode(data):
@@ -27,25 +28,35 @@ def encode(data):
     
 # Just for testing/debug:
 if __name__ == "__main__":
-    data=[3,4,-2,5]
-    #data=[3+2j,4,-2,5-4j]
-    #data=[3+2j,4+1j,-2,5-4j]
-    npd = np.asarray(data)
-    outer = np.flipud(np.outer(npd, npd))
-    traces = [ np.trace(outer,diag) for diag in range(1-len(data),len(data)) ]
+  for data in (np.asarray([3,4,-2,5]), np.asarray([3,4,-2])):
+    print()
+    complex_data = tools.real_pairs_to_complex_zip(data)
+    complex_encoding = underlying_encoder.encode(complex_data)
+    real_encoding = tools.expand_complex_to_real_pairs(complex_encoding)
+    # Now trim off last entry but ONLY IF we know it will be zero by construction -- this is when the data has an odd length
+    if len(data)%2 == 1:
+        real_encoding = real_encoding[:-1]
+
     print("data ",data)
-    print("npd ",npd)
-    print("outer\n",outer)
-    print("traces ",traces)
+    print("complex_data ",complex_data)
+    print("complex_encoding",complex_encoding)
+    print("real_encoding ",real_encoding)
     # Should print
     """
-    data  [3, 4, -2, 5]
-    npd  [ 3  4 -2  5]
-    outer
-     [[ 15  20 -10  25]
-     [ -6  -8   4 -10]
-     [ 12  16  -8  20]
-     [  9  12  -6  15]]
-    traces  [9, 24, 4, 14, 44, -20, 25]
+    input  [ 3  4 -2  5]
+    reals  [ 3 -2]
+    images  [4 5]
+    data  [ 3  4 -2  5]
+    complex_data  [ 3.+4.j -2.+5.j]
+    complex_encoding [ -7.+24.j -52.+14.j -21.-20.j]
+    real_encoding  [ -7.  24. -52.  14. -21. -20.]
+    
+    input  [ 3  4 -2]
+    reals  [ 3 -2]
+    images  [4 0]
+    data  [ 3  4 -2]
+    complex_data  [ 3.+4.j -2.+0.j]
+    complex_encoding [ -7.+24.j -12.-16.j   4. +0.j]
+    real_encoding  [ -7.  24. -12. -16.   4.]
     """
 
