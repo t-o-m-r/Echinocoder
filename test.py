@@ -6,6 +6,9 @@ import     Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset as encoder_C
 import Cinf_sympy_evenBursar_encoder_for_array_of_reals_as_multiset as encoder_Cinf_sp_evenBur_ar
 import  Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset as encoder_Cinf_np_li
 import             C0_sorting_encoder_for_list_of_reals_as_multiset as encoder_C0_li
+
+import Cinf_python_regular_encoder_for_list_of_reals_as_realprojectiveplane as encoder_Cinf_rpp_1
+
 import data_sources
 import numpy as np
 
@@ -27,6 +30,23 @@ def test_multiset_encoder(data, encoder=None, encoders=None, number_of_shuffled_
             print("ENCH",encoder.__name__,"generates",encoding,"of length",len(encoding),"when encoding",shuffled_data,"with (m,n)=",shuffled_data.shape[::-1],". Expectation was "+str(expected_encoding))
             
         np.random.shuffle(shuffled_data) 
+    print()
+
+def test_realprojectiveplane_encoder(data, encoder=None, encoders=None, expected_encoding=None):
+    global fail_count
+    print("ORIGINAL DATA is",data)
+    data_copy = data.copy()
+    if encoders is None:
+        encoders = [ encoder ]
+    for sign in [+1,-1]:
+        data_copy *= sign
+        for encoder in encoders:
+            encoding = encoder.encode(data_copy)
+            encoding_fails = expected_encoding is not None and not np.array_equal(np.asarray(encoding),np.asarray(expected_encoding))
+            if encoding_fails:
+                fail_count += 1
+                print("FAIL! Expected "+str(expected_encoding)+" ... ", end='')
+            print("ENCH",encoder.__name__,"generates",encoding,"of length",len(encoding),"when encoding",data_copy,"having n=",len(data_copy),". Expectation was "+str(expected_encoding))
     print()
 
 def make_randoms_reproducable():
@@ -101,6 +121,12 @@ def test_various_encoders():
        encoders=[ encoder_Cinf_sp_evenBur_ar, ],
        number_of_shuffled_copies=10,
        expected_encoding = [9, 20, 3, 13, 2, 5, 23, 8, 6],
+    )
+
+    test_realprojectiveplane_encoder(
+       data=np.asarray([3,4,-2,5]),
+       encoders=[ encoder_Cinf_rpp_1 ],
+       expected_encoding = [9, 24, 4, 14, 44, -20, 25],
     )
 
     print(str(fail_count)+" failures")
