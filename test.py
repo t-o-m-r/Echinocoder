@@ -55,19 +55,38 @@ def make_randoms_reproducable():
     np.random.seed(1)
 
 def test_tools():
+
+
     global fail_count
     import tools
+
+
     data = np.asarray([3+4j, 4+2j])
     out_expected = [3, 4, 4, 2]
     out_real = tools.expand_complex_to_real_pairs(data)
-    print("tools.expand_comp[lex_to_real_pairs ")
+    print("tools.expand_complex_to_real_pairs")
     print("data in ",data)
     print("out_expected ",out_expected)
     print("out_real     ",out_real)
     if not np.array_equal(out_expected,out_real):
         fail_count += 1
-        print("FAIL in expand_comp[lex_to_real_pairs")
+        print("FAIL in expand_complex_to_real_pairs")
+    print()
 
+    for data, expected in ( ([1,2,3,4,5,], [1+2j, 3+4j, 5,]),  ([1,2,3,4,], [1+2j, 3+4j, ]),  ):
+       data = np.asarray(data)
+       expected = np.asarray(expected)
+       out = tools.real_pairs_to_complex_zip(data)
+       print("tools.real_pairs_to_complex_zip")
+       print("data in ",data)
+       print("out_expected ",expected)
+       print("out_real     ",out)
+       if not np.array_equal(expected,out):
+           fail_count += 1
+           print("FAIL in real_pairs_to_complex_zip")
+       print()
+
+    
 
 
 def test_various_encoders():
