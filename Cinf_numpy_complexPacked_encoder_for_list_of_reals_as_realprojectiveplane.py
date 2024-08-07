@@ -16,7 +16,16 @@
 #
 #        -x = [-3,-4,2,-5].
 #
+# Here is a table of the first few encoding orders (first column is n, second column is the order):
 #
+#  0  0
+#  1  1
+#  2  2
+#  3  5
+#  4  6
+#  5  9
+#  6 10
+
 
 import numpy as np
 import tools
