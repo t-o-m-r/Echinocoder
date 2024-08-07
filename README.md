@@ -28,4 +28,4 @@ Most encoders work only reals or real vectors and generate only real encodings, 
 
 ## References:
 
-None of the [Don Davis papers](https://www.lehigh.edu/~dmd1/toppapers.html) have been used to create this library, but they can be useful references. Some are cached in the [DOCS](DOCS) directory.
+Neither the [Don Davis papers](https://www.lehigh.edu/~dmd1/toppapers.html) nor [Don Davis immersion list](https://www.lehigh.edu/~dmd1/imms.html) has been used to create this library. Both may, however, be useful references and sources of other references, so some are cached in the [DOCS](DOCS) directory.
