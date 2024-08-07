@@ -31,11 +31,11 @@ def test_multiset_encoder(data, encoder=None, encoders=None, number_of_shuffled_
         np.random.shuffle(shuffled_data) 
     print()
 
-def self_test_realprojectiveplane_encoder(encoder):
+def self_test_realprojectivespace_encoder(encoder):
     for inp, out in encoder.unit_test_input_output_pairs:
-       test_realprojectiveplane_encoder(inp, encoder=encoder, expected_encoding=out)
+       test_realprojectivespace_encoder(inp, encoder=encoder, expected_encoding=out)
 
-def test_realprojectiveplane_encoder(data, encoder=None, encoders=None, expected_encoding=None):
+def test_realprojectivespace_encoder(data, encoder=None, encoders=None, expected_encoding=None):
     global fail_count
     print("ORIGINAL DATA is",data)
     data_copy = data.copy()
@@ -161,11 +161,11 @@ def test_various_encoders():
        expected_encoding = [9, 20, 3, 13, 2, 5, 23, 8, 6],
     )
 
-    import Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectiveplane
-    self_test_realprojectiveplane_encoder(Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectiveplane)
+    import Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace
+    self_test_realprojectivespace_encoder(Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace)
 
-    import Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectiveplane
-    self_test_realprojectiveplane_encoder(Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectiveplane)
+    import Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace
+    self_test_realprojectivespace_encoder(Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace)
 
 def test_everything():
     test_various_encoders()

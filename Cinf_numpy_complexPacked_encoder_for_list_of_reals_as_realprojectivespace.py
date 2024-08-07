@@ -1,4 +1,4 @@
-# Encode list of n real numbers treated as an element of a realprojectiveplane.
+# Encode list of n real numbers treated as an element of a realprojectivespace.
 #
 # This particular implentation explots a complex trick which (when n is even and greater than 0) allows the encoding save one real number over that required by trhe underlying regular implementation.
 #
@@ -29,7 +29,7 @@
 
 import numpy as np
 import tools
-import Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectiveplane as underlying_encoder
+import Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace as underlying_encoder
 
 def encode(data):
     # data=np.asarray(data)
