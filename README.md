@@ -26,3 +26,6 @@ Most encoders work only reals or real vectors and generate only real encodings, 
 
 [test.py](test.py) is the example/test script. Run it to excercise the encoders. If they all work the script should end with a message saying something like "0 failures".
 
+## References:
+
+None of the [Don Davis papers](https://www.lehigh.edu/~dmd1/toppapers.html) have been used to create this library, but they can be useful references. Some are cached in the [DOCS](DOCS) directory.
