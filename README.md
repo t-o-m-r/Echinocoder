@@ -16,7 +16,7 @@ Most encoders work only reals or real vectors and generate only real encodings, 
 * The 'even' busar encoder has order $Binom(m+n,n)-1$.
 * If one were to use the busar encoder when $m\ge n$ and the polynomial encoder when $n\ge m$ then one would have, in effect, a single method of order $O((mn)^{\frac 3 2})$. [Check this statement! It is probably not true!]
 
-## $RP(\mathbb R^m)$ -- i.e. RealProjectiveSpace encoders:
+## What this library is calling $RP(\mathbb R^m)$ ([real projective space](https://en.wikipedia.org/wiki/Real_projective_space)) encoders:
 
 * By setting $n=2$ and encoding the multiset $\left\\{\vec x,-\vec x\right\\}$ with $\vec x$ in $R^m$ one can use the bursar encoder to encode something this library calls $RP^m$ (which is possibly an abuse of the notation for real projective space of order $m$).  This $RP^m$ embedding would (for the (vanilla) bursar encoder) naively therefore be of size $2+(m-1)2(2+1)/2 = 2+3(m-1)$.  However, since all $m$ terms of order 1 in the auxiliary variable $y$ always disappear for multisets of this sort, the coefficients of those terms do not need to be recorded. This leaves only $2m-1$ reals needing to be recorded in the encoding for $RP^m$.  A method named [Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace](Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace.py) implements this method. It is order $2n-1$ when $n>0$.
 * A small optimisation of the above method (implemented as [Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace](Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace.py))  reduces the by one when $n>0$ and $n$ is even.
