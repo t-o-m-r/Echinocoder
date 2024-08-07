@@ -22,9 +22,7 @@ Most encoders work only reals or real vectors and generate only real encodings, 
 * A small optimisation of the above method (implemented as [Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace](Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace.py))  reduces the by one when $n>0$ and $n$ is even.
 
 
+## Testing/examples
 
+[test.py](test.py) is the example/test script. Run it to excercise the encoders. If they all work the script should end with a message saying something like "0 failures".
 
-
-./test.py is the example/test script.
-
-Note to self: one could complexify the Bursar's idea.

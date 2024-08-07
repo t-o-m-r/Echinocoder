@@ -1,3 +1,9 @@
+## Item 1
+
+Note to self: one could complexify the Bursar's idea.
+
+## Item 2
+
 20240211a : I have just noticed that the pairwise general (m,n) encoder is "trivially" redundant (contains unnecessary information). As the printout below shows,
 the encoding of
 
