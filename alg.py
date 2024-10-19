@@ -3,6 +3,8 @@
 # Patrick Kennedy-Hunt
 # Christopher Lester
 
+import numpy as np
+
 def tuple_rank(tup, k):
     """ Purpose of this function is to map a supplied tuple to its position in this list:
     (), (1), (2), ... ,(k), (1,1), (1,2), ... , (1,k), (2,2), (2,3), ... ,(2,k), (3,3), ... ,(3,k),..., (k,k), (1,1,1), (1,1,2), (1,1,3), ... , (1,1,k),(1,2,2),(1,2,3),...(2,2,2),(2,2,3),...,(k,k,k),(1,1,1,1),...,(k,k,k,k),...
@@ -176,9 +178,19 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doin
     # We are done:        
     return c_dc_pairs
 
+def pr(r, big_n):
+    return np.power(r, np.arange(1, big_n+1))
+
 def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     c_dc_pairs = map_Delta_k_to_the_n_to_c_dc_pairs(delta=delta)
     c_l_dc_triples = [ (c, ell(c,k), dc) for (c,dc) in c_dc_pairs ]
+    big_n = n*k+1
+    # Please someone re-implement this dot product without so many comprehensions ... or at any rate BETTER:
+    # Want output here to be sum_i pr(r_i, big_n) x_i)
+    # where, in effect, r_i and x_i would be defined by
+    # [ blah for _, r_i, x_i in c_l_dc_triples ]
+    # Help Jeremy!
+
     return c_l_dc_triples
 
 
