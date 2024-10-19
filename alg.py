@@ -96,7 +96,7 @@ def ell(c, k):
     return tuple_rank(k_vals, k)
 
 
-def map_Delta_k_to_the_n_to_c_l_dc_triples(#n=3,k=3,  # Only need n and/or k if doing "original initialisation" of x_with_coeffs 
+def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doing "original initialisation" of x_with_coeffs 
          delta = dict(), # Each key in the dict is an (j,i) tuple representing Patrick's e^j_i with j in [1,n] and i in [i,k].  The associated value is the coefficient of that e^j_i basis vector in the associated element of (\Delta_k)^n.
         # e.g delta = {  
         #     (1,1) : 0.5, (1,2) : 0.2, (1,3) : 0.1,    #a point in the 1st simplex
@@ -105,7 +105,7 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(#n=3,k=3,  # Only need n and/or k if 
         #   }, 
         ):
 
-    c_l_dc_triples = []
+    c_dc_pairs = []
 
     print("delta",delta)
 
@@ -143,11 +143,11 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(#n=3,k=3,  # Only need n and/or k if 
             raise Exception("IMPLEMENTATION ERROR")
 
         if dx>0:
-            # Grow the c_l_dc_triples list
+            # Grow the c_dc_pairs list
             c = list(x_with_coeffs.keys())
-            c_l_dc_triples.append((c, ell(c, k), dx)) 
-            print("grew c_l_dc_triples")
-            print("c_l_dc_triples=",c_l_dc_triples)
+            c_dc_pairs.append((c, dx)) 
+            print("grew c_dc_pairs")
+            print("c_dc_pairs=",c_dc_pairs)
 
             # trim delta
             for pair,val in list(delta.items()):
@@ -174,7 +174,14 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(#n=3,k=3,  # Only need n and/or k if 
            
 
     # We are done:        
+    return c_dc_pairs
+
+def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
+    c_dc_pairs = map_Delta_k_to_the_n_to_c_dc_pairs(delta=delta)
+    c_l_dc_triples = [ (c, ell(c,k), dc) for (c,dc) in c_dc_pairs ]
     return c_l_dc_triples
+
+
 
 if __name__ == "__main__":
 
@@ -182,25 +189,25 @@ if __name__ == "__main__":
 
     short = map_Delta_k_to_the_n_to_c_l_dc_triples
 
-    ans1 = short(#n=3, k=3, 
+    ans1 = short(n=3, k=3, 
                  delta = {  (1,2) : 0.5, (2,3) : 0.25 }, )
 
     # Next three all similar to each other.
-    ans2a = short(#n=3, k=3, 
+    ans2a = short(n=3, k=3, 
                   delta = {  (1,3) : 0.5, (2,3) : 0.25, (3,3):0.1 }, )
-    ans2b = short(#n=3, k=3, 
+    ans2b = short(n=3, k=3, 
                   delta = {  (1,3) : 0.5, (2,3) : 0.25, (3,3):0.1,  (2,2):0.0001}, )
-    ans2c = short(#n=3, k=3, 
+    ans2c = short(n=3, k=3, 
                   delta = {  (1,3) : 0.5, (2,3) : 0.25, (3,3):0.1001,  }, )
 
     # Perm invariance
-    ans3c1 = short(#n=3, k=3, 
+    ans3c1 = short(n=3, k=3, 
                    delta = {  (1,3) : 0.5, (2,1):0.001, (2,3) : 0.25, (3,3):0.1001,  }, )
-    ans3c2 = short(#n=3, k=3, 
+    ans3c2 = short(n=3, k=3, 
                    delta = {  (2,3) : 0.5, (1,1):0.001, (1,3) : 0.25, (3,3):0.1001,  }, )
 
     # Trick case:
-    ans4 = short(#n=3, k=3, 
+    ans4 = short(n=3, k=3, 
              delta = {
              (1,1) : 0.5, (1,2) : 0.2, (1,3) : 0.1,    #a point in the 1st simplex
              (2,3) : 0.25,                             #a point in the 2nd simplex 
@@ -208,7 +215,7 @@ if __name__ == "__main__":
              })
 
     # Trick case:
-    ans5 = short(#n=7, k=3, 
+    ans5 = short(n=7, k=3, 
              delta = {
              (1,1) : 0.5, (1,2) : 0.2, (1,3) : 0.1,    #a point in the 1st simplex
              (2,3) : 0.25,                             #a point in the 2nd simplex 
@@ -216,10 +223,10 @@ if __name__ == "__main__":
              })
 
     # Zero cases:
-    ans6a = short(#n=7, k=3, 
+    ans6a = short(n=7, k=3, 
                   delta = { (1,2) : 0.0, (2,3) : 0.0, })
-    ans6b = short(#n=7, k=3,
-                                                       )
+    ans6b = short(n=7, k=3,
+                  delta = dict()                       )
 
     print("Ans1 was ",ans1)
     print("Ans2a was ",ans2a)
