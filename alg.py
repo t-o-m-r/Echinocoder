@@ -191,11 +191,13 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     # [ blah for _, r_i, x_i in c_l_dc_triples ]
     # Help Jeremy!
 
-    point_in_R_bigN = sum([d * pr(r, big_n) for _, r, d in c_l_dc_triples])
+    point_in_R_bigN = sum([d * pr(r, big_n) for _, r, d in c_l_dc_triples]) + pr(0, big_n)
 
     return c_l_dc_triples, point_in_R_bigN 
 
-
+def vector_to_simplex_point(vec):
+    k = len(vec)
+    return 
 
 if __name__ == "__main__":
 
