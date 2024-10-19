@@ -78,8 +78,8 @@ def unit_test_tuple_rank():
 
 
 def ell(c, k):
-    # Every c is a (possibly empty) list of (j,i) pairs, with j in [1,n] and i in [1,k].
-    # Though c is a python list (and so is ordered) it is representing an unordered mathematical object (set).
+    # Every c is a (possibly empty) list (or set) of (j,i) pairs, with j in [1,n] and i in [1,k].
+    # Even if c is a python list (and so is ordered) it is representing an unordered mathematical object (set).
     #
     # We need to map every possible c to a natural number ... but inputs c differing only by a permutation of the j's among n elements must map to the same number (i.e. must collide) and all other collisions are forbidden. That is to say ell is supposed to be a function on C mod S(n).
     #
@@ -144,7 +144,7 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doin
 
         if dx>0:
             # Grow the c_dc_pairs list
-            c = list(x_with_coeffs.keys())
+            c = list(x_with_coeffs.keys()) # could use list or set in the implementation ... it doesn't really matter ... but the object represented is a set
             c_dc_pairs.append((c, dx)) 
             print("grew c_dc_pairs")
             print("c_dc_pairs=",c_dc_pairs)
