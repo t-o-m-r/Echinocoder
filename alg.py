@@ -1,5 +1,8 @@
 #!/opt/local/bin/python3
 
+# Patrick Kennedy-Hunt
+# Christopher Lester
+
 def tuple_rank(tup, k):
     """ Purpose of this function is to map a supplied tuple to its position in this list:
     (), (1), (2), ... ,(k), (1,1), (1,2), ... , (1,k), (2,2), (2,3), ... ,(2,k), (3,3), ... ,(3,k),..., (k,k), (1,1,1), (1,1,2), (1,1,3), ... , (1,1,k),(1,2,2),(1,2,3),...(2,2,2),(2,2,3),...,(k,k,k),(1,1,1,1),...,(k,k,k,k),...
