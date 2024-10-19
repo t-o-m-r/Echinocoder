@@ -191,7 +191,9 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     # [ blah for _, r_i, x_i in c_l_dc_triples ]
     # Help Jeremy!
 
-    return c_l_dc_triples, sum([d * pr(r, big_n) for _, r, d in c_l_dc_triples])
+    point_in_R_bigN = sum([d * pr(r, big_n) for _, r, d in c_l_dc_triples])
+
+    return c_l_dc_triples, point_in_R_bigN 
 
 
 
@@ -249,6 +251,16 @@ if __name__ == "__main__":
     print("Ans5 was ",ans5)
     print("Ans6a was ",ans6a)
     print("Ans6b was ",ans6b)
+
+    print("Ans1 was ",ans1[1])
+    print("Ans2a was ",ans2a[1])
+    print("Ans2b was ",ans2b[1])
+    print("Ans2c was ",ans2c[1])
+    print("Ans3c1 was ",ans3c1[1])
+    print("Ans3c2 was ",ans3c2[1])
+    print("Ans5 was ",ans5[1])
+    print("Ans6a was ",ans6a[1])
+    print("Ans6b was ",ans6b[1])
     
 
 
