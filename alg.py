@@ -3,6 +3,7 @@
 # Patrick Kennedy-Hunt
 # Christopher Lester
 
+# THIS SHOULD BE RE-WRITTEN AS 0-based not 1-based AS IT CURRENTLY IS!
 import numpy as np
 
 def tuple_rank(tup, k):
@@ -197,7 +198,26 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
 
 def vector_to_simplex_point(vec):
     k = len(vec)
-    return 
+    vec = np.array(vec)
+    return 1.0/(k*(1.0+np.power(2.0,vec))) # This somewhat crude parametrisation does not use the WHOLE of the simplex -- so it's a bit wasteful. It also has terrible dynamic range problems and even unit issues. Might want to address all of these points with a better mapping.
+
+def vectors_to_delta(vecs):
+    n=len(vecs)
+    delta = {}
+    if not vecs:
+        return delta
+    # vecs is not empty
+    k = len(vecs[0])
+    for j in range(n):
+        vec = vecs[j]
+        simplex_point = vector_to_simplex_point(vec)
+        k_this = len(vec)
+        if k!=k_this:
+            raise Exception("Vectos supplied to vectors_to_delta are not all the same dimension!")
+        for i in range(k):
+            delta[(j+1,i+1)]=simplex_point[i]
+    return delta
+
 
 if __name__ == "__main__":
 
@@ -243,6 +263,16 @@ if __name__ == "__main__":
                   delta = { (1,2) : 0.0, (2,3) : 0.0, })
     ans6b = short(n=7, k=3,
                   delta = dict()                       )
+    ans6c = short(n=7, k=3,
+                  delta = vectors_to_delta( [] )       )
+
+    ans7 = short(n=3, k=2,
+                  delta = vectors_to_delta( [
+                     np.array([1,2]), # k-vector number 1 of n
+                     np.array([1,0]), # k-vector number 2 of n
+                     np.array([5,2]), # k-vector number 3 of n
+                  ] )
+                )
 
     print("Ans1 was ",ans1)
     print("Ans2a was ",ans2a)
@@ -253,6 +283,8 @@ if __name__ == "__main__":
     print("Ans5 was ",ans5)
     print("Ans6a was ",ans6a)
     print("Ans6b was ",ans6b)
+    print("Ans6c was ",ans6c)
+    print("Ans7 was ",ans7)
 
     print("Ans1 was ",ans1[1])
     print("Ans2a was ",ans2a[1])
@@ -263,6 +295,8 @@ if __name__ == "__main__":
     print("Ans5 was ",ans5[1])
     print("Ans6a was ",ans6a[1])
     print("Ans6b was ",ans6b[1])
+    print("Ans6c was ",ans6c[1])
+    print("Ans7 was ",ans7[1])
     
-
+    
 
