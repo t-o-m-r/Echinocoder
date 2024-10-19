@@ -141,14 +141,15 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doin
 
     print("delta",delta)
 
-    # Set up initial value of x based on n, k and delta.
-    # This may be the only place where n is used, and that n-dependence
-    # could probably be dropped by replacing this line with a search for the set of  (j,i) with the largest i for each j in delta.
-
     if False:
         # Original initialisation. If using this pass n and k to the algorithm
+
+        # Set up initial value of x based on n, k and delta.
+        # This is the only place where n or k is used.
+
         x_with_coeffs = {  (j,k):delta.get((j,k),0)  for j in range(1,n+1) } 
     else:
+
         # n-and-k-independent initialisation
         if delta:
            j_vals = {j for (j,i) in delta.keys() }
@@ -166,12 +167,12 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doin
 
         e = min(x_with_coeffs, key=x_with_coeffs.get)
         dx = x_with_coeffs[e]
-        z=e[0]
+        z=e[0] # z is the j-val of the element of x with the smallest coefficient
         print("smallest: e=",e,"coeff=",dx, "z=",z)
 
         if dx<0:
-            # dx should never be negative, except for machine precision rounding, etc, so
-            print("WARNING: numerical precision concerns. ",dx,"<0.")
+            # dx should never be negative.
+            print("ERROR: or unexpected numerical precision concern since dx=",dx,"<0.")
             raise Exception("IMPLEMENTATION ERROR")
 
         if dx>0:
