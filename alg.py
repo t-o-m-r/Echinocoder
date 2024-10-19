@@ -44,15 +44,16 @@ def tuple_rank(tup, k):
     return rank
 
 def unit_test_tuple_rank():
-    k = 3
     fails = 0;
 
-    fails += 0 != tuple_rank((), k)
-    fails += 1 != tuple_rank((1,), k)
-    fails += 3 != tuple_rank((3,), k)
-    fails += 4 != tuple_rank((1,1,), k)
-    fails += 9 != tuple_rank((3,3,), k)
-    fails += 10 != tuple_rank((1,1,1), k)
+    fails += 0 != tuple_rank((), 1)
+    fails += 0 != tuple_rank((), 10)
+    fails += 0 != tuple_rank((), 100)
+    fails += 0 != tuple_rank((), 1000)
+
+    fails += 10 != tuple_rank((1,1,1), 3)
+    fails += 15 != tuple_rank((1,1,1), 4)
+    fails += 21 != tuple_rank((1,1,1), 5)
 
     fails += 0 != tuple_rank((),2)
     fails += 1 != tuple_rank((1,),2)
