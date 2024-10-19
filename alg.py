@@ -46,12 +46,25 @@ def tuple_rank(tup, k):
 def unit_test_tuple_rank():
     k = 3
     fails = 0;
+
     fails += 0 != tuple_rank((), k)
     fails += 1 != tuple_rank((1,), k)
     fails += 3 != tuple_rank((3,), k)
     fails += 4 != tuple_rank((1,1,), k)
     fails += 9 != tuple_rank((3,3,), k)
     fails += 10 != tuple_rank((1,1,1), k)
+
+    fails += 0 != tuple_rank((),2)
+    fails += 1 != tuple_rank((1,),2)
+    fails += 2 != tuple_rank((2,),2)
+    fails += 3 != tuple_rank((1,1,),2)
+    fails += 4 != tuple_rank((1,2,),2)
+    fails += 5 != tuple_rank((2,2,),2)
+    fails += 6 != tuple_rank((1,1,1,),2)
+    fails += 7 != tuple_rank((1,1,2,),2)
+    fails += 8 != tuple_rank((1,2,2,),2)
+    fails += 9 != tuple_rank((2,2,2,),2)
+    fails += 10 != tuple_rank((1,1,1,1,),2)
 
     fails += 0 != tuple_rank((),3)
     fails += 1 != tuple_rank((1,),3)
@@ -74,6 +87,21 @@ def unit_test_tuple_rank():
     fails += 18 != tuple_rank((2,3,3,),3)
     fails += 19 != tuple_rank((3,3,3,),3)
     fails += 20 != tuple_rank((1,1,1,1,),3)
+    fails += 21 != tuple_rank((1,1,1,2,),3)
+    fails += 22 != tuple_rank((1,1,1,3,),3)
+    fails += 23 != tuple_rank((1,1,2,2,),3)
+    fails += 24 != tuple_rank((1,1,2,3,),3)
+    fails += 25 != tuple_rank((1,1,3,3,),3)
+    fails += 26 != tuple_rank((1,2,2,2,),3)
+    fails += 27 != tuple_rank((1,2,2,3,),3)
+    fails += 28 != tuple_rank((1,2,3,3,),3)
+    fails += 29 != tuple_rank((1,3,3,3,),3)
+    fails += 30 != tuple_rank((2,2,2,2,),3)
+    fails += 31 != tuple_rank((2,2,2,3,),3)
+    fails += 32 != tuple_rank((2,2,3,3,),3)
+    fails += 33 != tuple_rank((2,3,3,3,),3)
+    fails += 34 != tuple_rank((3,3,3,3,),3)
+    fails += 35 != tuple_rank((1,1,1,1,1,),3)
 
     if fails>0:
         raise Exception("tuple_rank fails unit test")
