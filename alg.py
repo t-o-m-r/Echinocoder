@@ -191,7 +191,7 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     # [ blah for _, r_i, x_i in c_l_dc_triples ]
     # Help Jeremy!
 
-    return c_l_dc_triples
+    return c_l_dc_triples, sum([d * pr(r, big_n) for _, r, d in c_l_dc_triples])
 
 
 
