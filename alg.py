@@ -202,10 +202,8 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doin
     # We are done:        
     return c_dc_pairs
 
-# THIS SHOULD BE RE-WRITTEN AS 0-based not 1-based AS IT CURRENTLY IS!
-
 def pr(r, big_n):
-    return np.power(r, np.arange(1, big_n+1))
+    return np.power(r, np.arange(1, big_n+1)) # TODO: Ask PK-H whether there is a better final step than pr
 
 def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     c_dc_pairs = map_Delta_k_to_the_n_to_c_dc_pairs(delta=delta)
@@ -224,7 +222,7 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
 def vector_to_simplex_point(vec):
     k = len(vec)
     vec = np.array(vec)
-    return 1.0/(k*(1.0+np.power(2.0,vec))) # This somewhat crude parametrisation does not use the WHOLE of the simplex -- so it's a bit wasteful. It also has terrible dynamic range problems and even unit issues. Might want to address all of these points with a better mapping.
+    return 1.0/(k*(1.0+np.power(2.0,vec))) # TODO: This somewhat crude parametrisation does not use the WHOLE of the simplex -- so it's a bit wasteful. It also has terrible dynamic range problems and even unit issues. Might want to address all of these points with a better mapping.
 
 def vectors_to_delta(vecs):
     n=len(vecs)
@@ -240,9 +238,10 @@ def vectors_to_delta(vecs):
         if k!=k_this:
             raise Exception("Vectos supplied to vectors_to_delta are not all the same dimension!")
         for i in range(k):
-            delta[(j+1,i+1)]=simplex_point[i]
+            delta[(j,i)]=simplex_point[i]
     return delta
 
+# THIS SHOULD BE RE-WRITTEN AS 0-based not 1-based AS IT CURRENTLY IS!
 
 if __name__ == "__main__":
 
