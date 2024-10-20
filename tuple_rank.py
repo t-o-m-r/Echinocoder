@@ -37,7 +37,7 @@ def tuple_rank(tup, k):
     if k<0:
         raise Exception("k should be a non-negative integer")
     if not all(isinstance(x, int) and x>=0 and x<k for x in tup):
-        raise Exception("Inputs should be integers in [0,"+str(k)+"]")
+        raise Exception("values in tup should be integers in [0,"+str(k-1)+"]")
     if min([b-a for a,b in list(pairwise(tup))])<0:
         raise Exception("tup should be non-decreasing")
     
