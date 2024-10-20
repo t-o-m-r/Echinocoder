@@ -3,6 +3,12 @@
 # Patrick Kennedy-Hunt
 # Christopher Lester
 
+def encode(data):
+
+    n,m = data.shape
+    #print(f"Size (m,n)=({m},{n})")
+
+
 # Where used in this file the expression Deltak (or $\Delta^k$ in TeX) 
 # refers to the space inside a unit k-simplex.
 # A point in Deltak could be parameterised by  k real numbers: 
@@ -348,7 +354,7 @@ def test_simplex_embedding():
     print("Ans6b was ",ans6b[1])
     print("Ans6c was ",ans6c[1])
     print("Ans7 was ",ans7[1])
-    
+
 if __name__ == "__main__":
     unittest.main(exit=False)
     test_simplex_embedding()

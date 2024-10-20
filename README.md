@@ -2,14 +2,15 @@
 
 This is a library contains functions which are able to perform:
 
-  * Embeddings of real [symmetric product spaces](https://en.wikipedia.org/wiki/Symmetric_product_(topology)), $SP(\mathbb R^m)$.  These are continuous bijective mappings of multisets of size $n$ containing vectors in $\mathbb{R}^m$ into $\mathbb R^k$ for some $k$.
+  * Embeddings of real [symmetric product spaces](https://en.wikipedia.org/wiki/Symmetric_product_(topology)), $SP^n(\mathbb R^m)$.  These are continuous bijective mappings of multisets of size $n$ containing vectors in $\mathbb{R}^m$ into $\mathbb R^k$ for some $k$.
 
   * Embeddings of $\mathbb R^m$ in which $\vec x\in\mathbb R^n$ is identified with $-\vec x$.  I am not sure what these are really supposed to be called. This libarary currently calls them [real projective spaces](https://en.wikipedia.org/wiki/Real_projective_space) but that might be an abuse of terminology.
 
 Most encoders work only reals or real vectors and generate only real encodings, as that's the whole purpose of the libarary. However, some encoders will accept complex numbers as inputs and can generate complex numbers as outputs.  Where this is the case it is not always documented. Some of the encoders which can process complex inputs and outputs are nonetheless used (in Complex mode) as steps in the implementation of other encoders.  The capacity for some encoders to process complex numbers such routines should be considered private (unexposed) even if technically visible. This is to allow interface standardisation.
 
-## $SP(\mathbb R^m)$ -- i.e. multiset encoders:
+## $SP^nm(\mathbb R^m)$ -- i.e. multiset encoders:
 
+* The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) encoder works for any $n$ and $m$ and encodes into $n*m+1$ reals.
 * The sorting encoder is efficient for any $n$ but only can work with $m=1$.
 * The polynomial encoders are efficient for $m=1$ or $m=2$ but in general have order $O(n m^2)$.
 * The (vanilla) busar encoder has order $O(m n^2)$.  Indeed, the exact order is  $ORDER(m,n) = n + (m-1) n (n+1)/2$.
