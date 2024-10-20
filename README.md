@@ -11,8 +11,8 @@ Most encoders work only reals or real vectors and generate only real encodings, 
 ## $SP^n(\mathbb R^m)$ -- i.e. multiset encoders:
 
 * The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) encoder works for any $n$ and $m$ and encodes into $n*m+1$ reals.
-* The sorting encoder is efficient for any $n$ but only can work with $m=1$.
-* The polynomial encoders are efficient for $m=1$ or $m=2$ but in general have order $O(n m^2)$.
+* The sorting encoder is efficient (i.e. encodes into $nm$ reals) for any $n$ but only can work with $m=1$.
+* The polynomial encoders are efficient (i.e. encode into $nm$ reals) for $m=1$ or $m=2$ but in general have order $O(n m^2)$.
 * The (vanilla) busar encoder has order $O(m n^2)$.  Indeed, the exact order is  $ORDER(m,n) = n + (m-1) n (n+1)/2$.
 * The 'even' busar encoder has order $Binom(m+n,n)-1$.
 * If one were to use the busar encoder when $m\ge n$ and the polynomial encoder when $n\ge m$ then one would have, in effect, a single method of order $O((mn)^{\frac 3 2})$. [Check this statement! It is probably not true!]
