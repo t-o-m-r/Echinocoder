@@ -109,7 +109,11 @@ def ell(c, k):
     
     etc, to name just a few of the infinite number of things which must be avoided.
     """
-        
+    
+    assert isinstance(k,int), "k should be an integer."
+    assert k>=0, "k should be a non-negative integer"
+    assert len([j for j,_ in c]) == len({j for j,_ in c}), "no two distinct elements (j1,i1) and (j2,i2) in c should share the same value of j"
+
     k_vals = [vertex[1] for vertex in c]
     k_vals.sort()  # This divides out S(n)
     return tuple_rank.tuple_rank(k_vals, k)
@@ -136,9 +140,10 @@ class Test_Ell(unittest.TestCase):
         self.assertEqual(ell( [(1,5),(2,42),(3,100)], 101),
                          ell( {(2,42),(1,5),(3,100)}, 101))
 
-    def test_miss_non_perm(self):
-        self.assertNotEqual(ell( [(1,5),(2,42),(3,100)], 101),
-                            ell( [(1,5),(1,42),(3,100)], 101))      # ((1,2,3) cannot map to (1,1,3) under S(8))
+    # REMOVING NEXT TEST AS ell INPUT SPEC PRECULDES ACCEPTING ARGS WITH A REPEATED j AMONG THE (j,i)
+    # def test_miss_non_perm(self):
+    #     self.assertNotEqual(ell( [(1,5),(2,42),(3,100)], 101),
+    #                         ell( [(1,5),(1,42),(3,100)], 101))      # ((1,2,3) cannot map to (1,1,3) under S(8))
     def test_miss_not_same(self):
         self.assertNotEqual(ell( [(1,5),(2,42),(3,100)], 101),
                             ell( [(1,5),(2,42),(3, 90)], 101))      # (90 != 100)
@@ -157,7 +162,7 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doin
 
     c_dc_pairs = []
 
-    print("delta",delta)
+    #print("delta",delta)
 
 
     if False:
@@ -180,14 +185,14 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doin
            x_with_coeffs = dict()
 
     while x_with_coeffs:
-        print("Iteration! =====")
-        print("delta",delta)
-        print("x_with_coeffs",x_with_coeffs)
+        #print("Iteration! =====")
+        #print("delta",delta)
+        #print("x_with_coeffs",x_with_coeffs)
 
         e = min(x_with_coeffs, key=x_with_coeffs.get)
         dx = x_with_coeffs[e]
         z=e[0] # z is the j-val of the element of x with the smallest coefficient
-        print("smallest: e=",e,"coeff=",dx, "z=",z)
+        #print("smallest: e=",e,"coeff=",dx, "z=",z)
 
         if dx<0:
             # dx should never be negative.
@@ -198,8 +203,8 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doin
             # Grow the c_dc_pairs list
             c = list(x_with_coeffs.keys()) # could use list or set in the implementation ... it doesn't really matter ... but the object represented is a set
             c_dc_pairs.append((c, dx)) 
-            print("grew c_dc_pairs")
-            print("c_dc_pairs=",c_dc_pairs)
+            #print("grew c_dc_pairs")
+            #print("c_dc_pairs=",c_dc_pairs)
 
             # trim delta
             for pair,val in list(delta.items()):
@@ -209,7 +214,7 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doin
                      elif val>dx:
                         delta[pair] = val-dx
                      else:
-                        print("val=",val,"dx=",dx)
+                        print("ERROR: val=",val,"dx=",dx)
                         raise Exception("IMPLEMENTATION ERROR! Should not have val<dx.")
 
         # trim and update x_with_coeffs:
@@ -267,7 +272,7 @@ def vectors_to_delta(vecs):
     return delta
 
 
-def unit_test_simplex_embedding():
+def test_simplex_embedding():
     short = map_Delta_k_to_the_n_to_c_l_dc_triples
 
     ans1 = short(n=3, k=3, 
@@ -344,6 +349,6 @@ def unit_test_simplex_embedding():
     print("Ans7 was ",ans7[1])
     
 if __name__ == "__main__":
-    unittest.main()
-    unit_test_simplex_embedding()
+    unittest.main(exit=False)
+    test_simplex_embedding()
 

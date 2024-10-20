@@ -32,14 +32,10 @@ def tuple_rank(tup, k):
     There is a unit-test function which provides more test-cases.
     """
 
-    if not isinstance(k,int):
-        raise Exception("k should be an integer.")
-    if k<0:
-        raise Exception("k should be a non-negative integer")
-    if not all(isinstance(x, int) and x>=0 and x<k for x in tup):
-        raise Exception("values in tup should be integers in [0,"+str(k-1)+"]")
-    if min([b-a for a,b in list(pairwise(tup))])<0:
-        raise Exception("tup should be non-decreasing")
+    assert isinstance(k,int), "k should be an integer."
+    assert k>=0, "k should be a non-negative integer"
+    assert all(isinstance(x, int) and x>=0 and x<k for x in tup), "values in tup should be integers in [0,"+str(k-1)+"]"
+    assert len(tup)<=1 or min([b-a for a,b in list(pairwise(tup))])>=0, "tup should be non-decreasing"
     
     rank = 0
     n = len(tup)
