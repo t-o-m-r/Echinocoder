@@ -1,4 +1,4 @@
-#!/opt/local/bin/python3
+#!/usr/bin/env python3
 
 # Patrick Kennedy-Hunt
 # Christopher Lester
@@ -63,11 +63,17 @@ def ell(c, k):
     The function ell(c, k) can (in principle) be anything that satisfies the properties listed below.
     In practice, presumably some choices are better than others for efficiency reasons or reasons of practicality.
     TODO: Therefore one should experiment with alternatives that go beyond the choices made here!
-    
+  
+
+    INPUT REQUIREMENTS:
+    * The input k is a non-negative integer
+    * The input c is a (possibly empty) list (or set) of (j,i) pairs, with j in [0,n-1] and i in [0,k-1].
+    * In the input c there shall be no two pairs (j1,i1) and (j2,i2) such that j1==j2. [Aside: this restricts the length of c to be at most n.]
+
+
     What properties should ell satisfy? 
-    
-    * each c is a (possibly empty) list (or set) of (j,i) pairs, with j in [0,n-1] and i in [0,k-1].
-      Even if c is a python list (and so is ordered) it is representing an unordered mathematical object (set).
+   
+    * Even if c is a python list (and so is ordered) it should be considered to represent an unordered mathematical object (set).
     * ell should map every possible c to a natural number.
     * for same k, inputs c1 and c2 differing only by a permutation of the j's among n elements must map to the same number (i.e. must collide).
     * for same k, all other collisions are forbidden.

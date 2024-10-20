@@ -3,6 +3,7 @@
 # Christopher Lester
 
 from math import comb
+from itertools import pairwise
 
 def tuple_rank(tup, k):
     """
@@ -11,6 +12,8 @@ def tuple_rank(tup, k):
     (), (0), (1), (2), ... , (k-1), (0,0), (0,1), (0,k-1), (1,1), (1,2), ... , (1,k-1), (2,2), (2,3), ... , (2,k-1), (3,3), ... , (3,k-1), ... , (k-1,k-1), (0,0,0), (0,0,1), (0,0,2), ... , (0,0,k-1), (0,1,1), (0,1,2), ... , (1,1,1), (1,1,2), ... , (k-1,k-1,k-1), (0,0,0,0), ... , (k-1,k-1,k-1,k-1), ... .
 
     This list orders the tuples primarily by length, and secondarily by lexicographical order when tuples have the same length.
+
+    Behaviour is formally undefined if the input is not a tuple of the type specified above. However, at time of writing the method will throw an exception if inputs seem to be inconsistent.
 
     Expected output for k=3:
 
@@ -29,6 +32,15 @@ def tuple_rank(tup, k):
     There is a unit-test function which provides more test-cases.
     """
 
+    if not isinstance(k,int):
+        raise Exception("k should be an integer.")
+    if k<0:
+        raise Exception("k should be a non-negative integer")
+    if not all(isinstance(x, int) and x>=0 and x<k for x in tup):
+        raise Exception("Inputs should be integers in [0,"+str(k)+"]")
+    if min([b-a for a,b in list(pairwise(tup))])<0:
+        raise Exception("tup should be non-decreasing")
+    
     rank = 0
     n = len(tup)
 
