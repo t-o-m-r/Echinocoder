@@ -171,5 +171,7 @@ def test_everything():
     test_various_encoders()
     test_tools()
     print(str(fail_count)+" failures")
+    import tuple_rank
+    tuple_rank.unit_test_tuple_rank()
 
 test_everything()
