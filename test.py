@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 
-import Cinf_python_polynomial_encoder_for_list_of_reals_as_multiset as encoder_Cinf_py_li
-import Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset as encoder_Cinf_np_ar
-import     Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset as encoder_Cinf_sp_bur_ar
-import Cinf_sympy_evenBursar_encoder_for_array_of_reals_as_multiset as encoder_Cinf_sp_evenBur_ar
-import  Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset as encoder_Cinf_np_li
-import             C0_sorting_encoder_for_list_of_reals_as_multiset as encoder_C0_li
-
+import     Cinf_python_polynomial_encoder_for_list_of_reals_as_multiset as encoder_Cinf_py_li
+import     Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset as encoder_Cinf_np_ar
+import         Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset as encoder_Cinf_sp_bur_ar
+import     Cinf_sympy_evenBursar_encoder_for_array_of_reals_as_multiset as encoder_Cinf_sp_evenBur_ar
+import      Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset as encoder_Cinf_np_li
+import                 C0_sorting_encoder_for_list_of_reals_as_multiset as encoder_C0_li
+import C0_numpy_simplicalComplex_encoder_for_array_of_reals_as_multiset as encoder_C0_np_simplex
 
 import data_sources
 import numpy as np
 
 fail_count = 0
 
-def test_multiset_encoder(data, encoder=None, encoders=None, number_of_shuffled_copies=3, expected_encoding=None):
+def test_multiset_encoder(data, encoder=None, encoders=None, number_of_shuffled_copies=3, expected_encoding=None, relative_tolerance=0, absolute_tolerance=0):
     global fail_count
     print("ORIGINAL DATA is",data)
     shuffled_data = data.copy()
@@ -22,7 +22,8 @@ def test_multiset_encoder(data, encoder=None, encoders=None, number_of_shuffled_
     for i in range(number_of_shuffled_copies):
         for encoder in encoders:
             encoding = encoder.encode(shuffled_data)
-            encoding_fails = expected_encoding is not None and not np.array_equal(np.asarray(encoding),np.asarray(expected_encoding))
+            #encoding_fails = expected_encoding is not None and not np.array_equal(np.asarray(encoding),np.asarray(expected_encoding))
+            encoding_fails = expected_encoding is not None and not np.allclose(np.asarray(encoding),np.asarray(expected_encoding),rtol=relative_tolerance,atol=absolute_tolerance)
             if encoding_fails:
                 fail_count += 1
                 print("FAIL! Expected "+str(expected_encoding)+" ... ", end='')
@@ -167,9 +168,17 @@ def test_various_encoders():
     import Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace
     self_test_realprojectivespace_encoder(Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace)
 
+    test_multiset_encoder(
+       data=np.array(((1,2),(1,0),(5,2))),
+       encoders=[ encoder_C0_np_simplex, ],
+       number_of_shuffled_copies=10,
+       expected_encoding = [1.74545455e+00, 1.13000000e+01, 8.73272727e+01, 7.28500000e+02, 6.30183636e+03, 5.54913000e+04, 4.93020782e+05],
+       relative_tolerance=1e-8,
+    )
+
 def test_everything():
-    test_various_encoders()
     test_tools()
+    test_various_encoders()
     print(str(fail_count)+" failures")
     import tuple_rank
     tuple_rank.unit_test_tuple_rank()

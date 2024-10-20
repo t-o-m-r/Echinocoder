@@ -7,7 +7,9 @@ def encode(data):
 
     n,m = data.shape
     #print(f"Size (m,n)=({m},{n})")
+    _, ans = map_Delta_k_to_the_n_to_c_l_dc_triples(n=n, k=m, delta=vectors_to_delta(data) )
 
+    return ans
 
 # Where used in this file the expression Deltak (or $\Delta^k$ in TeX) 
 # refers to the space inside a unit k-simplex.
@@ -264,7 +266,7 @@ def vector_to_simplex_point(vec):
 def vectors_to_delta(vecs):
     n=len(vecs)
     delta = {}
-    if not vecs:
+    if len(vecs)==0:
         return delta
     # vecs is not empty
     k = len(vecs[0])
@@ -331,6 +333,8 @@ def test_simplex_embedding():
                   ] )
                 )
 
+    enc1 = encode(np.array([[1,2],[1,0],[5,2]]))
+
     print("Ans1 was ",ans1)
     print("Ans2a was ",ans2a)
     print("Ans2b was ",ans2b)
@@ -354,6 +358,8 @@ def test_simplex_embedding():
     print("Ans6b was ",ans6b[1])
     print("Ans6c was ",ans6c[1])
     print("Ans7 was ",ans7[1])
+
+    print("enc1 was ",enc1)
 
 if __name__ == "__main__":
     unittest.main(exit=False)
