@@ -152,13 +152,14 @@ class Test_Ell(unittest.TestCase):
                             ell( [(3,5),(1,42)        ], 101))      # (different lengths)
 
 def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doing "original initialisation" of x_with_coeffs 
-         delta = dict(), # Each key in the dict is an (j,i) tuple representing Patrick's e^j_i with j in [0,n-1] and i in [0,k-1].  The associated value is the coefficient of that e^j_i basis vector in the associated element of (\Delta_k)^n.
+         delta, # Each key in the dict is an (j,i) tuple representing Patrick's e^j_i with j in [0,n-1] and i in [0,k-1].  The associated value is the coefficient of that e^j_i basis vector in the associated element of (\Delta_k)^n.
         # e.g delta = {  
         #     (0,0) : 0.5, (0,1) : 0.2, (0,2) : 0.1,    #a point in the 1st simplex (simplex 0)
         #     (1,2) : 0.25,                             #a point in the 2nd simplex (simplex 1)
         #     (2,0) : 0.1,                              #a point in the 3rd simplex (simplex 2)
         #   }, 
         ):
+    delta = delta.copy() # because we heavily modify internally and dicts are mutable!
 
     c_dc_pairs = []
 
