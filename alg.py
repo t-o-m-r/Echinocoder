@@ -3,6 +3,57 @@
 # Patrick Kennedy-Hunt
 # Christopher Lester
 
+# Where used in this file the expression Deltak (or $\Delta^k$ in TeX) 
+# refers to the space inside a unit k-simplex.
+# A point in Deltak could be parameterised by  k real numbers: 
+#
+#      x_0, x_1, ... , x_(k-1)
+#
+# with the property that:
+#
+#      0 <= x_i <= 1 for all i
+#
+# and for which
+#
+#      sum_i x_i <= 1.
+#
+# The implementation below  also handles points that live inside spaces which are
+# products of n copies of Deltak. These would be in $(\Delta^k)^n$ in TeX, but
+# in the sourcecode we term this space Deltakn.  
+#
+# For practical reasons, the implementation below mostly stores points in Deltak
+# or in Deltakn not as lists, i.e. not as
+#
+#  x = [x_0, x_1, ... , x_(k-1)]
+#
+# but instead stores them as dictionaries mapping key index pairs (j,i) to the 
+# simplex coordinates. In these key index pairs (j,i) the value j in [0,n-1] 
+# indexes the copy of Deltak within Dektakn,  and the i value in [0,k-1] 
+# indexes the coordinate position within Deltak.
+#
+# For examplex:, for n=2 and k=2 ...
+#
+# a point x within the first Deltak within Deltakn might be stored as
+#
+#          x = { (0,0):0.25,  (0,1):0.50, (0,2):0.10, }
+#
+# and a point y within the second Deltak within Deltakn might be stored as
+#
+#          y = { (1,0):0.05, (1,1):0.00,  (1,2):0.90, }
+#
+# or equivalentlay (since zero coefficients may be omitted) as
+#
+#          y = { (1,0):0.05,              (1,2):0.90, }
+#
+# and a point delta = x*y  within Detlakn would be stored as
+#
+#          delta = { **x, **y }
+#                = { 
+#                    (0,0):0.25,  (0,1):0.50, (0,2):0.10, 
+#                    (1,0):0.05,              (1,2):0.90, 
+#                  }.
+#
+
 import numpy as np
 import tuple_rank
 
@@ -144,8 +195,8 @@ def vectors_to_delta(vecs):
             delta[(j,i)]=simplex_point[i]
     return delta
 
-if __name__ == "__main__":
 
+def unit_test_simplex_embedding():
     short = map_Delta_k_to_the_n_to_c_l_dc_triples
 
     ans1 = short(n=3, k=3, 
@@ -221,5 +272,6 @@ if __name__ == "__main__":
     print("Ans6c was ",ans6c[1])
     print("Ans7 was ",ans7[1])
     
-    
+if __name__ == "__main__":
+    unit_test_simplex_embedding()
 
