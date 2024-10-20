@@ -58,18 +58,44 @@ import numpy as np
 import tuple_rank
 
 def ell(c, k):
-    # Every c is a (possibly empty) list (or set) of (j,i) pairs, with j in [0,n-1] and i in [0,k-1].
-    # Even if c is a python list (and so is ordered) it is representing an unordered mathematical object (set).
-    #
-    # We need to map every possible c to a natural number ... but inputs c differing only by a permutation of the j's among n elements must map to the same number (i.e. must collide) and all other collisions are forbidden. That is to say ell is supposed to be a function on C mod S(n).
-    #
-    # E.g. we must have all these equal:
-    #
-    #     ell( [(1,5),(2,42),(3,100), 8] 
-    #     ell( [(7,5),(1,42),(3,100), 8]
-    #     ell( [(3,5),(1,42),(3,100), 8]
-    #
-    # but 
+    """
+    The function ell(c, k) can (in principle) be anything that satisfies the properties listed below.
+    In practice, presumably some choices are better than others for efficiency reasons or reasons of practicality.
+    TODO: Therefore one should experiment with alternatives that go beyond the choices made here!
+    
+    What properties should ell satisfy? 
+    
+    * each c is a (possibly empty) list (or set) of (j,i) pairs, with j in [0,n-1] and i in [0,k-1].
+      Even if c is a python list (and so is ordered) it is representing an unordered mathematical object (set).
+    
+    * ell should map every possible c to a natural number.
+    * for same k, inputs c1 and c2 differing only by a permutation of the j's among n elements must map to the same number (i.e. must collide).
+    * for same k, all other collisions are forbidden.
+    * Thus ell should be a function on C mod S(n).
+    
+    E.g. we must have all these equal:
+    
+        ell( [(1,5),(2,42),(3,100), 8]
+        ell( [(7,5),(1,42),(3,100), 8]
+    
+    since 1,2,3 can be mapped to 7,1,3 by the S8 perm 
+    
+            (0,1,2,3,4,5,6,7) -> (0,7,1,3,4,5,6,2)
+
+    which looks like (172) in cycle notation.
+
+    In contrast:
+    
+        ell( [(1,5),(2,42),(3,100), 8]
+    
+    should not collide with any of:
+    
+        ell( [(1,5),(1,42),(3,100), 8]      ((1,2,3) cannot map to (1,1,3) under S(8))
+        ell( [(1,5),(2,42),(3, 90), 8]      (90 != 100)
+        ell( [(3,5),(1,42),       , 8]      (different lengths)
+    
+    etc, to name just a few of the infinite number of things which must be avoided.
+    """
         
     k_vals = [vertex[1] for vertex in c]
     k_vals.sort()  # This divides out S(n)
