@@ -56,6 +56,7 @@
 
 import numpy as np
 import tuple_rank
+import unittest
 
 def ell(c, k):
     """
@@ -75,8 +76,8 @@ def ell(c, k):
     
     E.g. we must have all these equal:
     
-        ell( [(1,5),(2,42),(3,100), 8]
-        ell( [(7,5),(1,42),(3,100), 8]
+        ell( [(1,5),(2,42),(3,100)], 101)
+        ell( [(7,5),(1,42),(3,100)], 101)
     
     since 1,2,3 can be mapped to 7,1,3 by the S8 perm 
     
@@ -84,15 +85,22 @@ def ell(c, k):
 
     which looks like (172) in cycle notation.
 
+    We must also have these equal:
+
+        ell( [(1,5),(2,42),(3,100)], 101)
+        ell( [(2,42),(1,5),(3,100)], 101)
+
+    since ell must be a set function.
+
     In contrast:
     
-        ell( [(1,5),(2,42),(3,100), 8]
+        ell( [(1,5),(2,42),(3,100)], 101)
     
     should not collide with any of:
     
-        ell( [(1,5),(1,42),(3,100), 8]      ((1,2,3) cannot map to (1,1,3) under S(8))
-        ell( [(1,5),(2,42),(3, 90), 8]      (90 != 100)
-        ell( [(3,5),(1,42),       , 8]      (different lengths)
+        ell( [(1,5),(1,42),(3,100)], 101)      ((1,2,3) cannot map to (1,1,3) under S(8))
+        ell( [(1,5),(2,42),(3, 90)], 101)      (90 != 100)
+        ell( [(3,5),(1,42)],       , 101)      (different lengths)
     
     etc, to name just a few of the infinite number of things which must be avoided.
     """
@@ -100,6 +108,39 @@ def ell(c, k):
     k_vals = [vertex[1] for vertex in c]
     k_vals.sort()  # This divides out S(n)
     return tuple_rank.tuple_rank(k_vals, k)
+
+class Test_Ell(unittest.TestCase):
+    def test_sn_perm_collision(self):
+        # since (172) (cycle notation) is a perm in S(8):
+
+        #with lists as inputs:
+        self.assertEqual(ell( [(1,5),(2,42),(3,100)], 101),
+                         ell( [(7,5),(1,42),(3,100)], 101))
+
+        #with sets as inputs:
+        self.assertEqual(ell( {(1,5),(2,42),(3,100)}, 101),
+                         ell( {(7,5),(1,42),(3,100)}, 101))
+
+    def test_set_function_collision(self):
+        # With lists as inputs:
+        self.assertEqual(ell( [(1,5),(2,42),(3,100)], 101),
+                         ell( [(2,42),(1,5),(3,100)], 101))
+        # With sets as inputs:
+        self.assertEqual(ell( {(1,5),(2,42),(3,100)}, 101),
+                         ell( {(2,42),(1,5),(3,100)}, 101))
+        # With mix of inputs:
+        self.assertEqual(ell( [(1,5),(2,42),(3,100)], 101),
+                         ell( {(2,42),(1,5),(3,100)}, 101))
+
+    def test_miss_non_perm(self):
+        self.assertNotEqual(ell( [(1,5),(2,42),(3,100)], 101),
+                            ell( [(1,5),(1,42),(3,100)], 101))      # ((1,2,3) cannot map to (1,1,3) under S(8))
+    def test_miss_not_same(self):
+        self.assertNotEqual(ell( [(1,5),(2,42),(3,100)], 101),
+                            ell( [(1,5),(2,42),(3, 90)], 101))      # (90 != 100)
+    def test_miss_different_length(self):
+        self.assertNotEqual(ell( [(1,5),(2,42),(3,100)], 101),
+                            ell( [(3,5),(1,42)        ], 101))      # (different lengths)
 
 def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doing "original initialisation" of x_with_coeffs 
          delta = dict(), # Each key in the dict is an (j,i) tuple representing Patrick's e^j_i with j in [0,n-1] and i in [0,k-1].  The associated value is the coefficient of that e^j_i basis vector in the associated element of (\Delta_k)^n.
@@ -299,5 +340,6 @@ def unit_test_simplex_embedding():
     print("Ans7 was ",ans7[1])
     
 if __name__ == "__main__":
+    unittest.main()
     unit_test_simplex_embedding()
 
