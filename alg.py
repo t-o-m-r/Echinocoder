@@ -241,8 +241,6 @@ def vectors_to_delta(vecs):
             delta[(j,i)]=simplex_point[i]
     return delta
 
-# THIS SHOULD BE RE-WRITTEN AS 0-based not 1-based AS IT CURRENTLY IS!
-
 if __name__ == "__main__":
 
     unit_test_tuple_rank()
@@ -250,41 +248,41 @@ if __name__ == "__main__":
     short = map_Delta_k_to_the_n_to_c_l_dc_triples
 
     ans1 = short(n=3, k=3, 
-                 delta = {  (1,2) : 0.5, (2,3) : 0.25 }, )
+                 delta = {  (0,1) : 0.5, (1,2) : 0.25 }, )
 
     # Next three all similar to each other.
     ans2a = short(n=3, k=3, 
-                  delta = {  (1,3) : 0.5, (2,3) : 0.25, (3,3):0.1 }, )
+                  delta = {  (0,2) : 0.5, (1,2) : 0.25, (2,2):0.1 }, )
     ans2b = short(n=3, k=3, 
-                  delta = {  (1,3) : 0.5, (2,3) : 0.25, (3,3):0.1,  (2,2):0.0001}, )
+                  delta = {  (0,2) : 0.5, (1,2) : 0.25, (2,2):0.1,  (1,1):0.0001}, )
     ans2c = short(n=3, k=3, 
-                  delta = {  (1,3) : 0.5, (2,3) : 0.25, (3,3):0.1001,  }, )
+                  delta = {  (0,2) : 0.5, (1,2) : 0.25, (2,2):0.1001,  }, )
 
     # Perm invariance
     ans3c1 = short(n=3, k=3, 
-                   delta = {  (1,3) : 0.5, (2,1):0.001, (2,3) : 0.25, (3,3):0.1001,  }, )
+                   delta = {  (0,2) : 0.5, (1,0):0.001, (1,2) : 0.25, (2,2):0.1001,  }, )
     ans3c2 = short(n=3, k=3, 
-                   delta = {  (2,3) : 0.5, (1,1):0.001, (1,3) : 0.25, (3,3):0.1001,  }, )
+                   delta = {  (1,2) : 0.5, (0,0):0.001, (0,2) : 0.25, (2,2):0.1001,  }, )
 
     # Trick case:
     ans4 = short(n=3, k=3, 
              delta = {
-             (1,1) : 0.5, (1,2) : 0.2, (1,3) : 0.1,    #a point in the 1st simplex
-             (2,3) : 0.25,                             #a point in the 2nd simplex 
-             (3,1) : 0.1,                              #a point in the 3rd simplex
+             (0,0) : 0.5, (0,1) : 0.2, (0,2) : 0.1,    #a point in the 1st simplex
+             (1,2) : 0.25,                             #a point in the 2nd simplex 
+             (2,0) : 0.1,                              #a point in the 3rd simplex
              })
 
     # Trick case:
     ans5 = short(n=7, k=3, 
              delta = {
-             (1,1) : 0.5, (1,2) : 0.2, (1,3) : 0.1,    #a point in the 1st simplex
-             (2,3) : 0.25,                             #a point in the 2nd simplex 
-             (3,1) : 0.1,                              #a point in the 3rd simplex
+             (0,0) : 0.5, (0,1) : 0.2, (0,2) : 0.1,    #a point in the 1st simplex
+             (1,2) : 0.25,                             #a point in the 2nd simplex 
+             (2,0) : 0.1,                              #a point in the 3rd simplex
              })
 
     # Zero cases:
     ans6a = short(n=7, k=3, 
-                  delta = { (1,2) : 0.0, (2,3) : 0.0, })
+                  delta = { (0,1) : 0.0, (1,2) : 0.0, })
     ans6b = short(n=7, k=3,
                   delta = dict()                       )
     ans6c = short(n=7, k=3,
@@ -292,9 +290,9 @@ if __name__ == "__main__":
 
     ans7 = short(n=3, k=2,
                   delta = vectors_to_delta( [
-                     np.array([1,2]), # k-vector number 1 of n
-                     np.array([1,0]), # k-vector number 2 of n
-                     np.array([5,2]), # k-vector number 3 of n
+                     np.array([1,2]), # k-vector 1 of n
+                     np.array([1,0]), # k-vector 2 of n
+                     np.array([5,2]), # k-vector 3 of n
                   ] )
                 )
 
