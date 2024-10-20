@@ -6,18 +6,28 @@
 import numpy as np
 
 def tuple_rank(tup, k):
-    """ Purpose of this function is to map a supplied tuple to its position in this list:
+    """
+    The purpose of this function is to map the supplied tuple of non-decreasing integers in [0,k-1] to its position in this list:
+
     (), (0),(1), (2), ... ,(k-1), (0,0),(0,1),(0,k-1),(1,1), (1,2), ... , (1,k-1), (2,2), (2,3), ... ,(2,k-1), (3,3), ... ,(3,k-1),..., (k-1,k-1), (0,0,0), (0,0,1), (0,0,2), ... , (0,0,k-1),(0,1,1),(0,1,2),...(1,1,1),(1,1,2),...,(k-1,k-1,k-1),(0,0,0,0),...,(k-1,k-1,k-1,k-1),...
 
-    Expected output:
+    which, in effect, primarily by length of tuple, and secondarily by lexicographical order within tuples of the same length.
 
-    k = 3
-    print(tuple_rank((), k))        # Expected output: 0
-    print(tuple_rank((0,), k))      # Expected output: 1
-    print(tuple_rank((2,), k))      # Expected output: 3
-    print(tuple_rank((0,0,), k))    # Expected output: 4
-    print(tuple_rank((2,2,), k))    # Expected output: 9
-    print(tuple_rank((0,0,0), k))   # Expected output: 10
+    Expected output for k=3:
+
+    print(tuple_rank((), 3))        # Expected output: 0
+    print(tuple_rank((0,), 3))      # Expected output: 1
+    print(tuple_rank((1,), 3))      # Expected output: 2
+    print(tuple_rank((2,), 3))      # Expected output: 3
+    print(tuple_rank((0,0,), 3))    # Expected output: 4
+    print(tuple_rank((0,1,), 3))    # Expected output: 5
+    print(tuple_rank((0,2,), 3))    # Expected output: 6
+    print(tuple_rank((1,1,), 3))    # Expected output: 7
+    print(tuple_rank((1,2,), 3))    # Expected output: 8
+    print(tuple_rank((2,2,), 3))    # Expected output: 9
+    print(tuple_rank((0,0,0), 3))   # Expected output: 10
+
+    There is a unit-test function which provides more test-cases.
     """
 
     from math import comb
