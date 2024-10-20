@@ -8,23 +8,20 @@ import numpy as np
 
 def tuple_rank(tup, k):
     """ Purpose of this function is to map a supplied tuple to its position in this list:
-    (), (1), (2), ... ,(k), (1,1), (1,2), ... , (1,k), (2,2), (2,3), ... ,(2,k), (3,3), ... ,(3,k),..., (k,k), (1,1,1), (1,1,2), (1,1,3), ... , (1,1,k),(1,2,2),(1,2,3),...(2,2,2),(2,2,3),...,(k,k,k),(1,1,1,1),...,(k,k,k,k),...
+    (), (0),(1), (2), ... ,(k-1), (0,0),(0,1),(0,k-1),(1,1), (1,2), ... , (1,k-1), (2,2), (2,3), ... ,(2,k-1), (3,3), ... ,(3,k-1),..., (k-1,k-1), (0,0,0), (0,0,1), (0,0,2), ... , (0,0,k-1),(0,1,1),(0,1,2),...(1,1,1),(1,1,2),...,(k-1,k-1,k-1),(0,0,0,0),...,(k-1,k-1,k-1,k-1),...
 
     Expected output:
 
     k = 3
     print(tuple_rank((), k))        # Expected output: 0
-    print(tuple_rank((1,), k))      # Expected output: 1
-    print(tuple_rank((3,), k))      # Expected output: 3
-    print(tuple_rank((1,1,), k))    # Expected output: 4
-    print(tuple_rank((3,3,), k))    # Expected output: 9
-    print(tuple_rank((1,1,1), k))   # Expected output: 10
+    print(tuple_rank((0,), k))      # Expected output: 1
+    print(tuple_rank((2,), k))      # Expected output: 3
+    print(tuple_rank((0,0,), k))    # Expected output: 4
+    print(tuple_rank((2,2,), k))    # Expected output: 9
+    print(tuple_rank((0,0,0), k))   # Expected output: 10
     """
 
     from math import comb
-
-    # Convert the tuple to 0-based indexing
-    tup = [x - 1 for x in tup]
 
     rank = 0
     n = len(tup)
@@ -51,58 +48,58 @@ def unit_test_tuple_rank():
     fails += 0 != tuple_rank((), 100)
     fails += 0 != tuple_rank((), 1000)
 
-    fails += 10 != tuple_rank((1,1,1), 3)
-    fails += 15 != tuple_rank((1,1,1), 4)
-    fails += 21 != tuple_rank((1,1,1), 5)
+    fails += 10 != tuple_rank((0,0,0), 3)
+    fails += 15 != tuple_rank((0,0,0), 4)
+    fails += 21 != tuple_rank((0,0,0), 5)
 
     fails += 0 != tuple_rank((),2)
-    fails += 1 != tuple_rank((1,),2)
-    fails += 2 != tuple_rank((2,),2)
-    fails += 3 != tuple_rank((1,1,),2)
-    fails += 4 != tuple_rank((1,2,),2)
-    fails += 5 != tuple_rank((2,2,),2)
-    fails += 6 != tuple_rank((1,1,1,),2)
-    fails += 7 != tuple_rank((1,1,2,),2)
-    fails += 8 != tuple_rank((1,2,2,),2)
-    fails += 9 != tuple_rank((2,2,2,),2)
-    fails += 10 != tuple_rank((1,1,1,1,),2)
+    fails += 1 != tuple_rank((0,),2)
+    fails += 2 != tuple_rank((1,),2)
+    fails += 3 != tuple_rank((0,0,),2)
+    fails += 4 != tuple_rank((0,1,),2)
+    fails += 5 != tuple_rank((1,1,),2)
+    fails += 6 != tuple_rank((0,0,0,),2)
+    fails += 7 != tuple_rank((0,0,1,),2)
+    fails += 8 != tuple_rank((0,1,1,),2)
+    fails += 9 != tuple_rank((1,1,1,),2)
+    fails += 10 != tuple_rank((0,0,0,0,),2)
 
     fails += 0 != tuple_rank((),3)
-    fails += 1 != tuple_rank((1,),3)
-    fails += 2 != tuple_rank((2,),3)
-    fails += 3 != tuple_rank((3,),3)
-    fails += 4 != tuple_rank((1,1,),3)
-    fails += 5 != tuple_rank((1,2,),3)
-    fails += 6 != tuple_rank((1,3,),3)
-    fails += 7 != tuple_rank((2,2,),3)
-    fails += 8 != tuple_rank((2,3,),3)
-    fails += 9 != tuple_rank((3,3,),3)
-    fails += 10 != tuple_rank((1,1,1,),3)
-    fails += 11 != tuple_rank((1,1,2,),3)
-    fails += 12 != tuple_rank((1,1,3,),3)
-    fails += 13 != tuple_rank((1,2,2,),3)
-    fails += 14 != tuple_rank((1,2,3,),3)
-    fails += 15 != tuple_rank((1,3,3,),3)
-    fails += 16 != tuple_rank((2,2,2,),3)
-    fails += 17 != tuple_rank((2,2,3,),3)
-    fails += 18 != tuple_rank((2,3,3,),3)
-    fails += 19 != tuple_rank((3,3,3,),3)
-    fails += 20 != tuple_rank((1,1,1,1,),3)
-    fails += 21 != tuple_rank((1,1,1,2,),3)
-    fails += 22 != tuple_rank((1,1,1,3,),3)
-    fails += 23 != tuple_rank((1,1,2,2,),3)
-    fails += 24 != tuple_rank((1,1,2,3,),3)
-    fails += 25 != tuple_rank((1,1,3,3,),3)
-    fails += 26 != tuple_rank((1,2,2,2,),3)
-    fails += 27 != tuple_rank((1,2,2,3,),3)
-    fails += 28 != tuple_rank((1,2,3,3,),3)
-    fails += 29 != tuple_rank((1,3,3,3,),3)
-    fails += 30 != tuple_rank((2,2,2,2,),3)
-    fails += 31 != tuple_rank((2,2,2,3,),3)
-    fails += 32 != tuple_rank((2,2,3,3,),3)
-    fails += 33 != tuple_rank((2,3,3,3,),3)
-    fails += 34 != tuple_rank((3,3,3,3,),3)
-    fails += 35 != tuple_rank((1,1,1,1,1,),3)
+    fails += 1 != tuple_rank((0,),3)
+    fails += 2 != tuple_rank((1,),3)
+    fails += 3 != tuple_rank((2,),3)
+    fails += 4 != tuple_rank((0,0,),3)
+    fails += 5 != tuple_rank((0,1,),3)
+    fails += 6 != tuple_rank((0,2,),3)
+    fails += 7 != tuple_rank((1,1,),3)
+    fails += 8 != tuple_rank((1,2,),3)
+    fails += 9 != tuple_rank((2,2,),3)
+    fails += 10 != tuple_rank((0,0,0,),3)
+    fails += 11 != tuple_rank((0,0,1,),3)
+    fails += 12 != tuple_rank((0,0,2,),3)
+    fails += 13 != tuple_rank((0,1,1,),3)
+    fails += 14 != tuple_rank((0,1,2,),3)
+    fails += 15 != tuple_rank((0,2,2,),3)
+    fails += 16 != tuple_rank((1,1,1,),3)
+    fails += 17 != tuple_rank((1,1,2,),3)
+    fails += 18 != tuple_rank((1,2,2,),3)
+    fails += 19 != tuple_rank((2,2,2,),3)
+    fails += 20 != tuple_rank((0,0,0,0,),3)
+    fails += 21 != tuple_rank((0,0,0,1,),3)
+    fails += 22 != tuple_rank((0,0,0,2,),3)
+    fails += 23 != tuple_rank((0,0,1,1,),3)
+    fails += 24 != tuple_rank((0,0,1,2,),3)
+    fails += 25 != tuple_rank((0,0,2,2,),3)
+    fails += 26 != tuple_rank((0,1,1,1,),3)
+    fails += 27 != tuple_rank((0,1,1,2,),3)
+    fails += 28 != tuple_rank((0,1,2,2,),3)
+    fails += 29 != tuple_rank((0,2,2,2,),3)
+    fails += 30 != tuple_rank((1,1,1,1,),3)
+    fails += 31 != tuple_rank((1,1,1,2,),3)
+    fails += 32 != tuple_rank((1,1,2,2,),3)
+    fails += 33 != tuple_rank((1,2,2,2,),3)
+    fails += 34 != tuple_rank((2,2,2,2,),3)
+    fails += 35 != tuple_rank((0,0,0,0,0,),3)
 
     if fails>0:
         raise Exception("tuple_rank fails unit test")
