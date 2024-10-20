@@ -111,15 +111,14 @@ def ell(c, k):
 
 class Test_Ell(unittest.TestCase):
     def test_sn_perm_collision(self):
-        # since (172) (cycle notation) is a perm in S(8):
 
         #with lists as inputs:
         self.assertEqual(ell( [(1,5),(2,42),(3,100)], 101),
-                         ell( [(7,5),(1,42),(3,100)], 101))
+                         ell( [(7,5),(1,42),(3,100)], 101))  # ( (172) maps 1->7 and 2->1 in S(8) )
 
         #with sets as inputs:
         self.assertEqual(ell( {(1,5),(2,42),(3,100)}, 101),
-                         ell( {(7,5),(1,42),(3,100)}, 101))
+                         ell( {(7,5),(1,42),(3,100)}, 101))  # ( (172) maps 1->7 and 2->1 in S(8) )
 
     def test_set_function_collision(self):
         # With lists as inputs:
