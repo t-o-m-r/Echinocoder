@@ -68,7 +68,6 @@ def ell(c, k):
     
     * each c is a (possibly empty) list (or set) of (j,i) pairs, with j in [0,n-1] and i in [0,k-1].
       Even if c is a python list (and so is ordered) it is representing an unordered mathematical object (set).
-    
     * ell should map every possible c to a natural number.
     * for same k, inputs c1 and c2 differing only by a permutation of the j's among n elements must map to the same number (i.e. must collide).
     * for same k, all other collisions are forbidden.
