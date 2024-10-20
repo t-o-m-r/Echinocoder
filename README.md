@@ -8,7 +8,7 @@ This is a library contains functions which are able to perform:
 
 Most encoders work only reals or real vectors and generate only real encodings, as that's the whole purpose of the libarary. However, some encoders will accept complex numbers as inputs and can generate complex numbers as outputs.  Where this is the case it is not always documented. Some of the encoders which can process complex inputs and outputs are nonetheless used (in Complex mode) as steps in the implementation of other encoders.  The capacity for some encoders to process complex numbers such routines should be considered private (unexposed) even if technically visible. This is to allow interface standardisation.
 
-## $SP^nm(\mathbb R^m)$ -- i.e. multiset encoders:
+## $SP^n(\mathbb R^m)$ -- i.e. multiset encoders:
 
 * The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) encoder works for any $n$ and $m$ and encodes into $n*m+1$ reals.
 * The sorting encoder is efficient for any $n$ but only can work with $m=1$.
