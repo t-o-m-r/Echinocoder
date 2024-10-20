@@ -3,7 +3,6 @@
 # Patrick Kennedy-Hunt
 # Christopher Lester
 
-# THIS SHOULD BE RE-WRITTEN AS 0-based not 1-based AS IT CURRENTLY IS!
 import numpy as np
 
 def tuple_rank(tup, k):
@@ -104,10 +103,8 @@ def unit_test_tuple_rank():
     if fails>0:
         raise Exception("tuple_rank fails unit test")
 
-
-
 def ell(c, k):
-    # Every c is a (possibly empty) list (or set) of (j,i) pairs, with j in [1,n] and i in [1,k].
+    # Every c is a (possibly empty) list (or set) of (j,i) pairs, with j in [0,n-1] and i in [0,k-1].
     # Even if c is a python list (and so is ordered) it is representing an unordered mathematical object (set).
     #
     # We need to map every possible c to a natural number ... but inputs c differing only by a permutation of the j's among n elements must map to the same number (i.e. must collide) and all other collisions are forbidden. That is to say ell is supposed to be a function on C mod S(n).
@@ -124,13 +121,12 @@ def ell(c, k):
     k_vals.sort()  # This divides out S(n)
     return tuple_rank(k_vals, k)
 
-
 def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doing "original initialisation" of x_with_coeffs 
-         delta = dict(), # Each key in the dict is an (j,i) tuple representing Patrick's e^j_i with j in [1,n] and i in [i,k].  The associated value is the coefficient of that e^j_i basis vector in the associated element of (\Delta_k)^n.
+         delta = dict(), # Each key in the dict is an (j,i) tuple representing Patrick's e^j_i with j in [0,n-1] and i in [0,k-1].  The associated value is the coefficient of that e^j_i basis vector in the associated element of (\Delta_k)^n.
         # e.g delta = {  
-        #     (1,1) : 0.5, (1,2) : 0.2, (1,3) : 0.1,    #a point in the 1st simplex
-        #     (2,3) : 0.25,                             #a point in the 2nd simplex 
-        #     (3,1) : 0.1,                              #a point in the 3rd simplex
+        #     (0,0) : 0.5, (0,1) : 0.2, (0,2) : 0.1,    #a point in the 1st simplex (simplex 0)
+        #     (1,2) : 0.25,                             #a point in the 2nd simplex (simplex 1)
+        #     (2,0) : 0.1,                              #a point in the 3rd simplex (simplex 2)
         #   }, 
         ):
 
@@ -138,14 +134,16 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doin
 
     print("delta",delta)
 
+
     if False:
         # Original initialisation. If using this pass n and k to the algorithm
 
         # Set up initial value of x based on n, k and delta.
         # This is the only place where n or k is used.
 
-        x_with_coeffs = {  (j,k):delta.get((j,k),0)  for j in range(1,n+1) } 
+        x_with_coeffs = {  (j,k-1):delta.get((j,k-1),0)  for j in range(n) } 
     else:
+
 
         # n-and-k-independent initialisation
         if delta:
@@ -155,7 +153,6 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doin
            x_with_coeffs = {  (j,largest_i_for_j[j]):delta[(j,largest_i_for_j[j])]  for j in j_vals } 
         else:
            x_with_coeffs = dict()
-
 
     while x_with_coeffs:
         print("Iteration! =====")
@@ -195,16 +192,17 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doin
         del x_with_coeffs[e] # since this part should be gone.  Needed by next line!
         # Set up new keys:
         new_keys = list(x_with_coeffs.keys()) # Will not contain e.
-        if e[1]>1:
+        if e[1]>0:
             new_e = (z, e[1]-1)
             new_keys.append(new_e)
 
         # refresh x_with_coeffs:
         x_with_coeffs = { new_key:delta.get(new_key,0)  for new_key in new_keys } 
            
-
     # We are done:        
     return c_dc_pairs
+
+# THIS SHOULD BE RE-WRITTEN AS 0-based not 1-based AS IT CURRENTLY IS!
 
 def pr(r, big_n):
     return np.power(r, np.arange(1, big_n+1))
