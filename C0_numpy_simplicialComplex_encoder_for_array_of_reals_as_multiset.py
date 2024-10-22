@@ -247,7 +247,7 @@ def pr(r, big_n):
 def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     c_dc_pairs = map_Delta_k_to_the_n_to_c_dc_pairs(delta=delta)
     c_l_dc_triples = [ (c, ell(c,k), dc) for (c,dc) in c_dc_pairs ]
-    big_n = n*k + 1
+    big_n = 2*n*k + 1
     # Please someone re-implement this dot product without so many comprehensions ... or at any rate BETTER:
     # Want output here to be sum_i pr(r_i, big_n) x_i)
     # where, in effect, r_i and x_i would be defined by
