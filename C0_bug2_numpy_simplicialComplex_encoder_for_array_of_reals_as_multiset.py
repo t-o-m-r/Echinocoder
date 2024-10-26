@@ -330,10 +330,8 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "
         #   }, 
         ):
 
-    flat_sums = make_flat_sums(n,k,delta)
-    print("flat_sums pre sort =",flat_sums)
-    flat_sums_sorted = sorted(flat_sums, key=lambda x : (x[3], x[2]-x[1]) ) # Sort by delta sum, but break ties in favour of longer sums
-    print("flat_sums post sort =",flat_sums_sorted)
+    flat_sums = make_flat_sums(n,k,delta, sort=True)
+    print("flat_sums sorted =",flat_sums)
 
 
 
