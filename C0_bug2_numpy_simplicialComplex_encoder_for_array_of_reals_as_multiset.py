@@ -334,8 +334,7 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "
     print("flat_sums sorted =",flat_sums)
 
 
-
-    c_dc_pairs = []
+    c_dc_pairs = [("moo",  flat_sums[index]  ) for index in range(nk) ]
 
     #print("delta",delta)
 
@@ -502,6 +501,24 @@ def test_simplex_embedding():
 
     enc1 = encode(np.array([[1,2],[1,0],[5,2]]))
 
+    n=4
+    k=3
+    delta=dict()
+    delta[(0,0)]=0.00
+    delta[(0,1)]=0.03
+    delta[(0,2)]=0.22
+    delta[(1,0)]=0.00
+    delta[(1,1)]=0.11
+    delta[(1,2)]=0.10
+    delta[(2,0)]=0.10
+    delta[(2,1)]=0.00
+    delta[(2,2)]=0.50
+    delta[(3,0)]=0.01
+    delta[(3,1)]=0.03
+    delta[(3,2)]=0.20
+
+    ans8 = short(n=n, k=k, delta=delta)
+
     print("Ans1 was ",ans1)
     print("Ans2a was ",ans2a)
     print("Ans2b was ",ans2b)
@@ -513,6 +530,7 @@ def test_simplex_embedding():
     print("Ans6b was ",ans6b)
     print("Ans6c was ",ans6c)
     print("Ans7 was ",ans7)
+    print("Ans8 was ",ans8)
 
     print("Ans1 was ",ans1[1])
     print("Ans2a was ",ans2a[1])
@@ -527,6 +545,10 @@ def test_simplex_embedding():
     print("Ans7 was ",ans7[1])
 
     print("enc1 was ",enc1)
+
+    print("Ans8 was ",ans8)
+    print("Ans8 was ",ans8[1])
+
 
 if __name__ == "__main__":
     test_simplex_embedding()
