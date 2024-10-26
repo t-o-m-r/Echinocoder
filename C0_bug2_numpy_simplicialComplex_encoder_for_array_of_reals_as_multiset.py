@@ -161,7 +161,167 @@ class Test_Ell(unittest.TestCase):
         self.assertNotEqual(ell( [(1,5),(2,42),(3,100)], 101),
                             ell( [(3,5),(1,42)        ], 101))      # (different lengths)
 
-def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doing "original initialisation" of x_with_coeffs 
+def make_flat_sums(n,k,delta, sort=False):
+    """
+    Conceptually, the dict flat_sums (for k=3) should "represent" the following map
+    
+    flat_sums = {
+      {(0,0)+(0,1)+(0,2)} : delta[(0,0)]+delta[(0,1)]+delta[(0,2)],
+      {      (0,1)+(0,2)} :              delta[(0,1)]+delta[(0,2)],
+      {            (0,2)} :                           delta[(0,2)],
+      {(1,0)+(1,1)+(1,2)} : delta[(1,0)]+delta[(1,1)]+delta[(1,2)],
+      {      (1,1)+(1,2)} :              delta[(1,1)]+delta[(1,2)],
+      {            (1,2)} :                           delta[(1,2)],
+      ...
+      ...
+      ...
+      {(n-1,0)+(n-1,1)+(n-1,2)} : delta[(n-1,0)]+delta[(n-1,1)]+delta[(n-1,2)],
+      {        (n-1,1)+(n-1,2)} :                delta[(n-1,1)]+delta[(n-1,2)],
+      {                (n-1,2)} :                               delta[(n-1,2)],
+    }.
+
+    However, for practial implementation purposes we "represent" the above by the following more abbreviated structure
+    (a list of 
+    in which for each key the first index is j in [0,n-1], the second index is the least i value in the basis sum, 
+    and where the third index is one more than the largest value in the basis sum. I.e. key (j,b,c) below encodes key sum_{i=b}^(c-1) (j,i) above. The example below uses k=3 again
+    
+    flat_sums = [
+      (0, 0, 3, delta[(0,0)]+delta[(0,1)]+delta[(0,2)]),
+      (0, 1, 3,              delta[(0,1)]+delta[(0,2)]),
+      (0, 2, 3,                           delta[(0,2)]),
+      (1, 0, 3, delta[(1,0)]+delta[(1,1)]+delta[(1,2)]),
+      (1, 1, 3,              delta[(1,1)]+delta[(1,2)]),
+      (1, 2, 3,                           delta[(1,2)]),
+      ...
+      ...
+      ...
+      (n-1, 0, 3, delta[(n-1,0)]+delta[(n-1,1)]+delta[(n-1,2)]),
+      (n-1, 1, 3,                delta[(n-1,1)]+delta[(n-1,2)]),
+      (n-1, 2, 3,                               delta[(n-1,2)]),
+    ]
+
+    Note that one could omit the storage of c in (j,b,c) since c is always k (i.e. 2 in the example above). 
+    However, I may later choose to sum from the bottom, so I allow a small amount of redundancy above.
+
+    """
+    flat_sums=[ (j, i_min, k, sum([delta.get((j,i), 0) for i in range(i_min,k) ])) for j in range(n) for i_min in range(k) ]
+    print("flat_sums unsorted",flat_sums)
+    if sort:
+        flat_sums = sorted(flat_sums, key=lambda x : (x[3], x[2]-x[1]) ) # Sort by delta sum, but break ties in favour of longer sums
+        print("flat_sums sorted",flat_sums)
+    return flat_sums
+
+
+class Test_flat_sums(unittest.TestCase):
+    def test(self):
+
+        n=4
+        k=3
+
+        delta=dict()
+        delta[(0,0)]=1
+        delta[(0,1)]=4
+        delta[(0,2)]=2
+        delta[(1,0)]=1
+        delta[(1,1)]=54
+        delta[(1,2)]=6
+        delta[(2,0)]=9
+        delta[(2,1)]=10
+        delta[(2,2)]=22
+        delta[(3,0)]=-2
+        delta[(3,1)]=3
+        delta[(3,2)]=6
+
+        flat_sums_expected = [
+          (0, 0, 3, delta[(0,0)]+delta[(0,1)]+delta[(0,2)]),
+          (0, 1, 3,              delta[(0,1)]+delta[(0,2)]),
+          (0, 2, 3,                           delta[(0,2)]),
+          (1, 0, 3, delta[(1,0)]+delta[(1,1)]+delta[(1,2)]),
+          (1, 1, 3,              delta[(1,1)]+delta[(1,2)]),
+          (1, 2, 3,                           delta[(1,2)]),
+          (2, 0, 3, delta[(2,0)]+delta[(2,1)]+delta[(2,2)]),
+          (2, 1, 3,              delta[(2,1)]+delta[(2,2)]),
+          (2, 2, 3,                           delta[(2,2)]),
+          (3, 0, 3, delta[(3,0)]+delta[(3,1)]+delta[(3,2)]),
+          (3, 1, 3,              delta[(3,1)]+delta[(3,2)]),
+          (3, 2, 3,                           delta[(3,2)]),
+        ]
+        flat_sums_calculated = make_flat_sums(n,k,delta)
+        self.assertEqual(flat_sums_expected, flat_sums_calculated)
+
+    def test_with_omitted_zeros(self):
+
+        n=4
+        k=3
+
+        delta=dict()
+        delta[(0,0)]=1
+        # Omit! delta[(0,1)]=4
+        delta[(0,2)]=2
+        delta[(1,0)]=1
+        delta[(1,1)]=54
+        delta[(1,2)]=6
+        delta[(2,0)]=9
+        delta[(2,1)]=10
+        delta[(2,2)]=22
+        delta[(3,0)]=-2
+        delta[(3,1)]=3
+        # Omit! delta[(3,2)]=6
+
+        flat_sums_expected = [
+          (0, 0, 3, delta[(0,0)]+             delta[(0,2)]),
+          (0, 1, 3,                           delta[(0,2)]),
+          (0, 2, 3,                           delta[(0,2)]),
+          (1, 0, 3, delta[(1,0)]+delta[(1,1)]+delta[(1,2)]),
+          (1, 1, 3,              delta[(1,1)]+delta[(1,2)]),
+          (1, 2, 3,                           delta[(1,2)]),
+          (2, 0, 3, delta[(2,0)]+delta[(2,1)]+delta[(2,2)]),
+          (2, 1, 3,              delta[(2,1)]+delta[(2,2)]),
+          (2, 2, 3,                           delta[(2,2)]),
+          (3, 0, 3, delta[(3,0)]+delta[(3,1)]             ),
+          (3, 1, 3,              delta[(3,1)]             ),
+          (3, 2, 3,                                      0),
+        ]
+        flat_sums_calculated = make_flat_sums(n,k,delta)
+        self.assertEqual(flat_sums_expected, flat_sums_calculated)
+
+    def test_one_note_sorted_example(self):
+
+        n=4
+        k=3
+
+        delta=dict()
+        delta[(0,0)]=0+ 0 # am sneakily writing 0+00 for 0.00 to turn decimals into integers, just for testing. This is naughty as delta coords should be in [0,1] but it is OK for this test
+        delta[(0,1)]=0+ 3
+        delta[(0,2)]=0+22
+        delta[(1,0)]=0+00
+        delta[(1,1)]=0+11
+        delta[(1,2)]=0+10
+        delta[(2,0)]=0+10
+        delta[(2,1)]=0+00
+        delta[(2,2)]=0+50
+        delta[(3,0)]=0+ 1
+        delta[(3,1)]=0+ 3
+        delta[(3,2)]=0+20
+
+        flat_sums_expected = [
+          (1, 2, 3, 0+10), #                           delta[(1,2)]),
+          (3, 2, 3, 0+20), #                           delta[(3,2)]),
+          (1, 1, 3, 0+21), #              delta[(1,1)]+delta[(1,2)]),
+          (1, 0, 3, 0+21), # delta[(1,0)]+delta[(1,1)]+delta[(1,2)]),
+          (0, 2, 3, 0+22), #                           delta[(0,2)]),
+          (3, 1, 3, 0+23), #              delta[(3,1)]+delta[(3,2)]),
+          (3, 0, 3, 0+24), # delta[(3,0)]+delta[(3,1)]+delta[(3,2)]),
+          (0, 1, 3, 0+25), #              delta[(0,1)]+delta[(0,2)]),
+          (0, 0, 3, 0+25), # delta[(0,0)]+delta[(0,1)]+delta[(0,2)]),
+          (2, 2, 3, 0+50), #                           delta[(2,2)]),
+          (2, 1, 3, 0+50), #              delta[(2,1)]+delta[(2,2)]),
+          (2, 0, 3, 0+60), # delta[(2,0)]+delta[(2,1)]+delta[(2,2)]),
+        ]
+        flat_sums_calculated = make_flat_sums(n,k,delta, sort=True)
+        self.assertEqual(flat_sums_expected, flat_sums_calculated)
+
+def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "original initialisation" of x_with_coeffs 
          delta, # Each key in the dict is an (j,i) tuple representing Patrick's e^j_i with j in [0,n-1] and i in [0,k-1].  The associated value is the coefficient of that e^j_i basis vector in the associated element of (\Delta_k)^n.
         # e.g delta = {  
         #     (0,0) : 0.5, (0,1) : 0.2, (0,2) : 0.1,    #a point in the 1st simplex (simplex 0)
@@ -169,7 +329,13 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doin
         #     (2,0) : 0.1,                              #a point in the 3rd simplex (simplex 2)
         #   }, 
         ):
-    delta = delta.copy() # because we heavily modify internally and dicts are mutable!
+
+    flat_sums = make_flat_sums(n,k,delta)
+    print("flat_sums pre sort =",flat_sums)
+    flat_sums_sorted = sorted(flat_sums, key=lambda x : (x[3], x[2]-x[1]) ) # Sort by delta sum, but break ties in favour of longer sums
+    print("flat_sums post sort =",flat_sums_sorted)
+
+
 
     c_dc_pairs = []
 
@@ -248,7 +414,7 @@ def pr(r, big_n):
     return np.power(r, np.arange(1, big_n+1)) # TODO: Ask PK-H whether there is a better final step than pr
 
 def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
-    c_dc_pairs = map_Delta_k_to_the_n_to_c_dc_pairs(delta=delta)
+    c_dc_pairs = map_Delta_k_to_the_n_to_c_dc_pairs(n,k,delta)
     c_l_dc_triples = [ (c, ell(c,k), dc) for (c,dc) in c_dc_pairs ]
     big_n = 2*n*k + 1
     # Please someone re-implement this dot product without so many comprehensions ... or at any rate BETTER:
@@ -365,6 +531,6 @@ def test_simplex_embedding():
     print("enc1 was ",enc1)
 
 if __name__ == "__main__":
-    unittest.main(exit=False)
     test_simplex_embedding()
+    unittest.main(exit=False)
 
