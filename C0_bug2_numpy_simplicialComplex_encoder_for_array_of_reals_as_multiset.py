@@ -205,10 +205,10 @@ def make_flat_sums(n,k,delta, sort=False, prepend_zero=False):
 
     """
     flat_sums=list([ (j, tuple(range(i_min, k)), sum([delta.get((j,i), 0) for i in range(i_min,k) ])) for j in range(n) for i_min in range(k) ])
-    print("flat_sums unsorted",flat_sums)
+    #print("flat_sums unsorted",flat_sums)
     if sort:
         flat_sums = sorted(flat_sums, key=lambda x : (x[2], len(x[1])) ) # Sort by delta sum, but break ties in favour of longer sums
-        print("flat_sums sorted",flat_sums)
+        #print("flat_sums sorted",flat_sums)
     if prepend_zero:
         flat_sums = [ ( None, tuple(), 0) ] + flat_sums
     return flat_sums
@@ -342,7 +342,8 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "
 
 
     c_dc_pairs = [("moo", sum2-sum1  ) for (j1,i1_vals, sum1),(j2,i2_val, sum2) in pairwise(flat_sums) ]
-    print("c_dc_pairs from flat_sums = ",c_dc_pairs)
+    print("c_dc_pairs from flat_sums = ")
+    [print(_) for _ in c_dc_pairs]
 
     c_dc_pairs = []
 
@@ -414,7 +415,8 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "
         x_with_coeffs = { new_key:delta.get(new_key,0)  for new_key in new_keys } 
            
     # We are done:        
-    print("c_dc_pairs ",c_dc_pairs)
+    print("c_dc_pairs ")
+    [print(_) for _ in c_dc_pairs]
     return c_dc_pairs
 
 def pr(r, big_n):
@@ -460,6 +462,7 @@ def vectors_to_delta(vecs):
 def test_simplex_embedding():
     short = map_Delta_k_to_the_n_to_c_l_dc_triples
 
+    """
     ans1 = short(n=3, k=3, 
                  delta = {  (0,1) : 0.5, (1,2) : 0.25 }, )
 
@@ -510,6 +513,7 @@ def test_simplex_embedding():
                 )
 
     enc1 = encode(np.array([[1,2],[1,0],[5,2]]))
+    """
 
     n=4
     k=3
