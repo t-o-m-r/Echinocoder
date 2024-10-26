@@ -181,33 +181,31 @@ def make_flat_sums(n,k,delta, sort=False):
     }.
 
     However, for practial implementation purposes we "represent" the above by the following more abbreviated structure
-    (a list of 
-    in which for each key the first index is j in [0,n-1], the second index is the least i value in the basis sum, 
-    and where the third index is one more than the largest value in the basis sum. I.e. key (j,b,c) below encodes key sum_{i=b}^(c-1) (j,i) above. The example below uses k=3 again
+    (a list of tuples)
+    in which for each key the first index is j in [0,n-1], the second index is a tuple containing the i values in the basis sum, 
+    I.e. key (j,r) below encodes key sum([ (j,i) for i in r]) above. The example below uses k=3 again
     
     flat_sums = [
-      (0, 0, 3, delta[(0,0)]+delta[(0,1)]+delta[(0,2)]),
-      (0, 1, 3,              delta[(0,1)]+delta[(0,2)]),
-      (0, 2, 3,                           delta[(0,2)]),
-      (1, 0, 3, delta[(1,0)]+delta[(1,1)]+delta[(1,2)]),
-      (1, 1, 3,              delta[(1,1)]+delta[(1,2)]),
-      (1, 2, 3,                           delta[(1,2)]),
+      (0, (0,1,2,), delta[(0,0)]+delta[(0,1)]+delta[(0,2)]),
+      (0,   (1,2,),              delta[(0,1)]+delta[(0,2)]),
+      (0,     (2,),                           delta[(0,2)]),
+      (1, (0,1,2,), delta[(1,0)]+delta[(1,1)]+delta[(1,2)]),
+      (1,   (1,2,),              delta[(1,1)]+delta[(1,2)]),
+      (1,     (2,),                           delta[(1,2)]),
       ...
       ...
       ...
-      (n-1, 0, 3, delta[(n-1,0)]+delta[(n-1,1)]+delta[(n-1,2)]),
-      (n-1, 1, 3,                delta[(n-1,1)]+delta[(n-1,2)]),
-      (n-1, 2, 3,                               delta[(n-1,2)]),
+      (n-1, (0,1,2,), delta[(n-1,0)]+delta[(n-1,1)]+delta[(n-1,2)]),
+      (n-1,   (1,2,),                delta[(n-1,1)]+delta[(n-1,2)]),
+      (n-1,     (2,),                               delta[(n-1,2)]),
     ]
 
-    Note that one could omit the storage of c in (j,b,c) since c is always k (i.e. 2 in the example above). 
-    However, I may later choose to sum from the bottom, so I allow a small amount of redundancy above.
 
     """
-    flat_sums=[ (j, i_min, k, sum([delta.get((j,i), 0) for i in range(i_min,k) ])) for j in range(n) for i_min in range(k) ]
+    flat_sums=[ (j, tuple(range(i_min, k)), sum([delta.get((j,i), 0) for i in range(i_min,k) ])) for j in range(n) for i_min in range(k) ]
     print("flat_sums unsorted",flat_sums)
     if sort:
-        flat_sums = sorted(flat_sums, key=lambda x : (x[3], x[2]-x[1]) ) # Sort by delta sum, but break ties in favour of longer sums
+        flat_sums = sorted(flat_sums, key=lambda x : (x[2], len(x[1])) ) # Sort by delta sum, but break ties in favour of longer sums
         print("flat_sums sorted",flat_sums)
     return flat_sums
 
@@ -233,18 +231,18 @@ class Test_flat_sums(unittest.TestCase):
         delta[(3,2)]=6
 
         flat_sums_expected = [
-          (0, 0, 3, delta[(0,0)]+delta[(0,1)]+delta[(0,2)]),
-          (0, 1, 3,              delta[(0,1)]+delta[(0,2)]),
-          (0, 2, 3,                           delta[(0,2)]),
-          (1, 0, 3, delta[(1,0)]+delta[(1,1)]+delta[(1,2)]),
-          (1, 1, 3,              delta[(1,1)]+delta[(1,2)]),
-          (1, 2, 3,                           delta[(1,2)]),
-          (2, 0, 3, delta[(2,0)]+delta[(2,1)]+delta[(2,2)]),
-          (2, 1, 3,              delta[(2,1)]+delta[(2,2)]),
-          (2, 2, 3,                           delta[(2,2)]),
-          (3, 0, 3, delta[(3,0)]+delta[(3,1)]+delta[(3,2)]),
-          (3, 1, 3,              delta[(3,1)]+delta[(3,2)]),
-          (3, 2, 3,                           delta[(3,2)]),
+          (0, (0,1,2,), delta[(0,0)]+delta[(0,1)]+delta[(0,2)]),
+          (0,   (1,2,),              delta[(0,1)]+delta[(0,2)]),
+          (0,     (2,),                           delta[(0,2)]),
+          (1, (0,1,2,), delta[(1,0)]+delta[(1,1)]+delta[(1,2)]),
+          (1,   (1,2,),              delta[(1,1)]+delta[(1,2)]),
+          (1,     (2,),                           delta[(1,2)]),
+          (2, (0,1,2,), delta[(2,0)]+delta[(2,1)]+delta[(2,2)]),
+          (2,   (1,2,),              delta[(2,1)]+delta[(2,2)]),
+          (2,     (2,),                           delta[(2,2)]),
+          (3, (0,1,2,), delta[(3,0)]+delta[(3,1)]+delta[(3,2)]),
+          (3,   (1,2,),              delta[(3,1)]+delta[(3,2)]),
+          (3,     (2,),                           delta[(3,2)]),
         ]
         flat_sums_calculated = make_flat_sums(n,k,delta)
         self.assertEqual(flat_sums_expected, flat_sums_calculated)
@@ -269,18 +267,18 @@ class Test_flat_sums(unittest.TestCase):
         # Omit! delta[(3,2)]=6
 
         flat_sums_expected = [
-          (0, 0, 3, delta[(0,0)]+             delta[(0,2)]),
-          (0, 1, 3,                           delta[(0,2)]),
-          (0, 2, 3,                           delta[(0,2)]),
-          (1, 0, 3, delta[(1,0)]+delta[(1,1)]+delta[(1,2)]),
-          (1, 1, 3,              delta[(1,1)]+delta[(1,2)]),
-          (1, 2, 3,                           delta[(1,2)]),
-          (2, 0, 3, delta[(2,0)]+delta[(2,1)]+delta[(2,2)]),
-          (2, 1, 3,              delta[(2,1)]+delta[(2,2)]),
-          (2, 2, 3,                           delta[(2,2)]),
-          (3, 0, 3, delta[(3,0)]+delta[(3,1)]             ),
-          (3, 1, 3,              delta[(3,1)]             ),
-          (3, 2, 3,                                      0),
+          (0, (0,1,2,), delta[(0,0)]+             delta[(0,2)]),
+          (0,   (1,2,),                           delta[(0,2)]),
+          (0,     (2,),                           delta[(0,2)]),
+          (1, (0,1,2,), delta[(1,0)]+delta[(1,1)]+delta[(1,2)]),
+          (1,   (1,2,),              delta[(1,1)]+delta[(1,2)]),
+          (1,     (2,),                           delta[(1,2)]),
+          (2, (0,1,2,), delta[(2,0)]+delta[(2,1)]+delta[(2,2)]),
+          (2,   (1,2,),              delta[(2,1)]+delta[(2,2)]),
+          (2,     (2,),                           delta[(2,2)]),
+          (3, (0,1,2,), delta[(3,0)]+delta[(3,1)]             ),
+          (3,   (1,2,),              delta[(3,1)]             ),
+          (3,     (2,),                                      0),
         ]
         flat_sums_calculated = make_flat_sums(n,k,delta)
         self.assertEqual(flat_sums_expected, flat_sums_calculated)
@@ -305,18 +303,18 @@ class Test_flat_sums(unittest.TestCase):
         delta[(3,2)]=0+20
 
         flat_sums_expected = [
-          (1, 2, 3, 0+10), #                           delta[(1,2)]),
-          (3, 2, 3, 0+20), #                           delta[(3,2)]),
-          (1, 1, 3, 0+21), #              delta[(1,1)]+delta[(1,2)]),
-          (1, 0, 3, 0+21), # delta[(1,0)]+delta[(1,1)]+delta[(1,2)]),
-          (0, 2, 3, 0+22), #                           delta[(0,2)]),
-          (3, 1, 3, 0+23), #              delta[(3,1)]+delta[(3,2)]),
-          (3, 0, 3, 0+24), # delta[(3,0)]+delta[(3,1)]+delta[(3,2)]),
-          (0, 1, 3, 0+25), #              delta[(0,1)]+delta[(0,2)]),
-          (0, 0, 3, 0+25), # delta[(0,0)]+delta[(0,1)]+delta[(0,2)]),
-          (2, 2, 3, 0+50), #                           delta[(2,2)]),
-          (2, 1, 3, 0+50), #              delta[(2,1)]+delta[(2,2)]),
-          (2, 0, 3, 0+60), # delta[(2,0)]+delta[(2,1)]+delta[(2,2)]),
+          (1,     (2,), 0+10), #                           delta[(1,2)]),
+          (3,     (2,), 0+20), #                           delta[(3,2)]),
+          (1,   (1,2,), 0+21), #              delta[(1,1)]+delta[(1,2)]),
+          (1, (0,1,2,), 0+21), # delta[(1,0)]+delta[(1,1)]+delta[(1,2)]),
+          (0,     (2,), 0+22), #                           delta[(0,2)]),
+          (3,   (1,2,), 0+23), #              delta[(3,1)]+delta[(3,2)]),
+          (3, (0,1,2,), 0+24), # delta[(3,0)]+delta[(3,1)]+delta[(3,2)]),
+          (0,   (1,2,), 0+25), #              delta[(0,1)]+delta[(0,2)]),
+          (0, (0,1,2,), 0+25), # delta[(0,0)]+delta[(0,1)]+delta[(0,2)]),
+          (2,     (2,), 0+50), #                           delta[(2,2)]),
+          (2,   (1,2,), 0+50), #              delta[(2,1)]+delta[(2,2)]),
+          (2, (0,1,2,), 0+60), # delta[(2,0)]+delta[(2,1)]+delta[(2,2)]),
         ]
         flat_sums_calculated = make_flat_sums(n,k,delta, sort=True)
         self.assertEqual(flat_sums_expected, flat_sums_calculated)
@@ -334,7 +332,9 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "
     print("flat_sums sorted =",flat_sums)
 
 
-    c_dc_pairs = [("moo",  flat_sums[index]  ) for index in range(nk) ]
+    c_dc_pairs = [("moo",  flat_sums[index]  ) for index in range(n*k) ]
+
+    c_dc_pairs = []
 
     #print("delta",delta)
 
