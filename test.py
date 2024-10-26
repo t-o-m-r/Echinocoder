@@ -6,7 +6,8 @@ import          Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset as enco
 import      Cinf_sympy_evenBursar_encoder_for_array_of_reals_as_multiset as encoder_Cinf_sp_evenBur_ar
 import       Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset as encoder_Cinf_np_li
 import                  C0_sorting_encoder_for_list_of_reals_as_multiset as encoder_C0_li
-import C0_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset as encoder_C0_np_simplex
+import C0_bug1_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset as encoder_C0_np_simplex_bug1
+import C0_bug2_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset as encoder_C0_np_simplex_bug2
 
 import data_sources
 import numpy as np
@@ -170,9 +171,15 @@ def test_various_encoders():
 
     test_multiset_encoder(
        data=np.array(((1,2),(1,0),(5,2))),
-       encoders=[ encoder_C0_np_simplex, ],
+       encoders=[ 
+         encoder_C0_np_simplex_bug1, 
+         encoder_C0_np_simplex_bug2, 
+       ],
        number_of_shuffled_copies=10,
-       expected_encoding = [1.74545455e+00, 1.13000000e+01, 8.73272727e+01, 7.28500000e+02, 6.30183636e+03, 5.54913000e+04, 4.93020782e+05],
+       expected_encoding = [1.74545455e+00, 1.13000000e+01, 8.73272727e+01, 7.28500000e+02,
+                            6.30183636e+03, 5.54913000e+04, 4.93020782e+05, 4.40096450e+06,
+                            3.93891451e+07, 3.53100751e+08, 3.16863401e+09, 2.84549414e+10,
+                            2.55663674e+11,],
        relative_tolerance=1e-8,
     )
 
