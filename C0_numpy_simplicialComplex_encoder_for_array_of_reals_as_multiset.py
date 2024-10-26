@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# DO NOT USE! Currently assumed to be invalid.
+
 # Patrick Kennedy-Hunt
 # Christopher Lester
 
