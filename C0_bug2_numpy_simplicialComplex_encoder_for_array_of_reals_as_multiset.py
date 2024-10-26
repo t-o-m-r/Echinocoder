@@ -291,7 +291,7 @@ class Test_flat_sums(unittest.TestCase):
         k=3
 
         delta=dict()
-        delta[(0,0)]=0+ 0 # am sneakily writing 0+00 for 0.00 to turn decimals into integers, just for testing. This is naughty as delta coords should be in [0,1] but it is OK for this test
+        delta[(0,0)]=0+ 0 # am sneakily writing 0+ 0 for 0.00 to turn decimals into integers, just for testing. This is naughty as delta coords should be in [0,1] but it is OK for this test
         delta[(0,1)]=0+ 3
         delta[(0,2)]=0+22
         delta[(1,0)]=0+00
