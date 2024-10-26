@@ -241,6 +241,7 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(#n=3,k=3,  # Only need n and/or k if doin
         x_with_coeffs = { new_key:delta.get(new_key,0)  for new_key in new_keys } 
            
     # We are done:        
+    print("c_dc_pairs ",c_dc_pairs)
     return c_dc_pairs
 
 def pr(r, big_n):
