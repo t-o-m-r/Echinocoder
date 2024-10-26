@@ -161,7 +161,7 @@ class Test_Ell(unittest.TestCase):
         self.assertNotEqual(ell( [(1,5),(2,42),(3,100)], 101),
                             ell( [(3,5),(1,42)        ], 101))      # (different lengths)
 
-def make_flat_sums(n,k,delta, sort=False):
+def make_flat_sums(n,k,delta, sort=False, prepend_zero=False):
     """
     Conceptually, the dict flat_sums (for k=3) should "represent" the following map
     
@@ -207,6 +207,8 @@ def make_flat_sums(n,k,delta, sort=False):
     if sort:
         flat_sums = sorted(flat_sums, key=lambda x : (x[2], len(x[1])) ) # Sort by delta sum, but break ties in favour of longer sums
         print("flat_sums sorted",flat_sums)
+    if prepend_zero:
+        flat_sums = [ ( None, tuple(), 0) ] + flat_sums
     return flat_sums
 
 
@@ -245,6 +247,11 @@ class Test_flat_sums(unittest.TestCase):
           (3,     (2,),                           delta[(3,2)]),
         ]
         flat_sums_calculated = make_flat_sums(n,k,delta)
+        self.assertEqual(flat_sums_expected, flat_sums_calculated)
+
+        flat_sums_expected = [ (None, tuple(), 0), ] + flat_sums_expected
+
+        flat_sums_calculated = make_flat_sums(n,k,delta, prepend_zero = True)
         self.assertEqual(flat_sums_expected, flat_sums_calculated)
 
     def test_with_omitted_zeros(self):
@@ -328,8 +335,8 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "
         #   }, 
         ):
 
-    flat_sums = make_flat_sums(n,k,delta, sort=True)
-    print("flat_sums sorted =",flat_sums)
+    flat_sums = make_flat_sums(n,k,delta, sort=True, prepend_zero=True)
+    print("flat_sums sorted with zero start =",flat_sums)
 
 
     c_dc_pairs = [("moo",  flat_sums[index]  ) for index in range(n*k) ]
@@ -519,6 +526,7 @@ def test_simplex_embedding():
 
     ans8 = short(n=n, k=k, delta=delta)
 
+    """
     print("Ans1 was ",ans1)
     print("Ans2a was ",ans2a)
     print("Ans2b was ",ans2b)
@@ -545,12 +553,15 @@ def test_simplex_embedding():
     print("Ans7 was ",ans7[1])
 
     print("enc1 was ",enc1)
+    """
 
+    print()
+    print()
     print("Ans8 was ",ans8)
     print("Ans8 was ",ans8[1])
 
 
 if __name__ == "__main__":
-    test_simplex_embedding()
     unittest.main(exit=False)
+    test_simplex_embedding()
 
