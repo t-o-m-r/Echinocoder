@@ -389,6 +389,12 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "
         #   }, 
         prune_zeros = False,  # False is recommended default! See comments below.
         ):
+    """
+    the we output a list of c_dc_pairs.  Each pair (c,dc) contains a simplex vertex, c, together with a coefficient, dc. 
+    The simplex vertex, c, is coded as a list of (j,i) values representing e^j_i, i.e. the ith basis vector of the j-th simplex.
+    E.g. if the simplex vertex is c=[(0,1),(2,2)] then c represents e^0_1+e^2_2. 
+    The coefficient dc,  attached to c, says how much of c is needed to represent the component of delta in that direction.
+    """
 
     # Pruning zeros is optional as they are technically unnecessasry. However, removing them may also destroy regularity/predictability
     # e.g. people might prefer to see c_dc_pairs always have the same length as the number of non-origin simplex points. 
