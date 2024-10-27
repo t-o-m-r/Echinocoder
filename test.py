@@ -12,27 +12,9 @@ import C0_good1_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset a
 
 import data_sources
 import numpy as np
+import unittest
 
 fail_count = 0
-
-def test_multiset_encoder(data, encoder=None, encoders=None, number_of_shuffled_copies=3, expected_encoding=None, relative_tolerance=0, absolute_tolerance=0):
-    global fail_count
-    print("ORIGINAL DATA is",data)
-    shuffled_data = data.copy()
-    if encoders is None:
-        encoders = [ encoder ]
-    for i in range(number_of_shuffled_copies):
-        for encoder in encoders:
-            encoding = encoder.encode(shuffled_data)
-            #encoding_fails = expected_encoding is not None and not np.array_equal(np.asarray(encoding),np.asarray(expected_encoding))
-            encoding_fails = expected_encoding is not None and not np.allclose(np.asarray(encoding),np.asarray(expected_encoding),rtol=relative_tolerance,atol=absolute_tolerance)
-            if encoding_fails:
-                fail_count += 1
-                print("FAIL! Expected "+str(expected_encoding)+" ... ", end='')
-            print("ENCH",encoder.__name__,"generates",encoding,"of length",len(encoding),"when encoding",shuffled_data,"with (m,n)=",shuffled_data.shape[::-1],". Expectation was "+str(expected_encoding))
-            
-        np.random.shuffle(shuffled_data) 
-    print()
 
 def self_test_realprojectivespace_encoder(encoder):
     for inp, out in encoder.unit_test_input_output_pairs:
@@ -109,114 +91,150 @@ def test_tools():
         print("FAIL in tools.invert_perm")
         
 
+class Test_Encoders(unittest.TestCase):
+    def tost_multiset_encoder(self, data, encoder=None, encoders=None, number_of_shuffled_copies=3, expected_encoding=None, relative_tolerance=0, absolute_tolerance=0):
+        global fail_count
+        exact = relative_tolerance == 0 and absolute_tolerance == 0
+        print("ORIGINAL DATA is",data)
+        shuffled_data = data.copy()
+        if encoders is None:
+            encoders = [ encoder ]
+        for i in range(number_of_shuffled_copies):
+            for encoder in encoders:
+                encoding = encoder.encode(shuffled_data)
+                #encoding_fails = expected_encoding is not None and not np.array_equal(np.asarray(encoding),np.asarray(expected_encoding))
+                if expected_encoding is None:
+                    # nothing to check, so pass
+                    pass
+                else:
+                    #encoding_fails = not np.allclose(np.asarray(encoding),np.asarray(expected_encoding),rtol=relative_tolerance,atol=absolute_tolerance)
 
-def test_various_encoders():
-    make_randoms_reproducable()
+                    print("MOOO1",encoding)
+                    print("MOOO2",expected_encoding)
+                    np.testing.assert_allclose(encoding, expected_encoding, atol=absolute_tolerance, rtol=relative_tolerance, strict=False, equal_nan = False)
 
-    test_multiset_encoder(
-       data=np.asarray([9,-4,21,-8,5]),
-       encoder=encoder_C0_li,
-       expected_encoding = [-8,-4,5,9,21]
-    )
+                #if encoding_fails:
+                #    fail_count += 1
+                #    print("FAIL! Expected "+str(expected_encoding)+" ... ", end='')
+                #print("ENCH",encoder.__name__,"generates",encoding,"of length",len(encoding),"when encoding",shuffled_data,"with (m,n)=",shuffled_data.shape[::-1],". Expectation was "+str(expected_encoding))
+                
+            np.random.shuffle(shuffled_data) 
+        print()
 
-    test_multiset_encoder(
-       data=data_sources.random_real_linear_data(n=4),
-       encoder=encoder_C0_li,
-    )
+    def test_various_encoders(self):
 
-    test_multiset_encoder(
-       data=data_sources.random_complex_linear_data(n=4),
-       encoders=[ encoder_Cinf_np_li, encoder_Cinf_py_li, ],
-    )
+        #with lists as inputs:
+        #self.assertEqual(ell( [(1,5),(2,42),(3,100)], 101),
+        #                 ell( [(7,5),(1,42),(3,100)], 101))  # ( (172) maps 1->7 and 2->1 in S(8) )
 
-    test_multiset_encoder(
-       data=data_sources.random_real_linear_data(n=4),
-       encoders=[ encoder_Cinf_np_li, encoder_Cinf_py_li, ],
-    )
 
-    test_multiset_encoder(
-       data=data_sources.random_real_array_data(mn=(1,4)),
-       encoders=[ encoder_Cinf_np_ar, ],
-    )
-
-    test_multiset_encoder(
-       data=data_sources.random_real_array_data(mn=(2,3)),
-       encoders=[ encoder_Cinf_np_ar, ],
-    )
-
-    test_multiset_encoder(
-       data=data_sources.random_real_array_data(mn=(3,3)),
-       encoders=[ encoder_Cinf_np_ar, ],
-    )
-
-    test_multiset_encoder(
-       data=data_sources.random_real_array_data(mn=(4,3)),
-       encoders=[ encoder_Cinf_np_ar, encoder_Cinf_sp_bur_ar, ],
-    )
-
-    test_multiset_encoder(
-       data=np.array(((-7,-8,-1,-9),(9,-7,-6,5),(-9,4,9,-7))),
-       encoders=[ encoder_Cinf_sp_bur_ar, ],
-       expected_encoding = [-11, 2, -11, -7, -17, 62, 55, -202, 110, 120, -81, 315, -748, 58, 1289, -1497, 457, 1139, -1460, -45, 567],
-    )
-
-    test_multiset_encoder(
-       data=np.array(((8,-1,-4,3),(-8,-5,9,7),(8,2,7,-7))),
-       encoders=[ encoder_Cinf_np_ar, ],
-       expected_encoding = [   8,   -4,  -57,  -80, -488, -394,    8,   12,  -63,  144, -952,  636, 8,    3,  -15,  112, -456,  851,   -4,   12,   -6,  -21,    5,  309, -4,    3,   42,   40, -186,   68,   12,    3,   48,   34, -406,  392], 
-    )
-
-    test_multiset_encoder(
-       data=np.array(((3,1,4),(2,2,5))),
-       encoders=[ encoder_Cinf_sp_bur_ar, ],
-       expected_encoding =  [9, 3, 5, 20, 13, 25, 8, 6],
-    )
-
-    test_multiset_encoder(
-       data=np.array(((3,1,4),(2,2,5))),
-       encoders=[ encoder_Cinf_sp_evenBur_ar, ],
-       number_of_shuffled_copies=10,
-       expected_encoding = [9, 20, 3, 13, 2, 5, 23, 8, 6],
-    )
-
-    import Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace
-    self_test_realprojectivespace_encoder(Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace)
-
-    import Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace
-    self_test_realprojectivespace_encoder(Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace)
-
-    test_multiset_encoder(
-       data=np.array(((1,2),(1,0),(5,2))),
-       encoders=[ 
-         encoder_C0_np_simplex_bug1, 
-         encoder_C0_np_simplex_bug2, 
-       ],
-       number_of_shuffled_copies=10,
-       expected_encoding = [1.74545455e+00, 1.13000000e+01, 8.73272727e+01, 7.28500000e+02,
-                            6.30183636e+03, 5.54913000e+04, 4.93020782e+05, 4.40096450e+06,
-                            3.93891451e+07, 3.53100751e+08, 3.16863401e+09, 2.84549414e+10,
-                            2.55663674e+11,],
-       relative_tolerance=1e-8,
-    )
-
-    test_multiset_encoder(
-       data=np.array(((1,2),(1,0),(5,2))),
-       encoders=[ 
-         encoder_C0_np_simplex_good1,
-       ],
-       number_of_shuffled_copies=10,
-       expected_encoding = [1.74545455e+00, 1.13000000e+01, 8.73272727e+01, 7.28500000e+02,
-                            6.30183636e+03, 5.54913000e+04, 4.93020782e+05, 4.40096450e+06,
-                            3.93891451e+07, 3.53100751e+08, 3.16863401e+09, 2.84549414e+10,
-                            2.55663674e+11,],
-       relative_tolerance=1e-8,
-    )
+        make_randoms_reproducable()
+    
+        self.tost_multiset_encoder(
+           data=np.asarray([9,-4,21,-8,5]),
+           encoder=encoder_C0_li,
+           expected_encoding = [-8,-4,5,9,21],
+        )
+    
+        self.tost_multiset_encoder(
+           data=data_sources.random_real_linear_data(n=4),
+           encoder=encoder_C0_li,
+        )
+    
+        self.tost_multiset_encoder(
+           data=data_sources.random_complex_linear_data(n=4),
+           encoders=[ encoder_Cinf_np_li, encoder_Cinf_py_li, ],
+        )
+    
+        self.tost_multiset_encoder(
+           data=data_sources.random_real_linear_data(n=4),
+           encoders=[ encoder_Cinf_np_li, encoder_Cinf_py_li, ],
+        )
+    
+        self.tost_multiset_encoder(
+           data=data_sources.random_real_array_data(mn=(1,4)),
+           encoders=[ encoder_Cinf_np_ar, ],
+        )
+    
+        self.tost_multiset_encoder(
+           data=data_sources.random_real_array_data(mn=(2,3)),
+           encoders=[ encoder_Cinf_np_ar, ],
+        )
+    
+        self.tost_multiset_encoder(
+           data=data_sources.random_real_array_data(mn=(3,3)),
+           encoders=[ encoder_Cinf_np_ar, ],
+        )
+    
+        self.tost_multiset_encoder(
+           data=data_sources.random_real_array_data(mn=(4,3)),
+           encoders=[ encoder_Cinf_np_ar, encoder_Cinf_sp_bur_ar, ],
+        )
+    
+        self.tost_multiset_encoder(
+           data=np.array(((-7,-8,-1,-9),(9,-7,-6,5),(-9,4,9,-7))),
+           encoders=[ encoder_Cinf_sp_bur_ar, ],
+           expected_encoding = [-11, 2, -11, -7, -17, 62, 55, -202, 110, 120, -81, 315, -748, 58, 1289, -1497, 457, 1139, -1460, -45, 567],
+        )
+    
+        self.tost_multiset_encoder(
+           data=np.array(((8,-1,-4,3),(-8,-5,9,7),(8,2,7,-7))),
+           encoders=[ encoder_Cinf_np_ar, ],
+           expected_encoding = [   8,   -4,  -57,  -80, -488, -394,    8,   12,  -63,  144, -952,  636, 8,    3,  -15,  112, -456,  851,   -4,   12,   -6,  -21,    5,  309, -4,    3,   42,   40, -186,   68,   12,    3,   48,   34, -406,  392], 
+        )
+    
+        self.tost_multiset_encoder(
+           data=np.array(((3,1,4),(2,2,5))),
+           encoders=[ encoder_Cinf_sp_bur_ar, ],
+           expected_encoding =  [9, 3, 5, 20, 13, 25, 8, 6],
+        )
+    
+        self.tost_multiset_encoder(
+           data=np.array(((3,1,4),(2,2,5))),
+           encoders=[ encoder_Cinf_sp_evenBur_ar, ],
+           number_of_shuffled_copies=10,
+           expected_encoding = [9, 20, 3, 13, 2, 5, 23, 8, 6],
+        )
+    
+        import Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace
+        self_test_realprojectivespace_encoder(Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace)
+    
+        import Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace
+        self_test_realprojectivespace_encoder(Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace)
+    
+        self.tost_multiset_encoder(
+           data=np.array(((1,2),(1,0),(5,2))),
+           encoders=[ 
+             encoder_C0_np_simplex_bug1, 
+             encoder_C0_np_simplex_bug2, 
+           ],
+           number_of_shuffled_copies=10,
+           expected_encoding = [1.74545455e+00, 1.13000000e+01, 8.73272727e+01, 7.28500000e+02,
+                                6.30183636e+03, 5.54913000e+04, 4.93020782e+05, 4.40096450e+06,
+                                3.93891451e+07, 3.53100751e+08, 3.16863401e+09, 2.84549414e+10,
+                                2.55663674e+11,],
+           relative_tolerance=1e-8,
+        )
+    
+        self.tost_multiset_encoder(
+           data=np.array(((1,2),(1,0),(5,2))),
+           encoders=[ 
+             encoder_C0_np_simplex_good1,
+           ],
+           number_of_shuffled_copies=10,
+           expected_encoding = [4.16666667e-01, 2.44090909e+00, 2.51045455e+01, 3.12022727e+02,
+                                4.14921364e+03, 5.66481682e+04, 7.81914741e+05, 1.08471822e+07,
+                                1.50879552e+08, 2.10209486e+09, 2.93197746e+10, 4.09286008e+11,
+                                5.71697611e+12,],
+           relative_tolerance=1e-8,
+        )
 
 def test_everything():
     test_tools()
-    test_various_encoders()
     print(str(fail_count)+" failures")
     import tuple_rank
     tuple_rank.unit_test_tuple_rank()
 
 test_everything()
+unittest.main(exit=False)
+

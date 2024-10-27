@@ -109,18 +109,18 @@ def ell(c, k):
     assert k>=0, "k should be a non-negative integer"
     len_c = len(c)
     assert set(range(len_c)) == { j for j,_ in c } # Every j in range(len(c)) should appear once! 
-    print("c was = ",c)
+    #print("c was = ",c)
 
     i_vals_sorted_by_j_vals = [i for _,i in sorted(list(c)) ] # Fortunaltey j comes first in (j,i) so this will work.
     # Note that above we do not bother storing the j values as we know they will be 0,1,..,len(c)-1 given the input preconditions.
     # Thus we will be done if we can hash i_vals_sorted_by_j_vals to a non-colliding value.
-    print("i_vals_sorted_by_j_vals = ",i_vals_sorted_by_j_vals)
+    #print("i_vals_sorted_by_j_vals = ",i_vals_sorted_by_j_vals)
 
     # Either of the two lines below should work identically. Just use one!
     #ell_value = sum(( i*(k**(len_c-1-pos))          for pos,i in enumerate(i_vals_sorted_by_j_vals) ))  +  sum((k**i for i in range(len_c)))
     ell_value = sum(( i*(k**(len_c-1-pos)) + k**pos for pos,i in enumerate(i_vals_sorted_by_j_vals) ))
 
-    print("ell_value = ",ell_value)
+    #print("ell_value = ",ell_value)
     return ell_value
 
 class Test_Ell(unittest.TestCase):
@@ -510,36 +510,36 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     c_dc_pairs = make_c_dc_pairs(n,k,delta)
  
     c_bits_and_null = [ c for c,_ in c_dc_pairs ] + [set()]
-    print("c_bits (before modding by S(n)) =")
-    [ print(c) for c in c_bits_and_null ]
+    #print("c_bits (before modding by S(n)) =")
+    #[ print(c) for c in c_bits_and_null ]
 
     """
     The following simplex_eji_ordering contains the implied basis element ordering (greatest first)
     which defined the simplex in which we the point delta stands.
     """
     simplex_eji_ordering = make_simplex_eji_ordering(c_bits_and_null)
-    print("simplex_eji_ordering (before mod S(n)) =")
-    [ print(eji) for eji in simplex_eji_ordering ]
+    #print("simplex_eji_ordering (before mod S(n)) =")
+    #[ print(eji) for eji in simplex_eji_ordering ]
 
     # We must canonicalise the simplex by detecting and modding out the relevant perm of S(n).
 
     # First detect the perm needed to take our simplex to canonical form:
     perm = make_perm_from_simplex(simplex_eji_ordering, from_right=True) # It is not critical whether we come from right or left, since any canonical form will do. I choose from_right as it matches the conventin I used in some OneNote nootbooks while I was getting to grips with things. from_left would be faster as no need to reverse a list internally.  Consider moving to from_left later.
-    print("perm = ",perm)
+    #print("perm = ",perm)
     
     # Actually we need the inverse perm!
     inverse_perm = invert_perm(perm)
-    print("inverse perm = ", inverse_perm)
+    #print("inverse perm = ", inverse_perm)
 
     # Now 'canonicalise' the vertices in c_dc_pairs using that perm:
     c_dc_pairs_after_mod_Sn = [ ({ (inverse_perm[j], i) for (j,i) in c }, dc)  for (c,dc) in c_dc_pairs   ]
-    print("c_dc_pairs (after modding by S(n)) =")
-    [ print(c) for c in c_dc_pairs_after_mod_Sn ]
+    #print("c_dc_pairs (after modding by S(n)) =")
+    #[ print(c) for c in c_dc_pairs_after_mod_Sn ]
     
     # Don't actually need the next thing -- but compute it for debug purposes "just in case"
     simplex_eji_ordering_after_mod_Sn = [ (inverse_perm[j], i) for (j,i) in simplex_eji_ordering ] 
-    print("simplex_eji_ordering (after mod S(n)) =")
-    [ print(eji) for eji in simplex_eji_ordering_after_mod_Sn ]
+    #print("simplex_eji_ordering (after mod S(n)) =")
+    #[ print(eji) for eji in simplex_eji_ordering_after_mod_Sn ]
 
     c_l_dc_triples = [ (c, ell(c,k), dc) for (c,dc) in c_dc_pairs_after_mod_Sn ]
     big_n = 2*n*k + 1
@@ -548,7 +548,7 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     # where, in effect, r_i and x_i would be defined by
     # [ blah for _, r_i, x_i in c_l_dc_triples ]
 
-    point_in_R_bigN = sum([d * pr(r, big_n) for _, r, d in c_l_dc_triples]) + pr(0, big_n) # Addition of zero term at end ensures that we still get a zero vec (not 0) in the event that c_l_dc_triples is empty!
+    point_in_R_bigN = sum([d * pr(r, big_n) for _, r, d in c_l_dc_triples]) + np.zeros(big_n)  # Addition of zero term at end ensures that we still get a zero vec (not 0) in the event that c_l_dc_triples is empty!
 
     return c_l_dc_triples, point_in_R_bigN 
 
