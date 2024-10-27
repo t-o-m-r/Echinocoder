@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# DO NOT USE! Currently assumed to be invalid.
+# USE WITH CAUTION!  No known bugs, but not tested to destruction.
 # This is a re-implementation of C0_bug2_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset.py but aiming to fix the bug in the part of the code which mods out S(n).
 
 # Patrick Kennedy-Hunt
@@ -481,22 +481,23 @@ def make_c_dc_pairs(n , k,  # Only need n and/or k if doing "original initialisa
     """
 
     flat_sums = make_flat_sums(n,k,delta, sort=True)
-    print("flat_sums sorted with zero start =",flat_sums)
+    #print("flat_sums sorted with zero start =",flat_sums)
 
     dc_vals = [ sum2-sum1 for (j1,i1_vals, sum1),(j2,i2_vals, sum2) in pairwise([(None, tuple(), 0), ]+flat_sums) ]
-    print("dc_vals from flat_sums = ")
-    [print(_) for _ in dc_vals]
+    #print("dc_vals from flat_sums = ")
+    #[print(_) for _ in dc_vals]
 
     c_dc_pairs = [ ({ (j,max(moo)) for j in range(n) if (moo:=[ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == j ]) }, dc_vals[index]) for index in range(len(flat_sums)) if not prune_zeros or dc_vals[index] != 0 ] # See set note below
     """A set rather than a list is used to hold the coordinate vectors because later we want to find out "elements in one set not in another" ... and so if we had used lists we would have to construct a set from a list later anyway.  Fortunately the objects represented are sets anyway (they represent sums of dissimilar basis elements which are vertices, and sums are order independent).  The set creation comprehension does not produce duplicate elements squashed by the set, though, so if it's later needed they could be changed back to a list here (instead of set) so long as the later set-difference calculation is done some other way."""
 
-    print("c_dc_pairs from flat_sums = ")
-    [print(_) for _ in c_dc_pairs]
+    #print("c_dc_pairs from flat_sums = ")
+    #[print(_) for _ in c_dc_pairs]
 
     return c_dc_pairs
 
 def pr(r, big_n):
-    return np.power(r, np.arange(big_n)) # Starting at zeroeth power so that r can be both zero and non-zero without constraint.
+    # Method below makes negative numbers from positive integer r if r is big enough!  Floating point wrap around! Must make r real
+    return np.power(np.float64(r), np.arange(big_n)) # Starting at zeroeth power so that r can be both zero and non-zero without constraint.
 
 def make_simplex_eji_ordering(c_bits_and_null):
     """
@@ -542,12 +543,15 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     #[ print(eji) for eji in simplex_eji_ordering_after_mod_Sn ]
 
     c_l_dc_triples = [ (c, ell(c,k), dc) for (c,dc) in c_dc_pairs_after_mod_Sn ]
+    print("c_l_dc_triples (after modding by S(n)) =")
+    [ print(c) for c in c_l_dc_triples ]
     big_n = 2*n*k + 1
     # Please someone re-implement this dot product without so many comprehensions ... or at any rate BETTER:
     # Want output here to be sum_i pr(r_i, big_n) x_i)
     # where, in effect, r_i and x_i would be defined by
     # [ blah for _, r_i, x_i in c_l_dc_triples ]
 
+    print("pr(20)=",pr(20,big_n))
     point_in_R_bigN = sum([d * pr(r, big_n) for _, r, d in c_l_dc_triples]) + np.zeros(big_n)  # Addition of zero term at end ensures that we still get a zero vec (not 0) in the event that c_l_dc_triples is empty!
 
     return c_l_dc_triples, point_in_R_bigN 

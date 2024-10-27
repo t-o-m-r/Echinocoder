@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 # DO NOT USE! Currently assumed to be invalid.
-# This is a re-implementation of C0_bug1_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset.py using a single list comprehension
+# This is a re-implementation of C0_bug1_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset.py using a single list comprehension.
+# The bug should be fixed in C0_good1_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset.py 
 
 # Patrick Kennedy-Hunt
 # Christopher Lester
@@ -422,7 +423,7 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "
     return c_dc_pairs
 
 def pr(r, big_n):
-    return np.power(r, np.arange(1, big_n+1)) # TODO: Ask PK-H whether there is a better final step than pr
+    return np.power(np.float64(r), np.arange(1, big_n+1)) # TODO: Ask PK-H whether there is a better final step than pr
 
 def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     c_dc_pairs = map_Delta_k_to_the_n_to_c_dc_pairs(n,k,delta)
