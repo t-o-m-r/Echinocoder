@@ -8,6 +8,10 @@
 
 from itertools import pairwise
 from tools import invert_perm
+import numpy as np
+#import tuple_rank
+import unittest
+
 
 def encode(data):
 
@@ -68,11 +72,7 @@ def encode(data):
 #                  }.
 #
 
-import numpy as np
-import tuple_rank
-import unittest
-
-def ell(c, k):
+def ell(c, k, shrink=False):
     """
     The function ell(c, k) can (in principle) be anything that satisfies the properties listed below.
     In practice, presumably some choices are better than others for efficiency reasons or reasons of practicality.
@@ -118,9 +118,20 @@ def ell(c, k):
 
     # Either of the two lines below should work identically. Just use one!
     #ell_value = sum(( i*(k**(len_c-1-pos))          for pos,i in enumerate(i_vals_sorted_by_j_vals) ))  +  sum((k**i for i in range(len_c)))
-    ell_value = sum(( i*(k**(len_c-1-pos)) + k**pos for pos,i in enumerate(i_vals_sorted_by_j_vals) ))
+    ell_value_integer = sum(( i*(k**(len_c-1-pos)) + k**pos for pos,i in enumerate(i_vals_sorted_by_j_vals) ))
 
-    #print("ell_value = ",ell_value)
+    #print("ell_value before nonlinear tfm= ",ell_value_integer)
+    
+    #At this point ell is an integer in 0,1,2,3,4,5, ...
+    # We may wish to non-linearly transform it into (-pi/2,pi/2)
+   
+    if shrink:
+        alternate_sign = 2*(ell_value_integer % 2)-1 # Will be +1 or -1 depending on even/oddness of ell_value_ingeger
+        ell_value = ell_value_integer * alternate_sign
+        ell_value = np.arctan(np.float64(ell_value)/50) # puts ell in (-pi/2,pi/2)
+    else:
+        ell_value = ell_value_integer
+
     return ell_value
 
 class Test_Ell(unittest.TestCase):
@@ -542,16 +553,17 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     #print("simplex_eji_ordering (after mod S(n)) =")
     #[ print(eji) for eji in simplex_eji_ordering_after_mod_Sn ]
 
-    c_l_dc_triples = [ (c, ell(c,k), dc) for (c,dc) in c_dc_pairs_after_mod_Sn ]
-    print("c_l_dc_triples (after modding by S(n)) =")
-    [ print(c) for c in c_l_dc_triples ]
+    shrink = True
+    c_l_dc_triples = [ (c, ell(c,k,shrink=shrink), dc) for (c,dc) in c_dc_pairs_after_mod_Sn ]
+    #print("c_l_dc_triples (after modding by S(n)) =")
+    #[ print(c) for c in c_l_dc_triples ]
     big_n = 2*n*k + 1
     # Please someone re-implement this dot product without so many comprehensions ... or at any rate BETTER:
     # Want output here to be sum_i pr(r_i, big_n) x_i)
     # where, in effect, r_i and x_i would be defined by
     # [ blah for _, r_i, x_i in c_l_dc_triples ]
 
-    print("pr(20)=",pr(20,big_n))
+    #print("pr(20)=",pr(20,big_n))
     point_in_R_bigN = sum([d * pr(r, big_n) for _, r, d in c_l_dc_triples]) + np.zeros(big_n)  # Addition of zero term at end ensures that we still get a zero vec (not 0) in the event that c_l_dc_triples is empty!
 
     return c_l_dc_triples, point_in_R_bigN 

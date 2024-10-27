@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from cProfile import label
 
 import numpy as np
