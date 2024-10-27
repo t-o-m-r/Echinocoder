@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # DO NOT USE! Currently assumed to be invalid.
+# This is a re-implementation of C0_bug1_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset.py using a single list comprehension
 
 # Patrick Kennedy-Hunt
 # Christopher Lester
@@ -354,79 +355,6 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "
     print("c_dc_pairs from flat_sums = ")
     [print(_) for _ in c_dc_pairs]
 
-
-    c_dc_pairs = []
-
-    #print("delta",delta)
-
-
-    if False:
-        # Original initialisation. If using this pass n and k to the algorithm
-
-        # Set up initial value of x based on n, k and delta.
-        # This is the only place where n or k is used.
-
-        x_with_coeffs = {  (j,k-1):delta.get((j,k-1),0)  for j in range(n) } 
-    else:
-
-
-        # n-and-k-independent initialisation
-        if delta:
-           j_vals = {j for (j,i) in delta.keys() }
-           largest_j = max(j_vals)
-           largest_i_for_j = {  j:max([ i for (jj,i) in delta.keys() if jj == j ])   for j in j_vals }
-           x_with_coeffs = {  (j,largest_i_for_j[j]):delta[(j,largest_i_for_j[j])]  for j in j_vals } 
-        else:
-           x_with_coeffs = dict()
-
-    while x_with_coeffs:
-        #print("Iteration! =====")
-        #print("delta",delta)
-        #print("x_with_coeffs",x_with_coeffs)
-
-        e = min(x_with_coeffs, key=x_with_coeffs.get)
-        dx = x_with_coeffs[e]
-        z=e[0] # z is the j-val of the element of x with the smallest coefficient
-        #print("smallest: e=",e,"coeff=",dx, "z=",z)
-
-        if dx<0:
-            # dx should never be negative.
-            print("ERROR: or unexpected numerical precision concern since dx=",dx,"<0.")
-            raise Exception("IMPLEMENTATION ERROR")
-
-        if dx>0:
-            # Grow the c_dc_pairs list
-            c = list(x_with_coeffs.keys()) # could use list or set in the implementation ... it doesn't really matter ... but the object represented is a set
-            c_dc_pairs.append((c, dx)) 
-            #print("grew c_dc_pairs")
-            #print("c_dc_pairs=",c_dc_pairs)
-
-            # trim delta
-            for pair,val in list(delta.items()):
-                 if pair in c:
-                     if val == dx:
-                        del delta[pair]
-                     elif val>dx:
-                        delta[pair] = val-dx
-                     else:
-                        print("ERROR: val=",val,"dx=",dx)
-                        raise Exception("IMPLEMENTATION ERROR! Should not have val<dx.")
-
-        # trim and update x_with_coeffs:
-
-        del x_with_coeffs[e] # since this part should be gone.  Needed by next line!
-        # Set up new keys:
-        new_keys = list(x_with_coeffs.keys()) # Will not contain e.
-        if e[1]>0:
-            new_e = (z, e[1]-1)
-            new_keys.append(new_e)
-
-        # refresh x_with_coeffs:
-        x_with_coeffs = { new_key:delta.get(new_key,0)  for new_key in new_keys } 
-           
-    # We are done:        
-    print("c_dc_pairs ")
-    [print(_) for _ in c_dc_pairs]
     return c_dc_pairs
 
 def pr(r, big_n):

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # DO NOT USE! Currently assumed to be invalid.
+# This is re-implemented in C0_bug2_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset.py as a single list comprehension
 
 # Patrick Kennedy-Hunt
 # Christopher Lester
