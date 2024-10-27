@@ -390,15 +390,21 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "
         prune_zeros = False,  # False is recommended default! See comments below.
         ):
     """
-    the we output a list of c_dc_pairs.  Each pair (c,dc) contains a simplex vertex, c, together with a coefficient, dc. 
+    We output a list of c_dc_pairs.  Each pair (c,dc) contains a simplex vertex, c, together with a coefficient, dc.
     The simplex vertex, c, is coded as a list of (j,i) values representing e^j_i, i.e. the ith basis vector of the j-th simplex.
     E.g. if the simplex vertex is c=[(0,1),(2,2)] then c represents e^0_1+e^2_2. 
     The coefficient dc,  attached to c, says how much of c is needed to represent the component of delta in that direction.
     """
 
-    # Pruning zeros is optional as they are technically unnecessasry. However, removing them may also destroy regularity/predictability
-    # e.g. people might prefer to see c_dc_pairs always have the same length as the number of non-origin simplex points. 
-    # It is also a test on a floating point number, which is a bit silly.  Default should therefore be NOT pruning zeros.
+    """
+    Pruning entries with dc=0 might seem like a good idea.  However:
+
+       (1) pruning zeros may also destroy regularity/predictability;  e.g. people might prefer to see c_dc_pairs always have the same length as the number of non-origin simplex points.
+       (2) pruning zeros requires  a test for equality on a floating point number, which is a bit silly.  Default should therefore be NOT pruning zeros,
+       (3) worst of all, pruning zeors makes it impossible to identify and canonicalise the simplex vertices.
+
+       Hence, do not prune zeros unless you have a good reason!
+    """
 
     flat_sums = make_flat_sums(n,k,delta, sort=True)
     print("flat_sums sorted with zero start =",flat_sums)
@@ -425,7 +431,6 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     # Want output here to be sum_i pr(r_i, big_n) x_i)
     # where, in effect, r_i and x_i would be defined by
     # [ blah for _, r_i, x_i in c_l_dc_triples ]
-    # Help Jeremy!
 
     point_in_R_bigN = sum([d * pr(r, big_n) for _, r, d in c_l_dc_triples]) + pr(0, big_n) # Addition of zero term at end ensures that we still get a zero vec (not 0) in the event that c_l_dc_triples is empty!
 
