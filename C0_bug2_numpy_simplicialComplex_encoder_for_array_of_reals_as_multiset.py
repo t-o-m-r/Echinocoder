@@ -337,13 +337,25 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "
         #   }, 
         ):
 
-    flat_sums = make_flat_sums(n,k,delta, sort=True, prepend_zero=True)
+    flat_sums = make_flat_sums(n,k,delta, sort=True)
     print("flat_sums sorted with zero start =",flat_sums)
 
+    dc_vals = [ sum2-sum1 for (j1,i1_vals, sum1),(j2,i2_vals, sum2) in pairwise([(None, tuple(), 0), ]+flat_sums) ]
+    print("dc_vals from flat_sums = ")
+    [print(_) for _ in dc_vals]
 
-    c_dc_pairs = [("moo", sum2-sum1  ) for (j1,i1_vals, sum1),(j2,i2_val, sum2) in pairwise(flat_sums) ]
-    print("c_dc_pairs from flat_sums = ")
-    [print(_) for _ in c_dc_pairs]
+    c_vals = [ 
+               #(0,max([ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == 0 ], default=None)),
+               #(1,max([ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == 1 ], default=None)),
+               #(2,max([ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == 2 ], default=None)),
+               #(3,max([ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == 3 ], default=None)),
+               ([ (j,max([ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == j ], default=None)) for j in range(n) 
+               if (moo:=[ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == j ]) 
+               ], dc_vals[index])
+            for index in range(len(flat_sums)) ]
+
+    print("c_vals from flat_sums = ")
+    [print(_) for _ in c_vals]
 
     c_dc_pairs = []
 
