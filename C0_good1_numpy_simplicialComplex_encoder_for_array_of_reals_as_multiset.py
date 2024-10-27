@@ -380,6 +380,65 @@ class Test_c_dc_pair_generation(unittest.TestCase):
         c_dc_pairs_calculated = make_c_dc_pairs(n,k,delta, prune_zeros=True)
         self.assertEqual(c_dc_pairs_expected, c_dc_pairs_calculated)
 
+class Test_simplex_eji_ordering_generation(unittest.TestCase):
+    def test(self):
+
+        c_bits_and_null = [
+                             {(0, 2), (1, 2), (2, 2), (3, 2)},
+                             {(0, 2), (1, 1), (2, 2), (3, 2)},
+                             {(0, 2), (1, 1), (2, 2), (3, 1)},
+                             {(0, 2), (1, 0), (2, 2), (3, 1)},
+                             {(0, 2), (2, 2), (3, 1)},
+                             {(0, 1), (2, 2), (3, 1)},
+                             {(0, 1), (2, 2), (3, 0)},
+                             {(0, 1), (2, 2)},
+                             {(0, 0), (2, 2)},
+                             {(2, 2)},
+                             {(2, 1)},
+                             {(2, 0)},
+                             set(),
+                          ]
+        ordering_calculated = make_simplex_eji_ordering(c_bits_and_null)
+
+        ordering_expected = [
+                             (1, 2),
+                             (3, 2),
+                             (1, 1),
+                             (1, 0),
+                             (0, 2),
+                             (3, 1),
+                             (3, 0),
+                             (0, 1),
+                             (0, 0),
+                             (2, 2),
+                             (2, 1),
+                             (2, 0),
+                          ]
+        self.assertEqual(ordering_calculated, ordering_expected)
+
+
+class Test_perm_detection(unittest.TestCase):
+    def test(self):
+
+        simplex_eji_ordering = [ (1, 2), (3, 2), (1, 1), (0, 2), (3, 1), (3, 0), (0, 1), (1, 0), (0, 0), (2, 2), (2, 1), (2, 0), ]
+
+        simple_ordering_on_j_vals_from_left_expected = [ 1, 3, 0, 2 ] # j vals read from left, ignoring repeats
+        simple_ordering_on_j_vals_from_right_expected = [ 2, 0, 1, 3 ] # j vals read from right, ignoring repeats
+
+        ordering_from_left_calculated = make_perm_from_simplex(simplex_eji_ordering)
+        ordering_from_right_calculated = make_perm_from_simplex(simplex_eji_ordering, from_right=True)
+
+        self.assertEqual(simple_ordering_on_j_vals_from_left_expected, ordering_from_left_calculated)
+        self.assertEqual(simple_ordering_on_j_vals_from_right_expected, ordering_from_right_calculated)
+
+def make_perm_from_simplex(simplex_eji_ordering, from_right=False):
+    # Note that setting from_right does not (in general) reverse the answer even though it reverses the input.
+    # I.e. perm_from_right(ordering)[::-1] is not in general the same as perm_from_left(ordering[::-1]).
+    if from_right:
+      simplex_eji_ordering=simplex_eji_ordering[::-1]
+    return list({ j[0] : None for j in simplex_eji_ordering  }) # Uses insertion order preservation
+
+
 def make_c_dc_pairs(n , k,  # Only need n and/or k if doing "original initialisation" of x_with_coeffs 
          delta, # Each key in the dict is an (j,i) tuple representing Patrick's e^j_i with j in [0,n-1] and i in [0,k-1].  The associated value is the coefficient of that e^j_i basis vector in the associated element of (\Delta_k)^n.
         # e.g delta = {  
@@ -424,8 +483,35 @@ def make_c_dc_pairs(n , k,  # Only need n and/or k if doing "original initialisa
 def pr(r, big_n):
     return np.power(r, np.arange(1, big_n+1)) # TODO: Ask PK-H whether there is a better final step than pr
 
+def make_simplex_eji_ordering(c_bits_and_null):
+    """
+    The following simplex_eji_ordering contains the implied basis element ordering (greatest first)
+    which defined the simplex in which we the point delta stands.
+    """
+    simplex_eji_ordering = [ (c1-c2).pop() for c1,c2 in pairwise(c_bits_and_null) ] # The set c1-c2 shuld contain only one element, so pop() should return it.
+    return simplex_eji_ordering
+
 def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     c_dc_pairs = make_c_dc_pairs(n,k,delta)
+ 
+    c_bits_and_null = [ c for c,_ in c_dc_pairs ] + [set()]
+    print("c_bits =")
+    [ print(c) for c in c_bits_and_null ]
+
+    """
+    The following simplex_eji_ordering contains the implied basis element ordering (greatest first)
+    which defined the simplex in which we the point delta stands.
+    """
+    simplex_eji_ordering = make_simplex_eji_ordering(c_bits_and_null)
+    print("simplex_eji_ordering =")
+    [ print(eji) for eji in simplex_eji_ordering ]
+
+    # We must canonicalise the simplex by detecting and modding out the relevant perm of S(n).
+
+    # First detect the perm needed to take our simplex to canonical form:
+    perm = make_perm_from_simplex(simplex_eji_ordering, from_right=True) # It is not critical whether we come from right or left, since any canonical form will do. I choose from_right as it matches the conventin I used in some OneNote nootbooks while I was getting to grips with things. from_left would be faster as no need to reverse a list internally.  Consider moving to from_left later.
+    print("perm = ",perm)
+
     c_l_dc_triples = [ (c, ell(c,k), dc) for (c,dc) in c_dc_pairs ]
     big_n = 2*n*k + 1
     # Please someone re-implement this dot product without so many comprehensions ... or at any rate BETTER:
