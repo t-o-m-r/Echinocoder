@@ -92,7 +92,14 @@ def test_tools():
            print("FAIL in real_pairs_to_complex_zip")
        print()
 
-    
+    perm = [3,0,1,2]
+    inverse_perm_calculated = tools.invert_perm(perm)
+    inverse_perm_expected = [1,2,3,0]
+
+    if not np.array_equal(inverse_perm_calculated, inverse_perm_expected):
+        fail_count += 1
+        print("FAIL in tools.invert_perm")
+        
 
 
 def test_various_encoders():

@@ -30,3 +30,7 @@ def real_pairs_to_complex_zip(np_array):
     print("images ",imags)
     return reals+1j*imags
 
+def invert_perm(perm):
+    """given [3, 0, 1, 2] should generate [1, 2, 3, 0]"""
+    return sorted(range(len(perm)), key=perm.__getitem__)
+
