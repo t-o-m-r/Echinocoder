@@ -6,7 +6,7 @@ from iwpc.scalars.scalar import Scalar
 from iwpc.scalars.scalar_function import ScalarFunction
 from iwpc.visualise.bokeh_function_visualiser_2D import BokehFunctionVisualiser2D
 
-from C0_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset import encode
+from C0_good1_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset import encode
 
 
 def make_input_scalars(n, m):

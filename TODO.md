@@ -1,3 +1,14 @@
+## PKH questions:
+
+ * Is num vertices really $n(k+1)$ ?  I think it might be  $(k+1)^n$.
+
+ * Am I now correctly implementing the modding out?
+
+
+## General TODO:
+
+Don't make ell produce such big numbers.
+
 ## Item 1
 
 Note to self: one could complexify the Bursar's idea.
