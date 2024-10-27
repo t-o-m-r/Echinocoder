@@ -205,7 +205,7 @@ def make_flat_sums(n,k,delta, sort=False, prepend_zero=False):
 
 
     """
-    flat_sums=list([ (j, tuple(range(i_min, k)), sum([delta.get((j,i), 0) for i in range(i_min,k) ])) for j in range(n) for i_min in range(k) ])
+    flat_sums=[ (j, tuple(range(i_min, k)), sum([delta.get((j,i), 0) for i in range(i_min,k) ])) for j in range(n) for i_min in range(k) ]
     #print("flat_sums unsorted",flat_sums)
     if sort:
         flat_sums = sorted(flat_sums, key=lambda x : (x[2], len(x[1])) ) # Sort by delta sum, but break ties in favour of longer sums
