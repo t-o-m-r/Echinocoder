@@ -7,6 +7,7 @@
 # Christopher Lester
 
 from itertools import pairwise
+from tools import invert_perm
 
 def encode(data):
 
@@ -79,90 +80,104 @@ def ell(c, k):
   
 
     INPUT REQUIREMENTS:
-    * The input k is a non-negative integer
-    * The input c is a (possibly empty) list (or set) of (j,i) pairs, with j in [0,n-1] and i in [0,k-1].
-    * In the input c there shall be no two pairs (j1,i1) and (j2,i2) such that j1==j2. [Aside: this restricts the length of c to be at most n.]
+    * The input k shall be a non-negative integer
+    * The input c shall be a (possibly empty) set of (j,i) pairs, with j in [0,n-1] and i in [0,k-1].
+    * The set of j values in c shall be identical to set(range(len(c))).  I.e. if there are three pairs in c then one pair will have j=0, one pair will have j=1 and one pair will have j=2.  [Aside: this restricts the length of c to be at most n.]
 
 
     What properties should ell satisfy? 
    
-    * Even if c is a python list (and so is ordered) it should be considered to represent an unordered mathematical object (set).
+    * The input c={(0,4),(2,1)} "represents" the sum of basis vectors e^0_4 + e^2_1 which is clearly the same as e^2_1 + e^0_4 as addition is commutative. This is why c is stored as a set.
     * ell should map every possible c to a natural number.
-    * for same k, inputs c1 and c2 differing only by a permutation of the j's among n elements must map to the same number (i.e. must collide).
-    * for same k, all other collisions are forbidden.
-    * Thus ell should be a function on C mod S(n).
+    * at fixed k, it must be the case that ell(c1,k)==ell(c2,k) <==> c1==c2
     
     E.g. we must have all these equal:
     
-        ell( [(1,5),(2,42),(3,100)], 101)
-        ell( [(7,5),(1,42),(3,100)], 101)
-    
-    since 1,2,3 can be mapped to 7,1,3 by the S8 perm 
-    
-            (0,1,2,3,4,5,6,7) -> (0,7,1,3,4,5,6,2)
+        ell( {(1,5),(2,42),(0,100)}, 101)
+        ell( {(2,42),(1,5),(0,100)}, 101)
 
-    which looks like (172) in cycle notation.
+    yet these must all differ:
 
-    We must also have these equal:
-
-        ell( [(1,5),(2,42),(3,100)], 101)
-        ell( [(2,42),(1,5),(3,100)], 101)
-
-    since ell must be a set function.
-
-    In contrast:
+        ell( {(1,5),(2,42),(0,100)}, 101)     (start)
+        ell( {(2,5),(1,42),(0,100)}, 101)     (sets differ in content)
+        ell( {(1,5),(2,43),(0,100)}, 101)     (43!=42)
+        ell( {(1,5),       (0,100)}, 101)     (sets differ in length)
     
-        ell( [(1,5),(2,42),(3,100)], 101)
-    
-    should not collide with any of:
-    
-        ell( [(1,5),(1,42),(3,100)], 101)      ((1,2,3) cannot map to (1,1,3) under S(8))
-        ell( [(1,5),(2,42),(3, 90)], 101)      (90 != 100)
-        ell( [(3,5),(1,42)],       , 101)      (different lengths)
-    
-    etc, to name just a few of the infinite number of things which must be avoided.
     """
     
     assert isinstance(k,int), "k should be an integer."
     assert k>=0, "k should be a non-negative integer"
-    assert len([j for j,_ in c]) == len({j for j,_ in c}), "no two distinct elements (j1,i1) and (j2,i2) in c should share the same value of j"
+    len_c = len(c)
+    assert set(range(len_c)) == { j for j,_ in c } # Every j in range(len(c)) should appear once! 
+    print("c was = ",c)
 
-    k_vals = [vertex[1] for vertex in c]
-    k_vals.sort()  # This divides out S(n)
-    return tuple_rank.tuple_rank(k_vals, k)
+    i_vals_sorted_by_j_vals = [i for _,i in sorted(list(c)) ] # Fortunaltey j comes first in (j,i) so this will work.
+    # Note that above we do not bother storing the j values as we know they will be 0,1,..,len(c)-1 given the input preconditions.
+    # Thus we will be done if we can hash i_vals_sorted_by_j_vals to a non-colliding value.
+    print("i_vals_sorted_by_j_vals = ",i_vals_sorted_by_j_vals)
+
+    # Either of the two lines below should work identically. Just use one!
+    #ell_value = sum(( i*(k**(len_c-1-pos))          for pos,i in enumerate(i_vals_sorted_by_j_vals) ))  +  sum((k**i for i in range(len_c)))
+    ell_value = sum(( i*(k**(len_c-1-pos)) + k**pos for pos,i in enumerate(i_vals_sorted_by_j_vals) ))
+
+    print("ell_value = ",ell_value)
+    return ell_value
 
 class Test_Ell(unittest.TestCase):
     def test_sn_perm_collision(self):
 
         #with lists as inputs:
-        self.assertEqual(ell( [(1,5),(2,42),(3,100)], 101),
-                         ell( [(7,5),(1,42),(3,100)], 101))  # ( (172) maps 1->7 and 2->1 in S(8) )
-
-        #with sets as inputs:
-        self.assertEqual(ell( {(1,5),(2,42),(3,100)}, 101),
-                         ell( {(7,5),(1,42),(3,100)}, 101))  # ( (172) maps 1->7 and 2->1 in S(8) )
+        self.assertEqual(ell( {(1,5),(2,4),(0,10)}, 11),
+                         ell( {(2,4),(1,5),(0,10)}, 11))
 
     def test_set_function_collision(self):
-        # With lists as inputs:
-        self.assertEqual(ell( [(1,5),(2,42),(3,100)], 101),
-                         ell( [(2,42),(1,5),(3,100)], 101))
-        # With sets as inputs:
-        self.assertEqual(ell( {(1,5),(2,42),(3,100)}, 101),
-                         ell( {(2,42),(1,5),(3,100)}, 101))
-        # With mix of inputs:
-        self.assertEqual(ell( [(1,5),(2,42),(3,100)], 101),
-                         ell( {(2,42),(1,5),(3,100)}, 101))
+        self.assertNotEqual(ell( {(1,5),(2,4),(0,10)}, 11), #     (start)
+                            ell( {(2,5),(1,4),(0,10)}, 11)) #     (sets differ in content)
 
-    # REMOVING NEXT TEST AS ell INPUT SPEC PRECULDES ACCEPTING ARGS WITH A REPEATED j AMONG THE (j,i)
-    # def test_miss_non_perm(self):
-    #     self.assertNotEqual(ell( [(1,5),(2,42),(3,100)], 101),
-    #                         ell( [(1,5),(1,42),(3,100)], 101))      # ((1,2,3) cannot map to (1,1,3) under S(8))
-    def test_miss_not_same(self):
-        self.assertNotEqual(ell( [(1,5),(2,42),(3,100)], 101),
-                            ell( [(1,5),(2,42),(3, 90)], 101))      # (90 != 100)
-    def test_miss_different_length(self):
-        self.assertNotEqual(ell( [(1,5),(2,42),(3,100)], 101),
-                            ell( [(3,5),(1,42)        ], 101))      # (different lengths)
+        self.assertNotEqual(ell( {(1,5),(2,4),(0,10)}, 11), #     (start)
+                            ell( {(1,5),(2,7),(0,10)}, 11)) #     (4!=7)
+
+        self.assertNotEqual(ell( {(1,5),(2,4),(0,10)}, 11), #     (start)
+                            ell( {(1,5),      (0,10)}, 11)) #     (sets differ in length)
+
+    def test_intention(self):
+        k = 3 
+
+        self.assertEqual(ell(set(), k), 0)                   #   0
+
+        self.assertEqual(ell({(0,0)}, k), 1)                 #   0 + 1
+        self.assertEqual(ell({(0,1)}, k), 2)                 #   1 + 1
+        self.assertEqual(ell({(0,2)}, k), 3)                 #   2 + 1
+
+        self.assertEqual(ell({(0,0), (1,0)}, k), 4)          #   0 + k**0 + k**1
+        self.assertEqual(ell({(0,0), (1,1)}, k), 5)          #   1 + k**0 + k**1
+        self.assertEqual(ell({(0,0), (1,2)}, k), 6)          #   2 + k**0 + k**1
+        self.assertEqual(ell({(0,1), (1,0)}, k), 7)          #  10 + k**0 + k**1
+        self.assertEqual(ell({(0,1), (1,1)}, k), 8)          #  11 + k**0 + k**1
+        self.assertEqual(ell({(0,1), (1,2)}, k), 9)          #  12 + k**0 + k**1
+        self.assertEqual(ell({(0,2), (1,0)}, k), 10)         #  20 + k**0 + k**1
+        self.assertEqual(ell({(0,2), (1,1)}, k), 11)         #  21 + k**0 + k**1
+        self.assertEqual(ell({(0,2), (1,2)}, k), 12)         #  22  + k**0 + k**1
+
+        self.assertEqual(ell({(0,0), (1,0), (2,0)}, k), 13)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,0), (1,0), (2,1)}, k), 14)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,0), (1,0), (2,2)}, k), 15)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,0), (1,1), (2,0)}, k), 16)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,0), (1,1), (2,1)}, k), 17)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,0), (1,1), (2,2)}, k), 18)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,0), (1,2), (2,0)}, k), 19)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,0), (1,2), (2,1)}, k), 20)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,0), (1,2), (2,2)}, k), 21)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,1), (1,0), (2,0)}, k), 22)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,1), (1,0), (2,1)}, k), 23)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,1), (1,0), (2,2)}, k), 24)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,1), (1,1), (2,0)}, k), 25)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,1), (1,1), (2,1)}, k), 26)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,1), (1,1), (2,2)}, k), 27)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,1), (1,2), (2,0)}, k), 28)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,1), (1,2), (2,1)}, k), 29)  #   0  + k**0 + k**1 + k**2
+        self.assertEqual(ell({(0,1), (1,2), (2,2)}, k), 30)  #   0  + k**0 + k**1 + k**2
+
 
 def make_flat_sums(n,k,delta, sort=False, prepend_zero=False):
     """
@@ -481,7 +496,7 @@ def make_c_dc_pairs(n , k,  # Only need n and/or k if doing "original initialisa
     return c_dc_pairs
 
 def pr(r, big_n):
-    return np.power(r, np.arange(1, big_n+1)) # TODO: Ask PK-H whether there is a better final step than pr
+    return np.power(r, np.arange(big_n)) # Starting at zeroeth power so that r can be both zero and non-zero without constraint.
 
 def make_simplex_eji_ordering(c_bits_and_null):
     """
@@ -495,7 +510,7 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     c_dc_pairs = make_c_dc_pairs(n,k,delta)
  
     c_bits_and_null = [ c for c,_ in c_dc_pairs ] + [set()]
-    print("c_bits =")
+    print("c_bits (before modding by S(n)) =")
     [ print(c) for c in c_bits_and_null ]
 
     """
@@ -503,7 +518,7 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     which defined the simplex in which we the point delta stands.
     """
     simplex_eji_ordering = make_simplex_eji_ordering(c_bits_and_null)
-    print("simplex_eji_ordering =")
+    print("simplex_eji_ordering (before mod S(n)) =")
     [ print(eji) for eji in simplex_eji_ordering ]
 
     # We must canonicalise the simplex by detecting and modding out the relevant perm of S(n).
@@ -511,8 +526,22 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     # First detect the perm needed to take our simplex to canonical form:
     perm = make_perm_from_simplex(simplex_eji_ordering, from_right=True) # It is not critical whether we come from right or left, since any canonical form will do. I choose from_right as it matches the conventin I used in some OneNote nootbooks while I was getting to grips with things. from_left would be faster as no need to reverse a list internally.  Consider moving to from_left later.
     print("perm = ",perm)
+    
+    # Actually we need the inverse perm!
+    inverse_perm = invert_perm(perm)
+    print("inverse perm = ", inverse_perm)
 
-    c_l_dc_triples = [ (c, ell(c,k), dc) for (c,dc) in c_dc_pairs ]
+    # Now 'canonicalise' the vertices in c_dc_pairs using that perm:
+    c_dc_pairs_after_mod_Sn = [ ({ (inverse_perm[j], i) for (j,i) in c }, dc)  for (c,dc) in c_dc_pairs   ]
+    print("c_dc_pairs (after modding by S(n)) =")
+    [ print(c) for c in c_dc_pairs_after_mod_Sn ]
+    
+    # Don't actually need the next thing -- but compute it for debug purposes "just in case"
+    simplex_eji_ordering_after_mod_Sn = [ (inverse_perm[j], i) for (j,i) in simplex_eji_ordering ] 
+    print("simplex_eji_ordering (after mod S(n)) =")
+    [ print(eji) for eji in simplex_eji_ordering_after_mod_Sn ]
+
+    c_l_dc_triples = [ (c, ell(c,k), dc) for (c,dc) in c_dc_pairs_after_mod_Sn ]
     big_n = 2*n*k + 1
     # Please someone re-implement this dot product without so many comprehensions ... or at any rate BETTER:
     # Want output here to be sum_i pr(r_i, big_n) x_i)
@@ -656,6 +685,6 @@ def test_simplex_embedding():
 
 
 if __name__ == "__main__":
-    unittest.main(exit=False)
     test_simplex_embedding()
+    unittest.main(exit=False)
 
