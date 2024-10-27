@@ -100,6 +100,14 @@ def test_tools():
         fail_count += 1
         print("FAIL in tools.invert_perm")
         
+    perm = [3,5,0,4,1,2]
+    inverse_perm_calculated = tools.invert_perm(perm)
+    inverse_perm_expected = [2, 4, 5, 0, 3, 1]
+
+    if not np.array_equal(inverse_perm_calculated, inverse_perm_expected):
+        fail_count += 1
+        print("FAIL in tools.invert_perm")
+        
 
 
 def test_various_encoders():
