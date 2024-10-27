@@ -214,7 +214,6 @@ def make_flat_sums(n,k,delta, sort=False, prepend_zero=False):
         flat_sums = [ ( None, tuple(), 0) ] + flat_sums
     return flat_sums
 
-
 class Test_flat_sums(unittest.TestCase):
     def test(self):
 
@@ -329,6 +328,55 @@ class Test_flat_sums(unittest.TestCase):
         flat_sums_calculated = make_flat_sums(n,k,delta, sort=True)
         self.assertEqual(flat_sums_expected, flat_sums_calculated)
 
+class Test_c_dc_pair_generation(unittest.TestCase):
+    def test(self):
+
+        n=4
+        k=3
+        delta=dict()
+        delta[(0,0)]= 0 #0.00
+        delta[(0,1)]= 3 #0.03
+        delta[(0,2)]=22 #0.22
+        delta[(1,0)]= 0 #0.00
+        delta[(1,1)]=11 #0.11
+        delta[(1,2)]=10 #0.10
+        delta[(2,0)]=10 #0.10
+        delta[(2,1)]= 0 #0.00
+        delta[(2,2)]=50 #0.50
+        delta[(3,0)]= 1 #0.01
+        delta[(3,1)]= 3 #0.03
+        delta[(3,2)]=20 #0.20
+
+        c_dc_pairs_expected = [
+                                 ([(0, 2), (1, 2), (2, 2), (3, 2)], 10),
+                                 ([(0, 2), (1, 1), (2, 2), (3, 2)], 10),
+                                 ([(0, 2), (1, 1), (2, 2), (3, 1)], 1),
+                                 ([(0, 2), (2, 2), (3, 1)], 1),
+                                 ([(0, 1), (2, 2), (3, 1)], 1),
+                                 ([(0, 1), (2, 2), (3, 0)], 1),
+                                 ([(0, 1), (2, 2)], 1),
+                                 ([(2, 2)], 25),
+                                 ([(2, 0)], 10),
+                              ]
+
+        c_dc_pairs_calculated = map_Delta_k_to_the_n_to_c_dc_pairs(n,k,delta, prune_zeros=True)
+        self.assertEqual(c_dc_pairs_expected, c_dc_pairs_calculated)
+
+        c_dc_pairs_expected = [
+                                 ([(0, 2), (1, 2), (2, 2), (3, 2)], 10),
+                                 ([(0, 2), (1, 1), (2, 2), (3, 2)], 10),
+                                 ([(0, 2), (1, 1), (2, 2), (3, 1)], 1),
+                                 ([(0, 2), (2, 2), (3, 1)], 1),
+                                 ([(0, 1), (2, 2), (3, 1)], 1),
+                                 ([(0, 1), (2, 2), (3, 0)], 1),
+                                 ([(0, 1), (2, 2)], 1),
+                                 ([(2, 2)], 25),
+                                 ([(2, 0)], 10),
+                              ]
+
+        c_dc_pairs_calculated = map_Delta_k_to_the_n_to_c_dc_pairs(n,k,delta, prune_zeros=True)
+        self.assertEqual(c_dc_pairs_expected, c_dc_pairs_calculated)
+
 def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "original initialisation" of x_with_coeffs 
          delta, # Each key in the dict is an (j,i) tuple representing Patrick's e^j_i with j in [0,n-1] and i in [0,k-1].  The associated value is the coefficient of that e^j_i basis vector in the associated element of (\Delta_k)^n.
         # e.g delta = {  
@@ -336,7 +384,7 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "
         #     (1,2) : 0.25,                             #a point in the 2nd simplex (simplex 1)
         #     (2,0) : 0.1,                              #a point in the 3rd simplex (simplex 2)
         #   }, 
-        prune_zeros = True,  # False is recommended default! See comments below.
+        prune_zeros = False,  # False is recommended default! See comments below.
         ):
 
     # Pruning zeros is optional as they are technically unnecessasry. However, removing them may also destroy regularity/predictability
