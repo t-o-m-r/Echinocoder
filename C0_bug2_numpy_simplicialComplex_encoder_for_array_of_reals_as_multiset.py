@@ -344,18 +344,13 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "
     print("dc_vals from flat_sums = ")
     [print(_) for _ in dc_vals]
 
-    c_vals = [ 
-               #(0,max([ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == 0 ], default=None)),
-               #(1,max([ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == 1 ], default=None)),
-               #(2,max([ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == 2 ], default=None)),
-               #(3,max([ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == 3 ], default=None)),
-               ([ (j,max([ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == j ], default=None)) for j in range(n) 
-               if (moo:=[ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == j ]) 
-               ], dc_vals[index])
-            for index in range(len(flat_sums)) ]
+    c_dc_pairs = [ 
+               ([ (j,max(moo)) for j in range(n) if (moo:=[ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == j ]) ], dc_vals[index])
+               for index in range(len(flat_sums)) 
+             ]
 
-    print("c_vals from flat_sums = ")
-    [print(_) for _ in c_vals]
+    print("c_dc_pairs from flat_sums = ")
+    [print(_) for _ in c_dc_pairs]
 
     c_dc_pairs = []
 
