@@ -335,7 +335,12 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "
         #     (1,2) : 0.25,                             #a point in the 2nd simplex (simplex 1)
         #     (2,0) : 0.1,                              #a point in the 3rd simplex (simplex 2)
         #   }, 
+        prune_zeros = True,  # False is recommended default! See comments below.
         ):
+
+    # Pruning zeros is optional as they are technically unnecessasry. However, removing them may also destroy regularity/predictability
+    # e.g. people might prefer to see c_dc_pairs always have the same length as the number of non-origin simplex points. 
+    # It is also a test on a floating point number, which is a bit silly.  Default should therefore be NOT pruning zeros.
 
     flat_sums = make_flat_sums(n,k,delta, sort=True)
     print("flat_sums sorted with zero start =",flat_sums)
@@ -344,13 +349,11 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "
     print("dc_vals from flat_sums = ")
     [print(_) for _ in dc_vals]
 
-    c_dc_pairs = [ 
-               ([ (j,max(moo)) for j in range(n) if (moo:=[ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == j ]) ], dc_vals[index])
-               for index in range(len(flat_sums)) 
-             ]
+    c_dc_pairs = [ ([ (j,max(moo)) for j in range(n) if (moo:=[ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == j ]) ], dc_vals[index]) for index in range(len(flat_sums)) if not prune_zeros or dc_vals[index] != 0 ]
 
     print("c_dc_pairs from flat_sums = ")
     [print(_) for _ in c_dc_pairs]
+
 
     c_dc_pairs = []
 
