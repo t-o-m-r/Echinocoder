@@ -351,15 +351,18 @@ class Test_c_dc_pair_generation(unittest.TestCase):
                                  ([(0, 2), (1, 2), (2, 2), (3, 2)], 10),
                                  ([(0, 2), (1, 1), (2, 2), (3, 2)], 10),
                                  ([(0, 2), (1, 1), (2, 2), (3, 1)], 1),
+                                 ([(0, 2), (1, 0), (2, 2), (3, 1)], 0),
                                  ([(0, 2), (2, 2), (3, 1)], 1),
                                  ([(0, 1), (2, 2), (3, 1)], 1),
                                  ([(0, 1), (2, 2), (3, 0)], 1),
                                  ([(0, 1), (2, 2)], 1),
+                                 ([(0, 0), (2, 2)], 0),
                                  ([(2, 2)], 25),
+                                 ([(2, 1)], 0),
                                  ([(2, 0)], 10),
                               ]
 
-        c_dc_pairs_calculated = map_Delta_k_to_the_n_to_c_dc_pairs(n,k,delta, prune_zeros=True)
+        c_dc_pairs_calculated = map_Delta_k_to_the_n_to_c_dc_pairs(n,k,delta)
         self.assertEqual(c_dc_pairs_expected, c_dc_pairs_calculated)
 
         c_dc_pairs_expected = [
