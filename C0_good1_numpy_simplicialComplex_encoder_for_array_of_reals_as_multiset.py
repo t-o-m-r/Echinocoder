@@ -564,7 +564,7 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
     # [ blah for _, r_i, x_i in c_l_dc_triples ]
 
     #print("pr(20)=",pr(20,big_n))
-    point_in_R_bigN = sum([d * pr(r, big_n) for _, r, d in c_l_dc_triples]) + np.zeros(big_n)  # Addition of zero term at end ensures that we still get a zero vec (not 0) in the event that c_l_dc_triples is empty!
+    point_in_R_bigN = sum([d * pr(ell, big_n) for _, ell, d in c_l_dc_triples]) + np.zeros(big_n)  # Addition of zero term at end ensures that we still get a zero vec (not 0) in the event that c_l_dc_triples is empty!
 
     return c_l_dc_triples, point_in_R_bigN 
 

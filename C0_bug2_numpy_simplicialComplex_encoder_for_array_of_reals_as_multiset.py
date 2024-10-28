@@ -408,17 +408,17 @@ def map_Delta_k_to_the_n_to_c_dc_pairs(n , k,  # Only need n and/or k if doing "
     """
 
     flat_sums = make_flat_sums(n,k,delta, sort=True)
-    print("flat_sums sorted with zero start =",flat_sums)
+    #print("flat_sums sorted with zero start =",flat_sums)
 
     dc_vals = [ sum2-sum1 for (j1,i1_vals, sum1),(j2,i2_vals, sum2) in pairwise([(None, tuple(), 0), ]+flat_sums) ]
-    print("dc_vals from flat_sums = ")
-    [print(_) for _ in dc_vals]
+    #print("dc_vals from flat_sums = ")
+    #[print(_) for _ in dc_vals]
 
     c_dc_pairs = [ ({ (j,max(moo)) for j in range(n) if (moo:=[ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == j ]) }, dc_vals[index]) for index in range(len(flat_sums)) if not prune_zeros or dc_vals[index] != 0 ] # See set note below
     """A set rather than a list is used to hold the coordinate vectors because later we want to find out "elements in one set not in another" ... and so if we had used lists we would have to construct a set from a list later anyway.  Fortunately the objects represented are sets anyway (they represent sums of dissimilar basis elements which are vertices, and sums are order independent).  The set creation comprehension does not produce duplicate elements squashed by the set, though, so if it's later needed they could be changed back to a list here (instead of set) so long as the later set-difference calculation is done some other way."""
 
-    print("c_dc_pairs from flat_sums = ")
-    [print(_) for _ in c_dc_pairs]
+    #print("c_dc_pairs from flat_sums = ")
+    #[print(_) for _ in c_dc_pairs]
 
     return c_dc_pairs
 
