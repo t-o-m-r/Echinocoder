@@ -514,6 +514,8 @@ def make_c_dc_pairs_n2k2(delta):
         simplex = None
         assert False
 
+    return c_dc_pairs
+
 
     
 
