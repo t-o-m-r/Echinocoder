@@ -17,9 +17,14 @@ def encode(data):
 
     n,m = data.shape
     #print(f"Size (m,n)=({m},{n})")
-    _, ans = map_Delta_k_to_the_n_to_c_l_dc_triples(n=n, k=m, delta=vectors_to_delta(data) )
+    _, ans = map_Delta_k_to_the_n_to_c_l_dc_triples(n=n, k=m, delta=vectors_to_delta(data), use_n2k2=False)
+    _, ans2 = map_Delta_k_to_the_n_to_c_l_dc_triples(n=n, k=m, delta=vectors_to_delta(data), use_n2k2=True)
 
-    return ans
+    #return ans
+
+    #Interleave the two outputs
+    return [ val for pair in zip(ans,ans2) for val in pair ]
+
 
 # Where used in this file the expression Deltak (or $\Delta^k$ in TeX) 
 # refers to the space inside a unit k-simplex.
@@ -502,7 +507,7 @@ def make_c_dc_pairs_n2k2(delta):
         c_dc_pairs = [
             ({(0,1), (1,1)},       d),
             ({(0,1), (1,0)},       c),
-            ({(0,1))},         b-c-d),
+            ({(0,1)},          b-c-d),
             ({(0,0)},              a),
             ]
     else:
@@ -565,9 +570,9 @@ def make_simplex_eji_ordering(c_bits_and_null):
     simplex_eji_ordering = [ (c1-c2).pop() for c1,c2 in pairwise(c_bits_and_null) ] # The set c1-c2 shuld contain only one element, so pop() should return it.
     return simplex_eji_ordering
 
-def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
-    use_n2k2_shortcut = True and n==2 and k==2
-    if use_n2k2_shortcut:
+def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta, use_n2k2=False):
+
+    if use_n2k2 and n==2 and k==2:
         c_dc_pairs = make_c_dc_pairs_n2k2(delta)
     else:
         c_dc_pairs = make_c_dc_pairs(n,k,delta)
