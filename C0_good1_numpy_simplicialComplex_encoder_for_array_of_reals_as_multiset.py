@@ -465,6 +465,53 @@ def make_perm_from_simplex(simplex_eji_ordering, from_right=False):
     return list({ j[0] : None for j in simplex_eji_ordering  }) # Uses insertion order preservation
 
 
+def make_c_dc_pairs_n2k2(delta):
+    # Each key in the "delta" dict is an (j,i) tuple representing Patrick's e^j_i with j in [0,n-1] and i in [0,k-1].  The associated value is the coefficient of that e^j_i basis vector in the associated element of (\Delta_k)^n.
+    # e.g delta = {  
+    #     (0,0) : 0.5, (0,1) : 0.2, (0,2) : 0.1,    #a point in the 1st simplex (simplex 0)
+    #     (1,2) : 0.25,                             #a point in the 2nd simplex (simplex 1)
+    #     (2,0) : 0.1,                              #a point in the 3rd simplex (simplex 2)
+    #   }
+    a=delta[(0,0)]
+    b=delta[(0,1)]
+    c=delta[(1,0)]
+    d=delta[(1,1)]
+
+    if a+b < max([b,c+d,d]):
+        # swap j=0 with j=1
+        a,b,c,d = c,d,a,b
+    
+    if a+b>=c+d and c+d>=d and d>=b:
+        simplex = "left"
+        c_dc_pairs = [
+            ({(0,1), (1,1)},       b),
+            ({(0,0), (1,1)},     d-b),
+            ({(0,0), (1,0)},       c),
+            ({(0,0)},        a-c+b-d),
+            ]
+    elif a+b>=c+d and c+d>=b and b>=d:
+        simplex = "mid"
+        c_dc_pairs = [
+            ({(0,1), (1,1)},       d),
+            ({(0,1), (1,0)},     b-d),
+            ({(0,0), (1,0)},   c+d-b),
+            ({(0,0)},        a-c+b-d),
+            ]
+    elif a+b>=b and b>=c+d and c+d>=d:
+        simplex = "right"
+        c_dc_pairs = [
+            ({(0,1), (1,1)},       d),
+            ({(0,1), (1,0)},       c),
+            ({(0,1))},         b-c-d),
+            ({(0,0)},              a),
+            ]
+    else:
+        simplex = None
+        assert False
+
+
+    
+
 def make_c_dc_pairs(n , k,  # Only need n and/or k if doing "original initialisation" of x_with_coeffs 
          delta, # Each key in the dict is an (j,i) tuple representing Patrick's e^j_i with j in [0,n-1] and i in [0,k-1].  The associated value is the coefficient of that e^j_i basis vector in the associated element of (\Delta_k)^n.
         # e.g delta = {  
@@ -519,7 +566,11 @@ def make_simplex_eji_ordering(c_bits_and_null):
     return simplex_eji_ordering
 
 def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta):
-    c_dc_pairs = make_c_dc_pairs(n,k,delta)
+    use_n2k2_shortcut = True and n==2 and k==2
+    if use_n2k2_shortcut:
+        c_dc_pairs = make_c_dc_pairs_n2k2(delta)
+    else:
+        c_dc_pairs = make_c_dc_pairs(n,k,delta)
  
     c_bits_and_null = [ c for c,_ in c_dc_pairs ] + [set()]
     #print("c_bits (before modding by S(n)) =")
