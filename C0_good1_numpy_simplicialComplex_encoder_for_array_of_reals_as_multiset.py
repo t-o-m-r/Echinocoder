@@ -13,17 +13,17 @@ import numpy as np
 import unittest
 
 
-def encode(data):
+def encode(data, use_n2k2_optimisation=False):
 
     n,m = data.shape
     #print(f"Size (m,n)=({m},{n})")
-    _, ans = map_Delta_k_to_the_n_to_c_l_dc_triples(n=n, k=m, delta=vectors_to_delta(data), use_n2k2=False)
-    _, ans2 = map_Delta_k_to_the_n_to_c_l_dc_triples(n=n, k=m, delta=vectors_to_delta(data), use_n2k2=True)
+    _, ans = map_Delta_k_to_the_n_to_c_l_dc_triples(n=n, k=m, delta=vectors_to_delta(data), use_n2k2=use_n2k2_optimisation)
 
-    #return ans
+    #Interleave the two outputs in debug mode:
+    # _, ans2 = map_Delta_k_to_the_n_to_c_l_dc_triples(n=n, k=m, delta=vectors_to_delta(data), use_n2k2=True)
+    #return [ val for pair in zip(ans,ans2) for val in pair ]
 
-    #Interleave the two outputs
-    return [ val for pair in zip(ans,ans2) for val in pair ]
+    return ans
 
 
 # Where used in this file the expression Deltak (or $\Delta^k$ in TeX) 
@@ -412,63 +412,63 @@ class Test_c_dc_pair_generation(unittest.TestCase):
         c_dc_pairs_calculated = make_c_dc_pairs(n,k,delta, prune_zeros=True)
         self.assertEqual(c_dc_pairs_expected, c_dc_pairs_calculated)
 
-class Test_simplex_eji_ordering_generation(unittest.TestCase):
-    def test(self):
+### TEST ### class Test_simplex_eji_ordering_generation(unittest.TestCase):
+### TEST ###     def test(self):
+### TEST ### 
+### TEST ###         c_bits_and_null = [
+### TEST ###                              {(0, 2), (1, 2), (2, 2), (3, 2)},
+### TEST ###                              {(0, 2), (1, 1), (2, 2), (3, 2)},
+### TEST ###                              {(0, 2), (1, 1), (2, 2), (3, 1)},
+### TEST ###                              {(0, 2), (1, 0), (2, 2), (3, 1)},
+### TEST ###                              {(0, 2), (2, 2), (3, 1)},
+### TEST ###                              {(0, 1), (2, 2), (3, 1)},
+### TEST ###                              {(0, 1), (2, 2), (3, 0)},
+### TEST ###                              {(0, 1), (2, 2)},
+### TEST ###                              {(0, 0), (2, 2)},
+### TEST ###                              {(2, 2)},
+### TEST ###                              {(2, 1)},
+### TEST ###                              {(2, 0)},
+### TEST ###                              set(),
+### TEST ###                           ]
+### TEST ###         ordering_calculated = make_simplex_eji_ordering(c_bits_and_null)
+### TEST ### 
+### TEST ###         ordering_expected = [
+### TEST ###                              (1, 2),
+### TEST ###                              (3, 2),
+### TEST ###                              (1, 1),
+### TEST ###                              (1, 0),
+### TEST ###                              (0, 2),
+### TEST ###                              (3, 1),
+### TEST ###                              (3, 0),
+### TEST ###                              (0, 1),
+### TEST ###                              (0, 0),
+### TEST ###                              (2, 2),
+### TEST ###                              (2, 1),
+### TEST ###                              (2, 0),
+### TEST ###                           ]
+### TEST ###         self.assertEqual(ordering_calculated, ordering_expected)
 
-        c_bits_and_null = [
-                             {(0, 2), (1, 2), (2, 2), (3, 2)},
-                             {(0, 2), (1, 1), (2, 2), (3, 2)},
-                             {(0, 2), (1, 1), (2, 2), (3, 1)},
-                             {(0, 2), (1, 0), (2, 2), (3, 1)},
-                             {(0, 2), (2, 2), (3, 1)},
-                             {(0, 1), (2, 2), (3, 1)},
-                             {(0, 1), (2, 2), (3, 0)},
-                             {(0, 1), (2, 2)},
-                             {(0, 0), (2, 2)},
-                             {(2, 2)},
-                             {(2, 1)},
-                             {(2, 0)},
-                             set(),
-                          ]
-        ordering_calculated = make_simplex_eji_ordering(c_bits_and_null)
 
-        ordering_expected = [
-                             (1, 2),
-                             (3, 2),
-                             (1, 1),
-                             (1, 0),
-                             (0, 2),
-                             (3, 1),
-                             (3, 0),
-                             (0, 1),
-                             (0, 0),
-                             (2, 2),
-                             (2, 1),
-                             (2, 0),
-                          ]
-        self.assertEqual(ordering_calculated, ordering_expected)
-
-
-class Test_perm_detection(unittest.TestCase):
-    def test(self):
-
-        simplex_eji_ordering = [ (1, 2), (3, 2), (1, 1), (0, 2), (3, 1), (3, 0), (0, 1), (1, 0), (0, 0), (2, 2), (2, 1), (2, 0), ]
-
-        simple_ordering_on_j_vals_from_left_expected = [ 1, 3, 0, 2 ] # j vals read from left, ignoring repeats
-        simple_ordering_on_j_vals_from_right_expected = [ 2, 0, 1, 3 ] # j vals read from right, ignoring repeats
-
-        ordering_from_left_calculated = make_perm_from_simplex(simplex_eji_ordering)
-        ordering_from_right_calculated = make_perm_from_simplex(simplex_eji_ordering, from_right=True)
-
-        self.assertEqual(simple_ordering_on_j_vals_from_left_expected, ordering_from_left_calculated)
-        self.assertEqual(simple_ordering_on_j_vals_from_right_expected, ordering_from_right_calculated)
-
-def make_perm_from_simplex(simplex_eji_ordering, from_right=False):
-    # Note that setting from_right does not (in general) reverse the answer even though it reverses the input.
-    # I.e. perm_from_right(ordering)[::-1] is not in general the same as perm_from_left(ordering[::-1]).
-    if from_right:
-      simplex_eji_ordering=simplex_eji_ordering[::-1]
-    return list({ j[0] : None for j in simplex_eji_ordering  }) # Uses insertion order preservation
+### TEST ### class Test_perm_detection(unittest.TestCase):
+### TEST ###     def test(self):
+### TEST ### 
+### TEST ###         simplex_eji_ordering = [ (1, 2), (3, 2), (1, 1), (0, 2), (3, 1), (3, 0), (0, 1), (1, 0), (0, 0), (2, 2), (2, 1), (2, 0), ]
+### TEST ### 
+### TEST ###         simple_ordering_on_j_vals_from_left_expected = [ 1, 3, 0, 2 ] # j vals read from left, ignoring repeats
+### TEST ###         simple_ordering_on_j_vals_from_right_expected = [ 2, 0, 1, 3 ] # j vals read from right, ignoring repeats
+### TEST ### 
+### TEST ###         ordering_from_left_calculated = make_perm_from_simplex(simplex_eji_ordering)
+### TEST ###         ordering_from_right_calculated = make_perm_from_simplex(simplex_eji_ordering, from_right=True)
+### TEST ### 
+### TEST ###         self.assertEqual(simple_ordering_on_j_vals_from_left_expected, ordering_from_left_calculated)
+### TEST ###         self.assertEqual(simple_ordering_on_j_vals_from_right_expected, ordering_from_right_calculated)
+### TEST ### 
+### TEST ### def make_perm_from_simplex(simplex_eji_ordering, from_right=False):
+### TEST ###     # Note that setting from_right does not (in general) reverse the answer even though it reverses the input.
+### TEST ###     # I.e. perm_from_right(ordering)[::-1] is not in general the same as perm_from_left(ordering[::-1]).
+### TEST ###     if from_right:
+### TEST ###       simplex_eji_ordering=simplex_eji_ordering[::-1]
+### TEST ###     return list({ j[0] : None for j in simplex_eji_ordering  }) # Uses insertion order preservation
 
 
 def make_c_dc_pairs_n2k2(delta):
@@ -483,11 +483,39 @@ def make_c_dc_pairs_n2k2(delta):
     c=delta[(1,0)]
     d=delta[(1,1)]
 
-    if a+b < max([b,c+d,d]):
-        # swap j=0 with j=1
-        a,b,c,d = c,d,a,b
+
+    # TEST DONT!!!!!
+    ### if a+b < max([b,c+d,d]):
+    ###     # swap j=0 with j=1
+    ###     a,b,c,d = c,d,a,b
     
-    if a+b>=c+d and c+d>=d and d>=b:
+    if False:
+        pass
+    elif c+d >=d >= a+b >= b: # C'
+        simplex = "left"
+        c_dc_pairs = [
+            ({(0,1), (1,1)},       b),
+            ({(0,0), (1,1)},       a),
+            ({       (1,1)},   d-a-b),
+            ({       (1,0)},       c),
+            ]
+    elif c+d >= a+b >= b >= d: # A'
+        simplex = "left"
+        c_dc_pairs = [
+            ({(0,1), (1,1)},       d),
+            ({(0,1), (1,0)},     b-d),
+            ({(0,0), (1,0)},       a),
+            ({       (1,0)}, c+d-a-b),
+            ]
+    elif c+d >= a+b >= d >= b: # B'
+        simplex = "left"
+        c_dc_pairs = [
+            ({(0,1), (1,1)},       b),
+            ({(0,0), (1,1)},     d-b),
+            ({(0,0), (1,0)},   a+b-d),
+            ({       (1,0)}, c+d-a-b),
+            ]
+    elif a+b >= c+d >= d >= b: # A
         simplex = "left"
         c_dc_pairs = [
             ({(0,1), (1,1)},       b),
@@ -495,7 +523,7 @@ def make_c_dc_pairs_n2k2(delta):
             ({(0,0), (1,0)},       c),
             ({(0,0)},        a-c+b-d),
             ]
-    elif a+b>=c+d and c+d>=b and b>=d:
+    elif a+b >= c+d >= b >= d: # B
         simplex = "mid"
         c_dc_pairs = [
             ({(0,1), (1,1)},       d),
@@ -503,7 +531,7 @@ def make_c_dc_pairs_n2k2(delta):
             ({(0,0), (1,0)},   c+d-b),
             ({(0,0)},        a-c+b-d),
             ]
-    elif a+b>=b and b>=c+d and c+d>=d:
+    elif a+b >= b >= c+d >= d: # C
         simplex = "right"
         c_dc_pairs = [
             ({(0,1), (1,1)},       d),
@@ -613,7 +641,6 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta, use_n2k2=False):
     ####TEST_REMOVE#### c_dc_pairs_after_mod_Sn = [ ({ (inverse_perm[j], i) for (j,i) in c }, dc)  for (c,dc) in c_dc_pairs   ]
 
     # TEST DON'T APPLY PERM!!!!! It was a mistake!!!!!
-    print("TEST!!!")
     c_dc_pairs_after_mod_Sn = c_dc_pairs
 
     #print("c_dc_pairs (after modding by S(n)) =")
