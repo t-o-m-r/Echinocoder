@@ -87,7 +87,7 @@ def ell(c, k, shrink=False):
     INPUT REQUIREMENTS:
     * The input k shall be a non-negative integer
     * The input c shall be a (possibly empty) set of (j,i) pairs, with j in [0,n-1] and i in [0,k-1].
-    * The set of j values in c shall be identical to set(range(len(c))).  I.e. if there are three pairs in c then one pair will have j=0, one pair will have j=1 and one pair will have j=2.  [Aside: this restricts the length of c to be at most n.]
+    * The set of j values in c shall have no repeates.  I.e. if there are three pairs in c then one pair will have j=0, one pair will have j=1 and one pair will have j=2.  [Aside: this restricts the length of c to be at most n.]
 
 
     What properties should ell satisfy? 
@@ -111,9 +111,10 @@ def ell(c, k, shrink=False):
     """
     
     assert isinstance(k,int), "k should be an integer."
-    assert k>=0, "k should be a non-negative integer"
+    assert k>=0, "k should be a non-negative integer."
     len_c = len(c)
-    assert set(range(len_c)) == { j for j,_ in c } # Every j in range(len(c)) should appear once! 
+    assert len({ j for j,_ in c }) == len_c, "No j should repeat."
+
     #print("c was = ",c)
 
     i_vals_sorted_by_j_vals = [i for _,i in sorted(list(c)) ] # Fortunaltey j comes first in (j,i) so this will work.
@@ -579,38 +580,45 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta, use_n2k2=False):
     else:
         c_dc_pairs = make_c_dc_pairs(n,k,delta)
  
-    c_bits_and_null = [ c for c,_ in c_dc_pairs ] + [set()]
-    #print("c_bits (before modding by S(n)) =")
-    #[ print(c) for c in c_bits_and_null ]
+    ####TEST_REMOVE#### c_bits_and_null = [ c for c,_ in c_dc_pairs ] + [set()]
+    ####TEST_REMOVE#### #print("c_bits (before modding by S(n)) =")
+    ####TEST_REMOVE#### #[ print(c) for c in c_bits_and_null ]
 
-    """
-    The following simplex_eji_ordering contains the implied basis element ordering (greatest first)
-    which defined the simplex in which we the point delta stands.
-    """
-    simplex_eji_ordering = make_simplex_eji_ordering(c_bits_and_null)
-    #print("simplex_eji_ordering (before mod S(n)) =")
-    #[ print(eji) for eji in simplex_eji_ordering ]
+    ####TEST_REMOVE#### """
+    ####TEST_REMOVE#### The following simplex_eji_ordering contains the implied basis element ordering (greatest first)
+    ####TEST_REMOVE#### which defined the simplex in which we the point delta stands.
+    ####TEST_REMOVE#### """
+    ####TEST_REMOVE#### simplex_eji_ordering = make_simplex_eji_ordering(c_bits_and_null)
+    ####TEST_REMOVE#### #print("simplex_eji_ordering (before mod S(n)) =")
+    ####TEST_REMOVE#### #[ print(eji) for eji in simplex_eji_ordering ]
 
-    # We must canonicalise the simplex by detecting and modding out the relevant perm of S(n).
+    ####TEST_REMOVE#### # We must canonicalise the simplex by detecting and modding out the relevant perm of S(n).
 
-    # First detect the perm needed to take our simplex to canonical form:
-    perm = make_perm_from_simplex(simplex_eji_ordering, from_right=True) # It is not critical whether we come from right or left, since any canonical form will do. I choose from_right as it matches the conventin I used in some OneNote nootbooks while I was getting to grips with things. from_left would be faster as no need to reverse a list internally.  Consider moving to from_left later.
-    #print("perm = ",perm)
-    
-    # Actually we need the inverse perm!
-    inverse_perm = invert_perm(perm)
-    #print("inverse perm = ", inverse_perm)
 
-    # Now 'canonicalise' the vertices in c_dc_pairs using that perm:
-    c_dc_pairs_after_mod_Sn = [ ({ (inverse_perm[j], i) for (j,i) in c }, dc)  for (c,dc) in c_dc_pairs   ]
+    ####TEST_REMOVE#### 
+    ####TEST_REMOVE#### # First detect the perm needed to take our simplex to canonical form:
+    ####TEST_REMOVE#### perm = make_perm_from_simplex(simplex_eji_ordering, from_right=True) # It is not critical whether we come from right or left, since any canonical form will do. I choose from_right as it matches the conventin I used in some OneNote nootbooks while I was getting to grips with things. from_left would be faster as no need to reverse a list internally.  Consider moving to from_left later.
+    ####TEST_REMOVE#### #print("perm = ",perm)
+    ####TEST_REMOVE#### 
+    ####TEST_REMOVE#### # Actually we need the inverse perm!
+    ####TEST_REMOVE#### inverse_perm = invert_perm(perm)
+    ####TEST_REMOVE#### #print("inverse perm = ", inverse_perm)
+
+    ####TEST_REMOVE#### # Don't actually need the next thing -- but compute it for debug purposes "just in case"
+    ####TEST_REMOVE#### simplex_eji_ordering_after_mod_Sn = [ (inverse_perm[j], i) for (j,i) in simplex_eji_ordering ] 
+    ####TEST_REMOVE#### #print("simplex_eji_ordering (after mod S(n)) =")
+    ####TEST_REMOVE#### #[ print(eji) for eji in simplex_eji_ordering_after_mod_Sn ]
+
+    ####TEST_REMOVE#### # Now 'canonicalise' the vertices in c_dc_pairs using that perm:
+    ####TEST_REMOVE#### c_dc_pairs_after_mod_Sn = [ ({ (inverse_perm[j], i) for (j,i) in c }, dc)  for (c,dc) in c_dc_pairs   ]
+
+    # TEST DON'T APPLY PERM!!!!! It was a mistake!!!!!
+    print("TEST!!!")
+    c_dc_pairs_after_mod_Sn = c_dc_pairs
+
     #print("c_dc_pairs (after modding by S(n)) =")
     #[ print(c) for c in c_dc_pairs_after_mod_Sn ]
     
-    # Don't actually need the next thing -- but compute it for debug purposes "just in case"
-    simplex_eji_ordering_after_mod_Sn = [ (inverse_perm[j], i) for (j,i) in simplex_eji_ordering ] 
-    #print("simplex_eji_ordering (after mod S(n)) =")
-    #[ print(eji) for eji in simplex_eji_ordering_after_mod_Sn ]
-
     shrink = True
     c_l_dc_triples = [ (c, ell(c,k,shrink=shrink), dc) for (c,dc) in c_dc_pairs_after_mod_Sn ]
     #print("c_l_dc_triples (after modding by S(n)) =")
