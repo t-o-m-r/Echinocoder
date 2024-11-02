@@ -40,8 +40,8 @@ def evaluate_encoding(x, n, m):
     return np.asarray(outs)
 
 
-n = 2
-m = 2
+n = 3
+m = 3
 
 bokeh_vis = BokehFunctionVisualiser2D(
     lambda x: evaluate_encoding(x, n, m),

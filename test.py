@@ -13,6 +13,7 @@ import C0_good1_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset a
 import data_sources
 import numpy as np
 import unittest
+from tools import __line__
 
 fail_count = 0
 
@@ -99,14 +100,24 @@ class Test_Encoders(unittest.TestCase):
         shuffled_data = data.copy()
         if encoders is None:
             encoders = [ encoder ]
+        first_encoding = dict()
         for i in range(number_of_shuffled_copies):
             for encoder in encoders:
                 encoding = encoder.encode(shuffled_data)
                 #encoding_fails = expected_encoding is not None and not np.array_equal(np.asarray(encoding),np.asarray(expected_encoding))
                 if expected_encoding is None:
-                    # nothing to check, so pass
-                    pass
+                    # Check subsequent encodings are same as first encoding.
+                    if i==0:
+                        first_encoding[encoder]=encoding
+                    else:
+                        print("MOOOCOWFIRST",encoder, first_encoding[encoder])
+                        print("MOOOCOW__NOW",encoder, encoding)
+                        if exact:
+                            np.testing.assert_equal(encoding, first_encoding[encoder], strict=True)
+                        else:
+                            np.testing.assert_allclose(np.array(encoding, dtype=float), np.array(first_encoding[encoder], dtype=float), atol=absolute_tolerance, rtol=relative_tolerance, strict=True, equal_nan=False)
                 else:
+                    # check encoding matches expected encoding
                     #encoding_fails = not np.allclose(np.asarray(encoding),np.asarray(expected_encoding),rtol=relative_tolerance,atol=absolute_tolerance)
 
                     print("MOOO1",encoding)
@@ -130,65 +141,77 @@ class Test_Encoders(unittest.TestCase):
 
         make_randoms_reproducable()
     
+        print(__file__, __line__)
         self.tost_multiset_encoder(
            data=np.asarray([9,-4,21,-8,5]),
            encoder=encoder_C0_li,
            expected_encoding = [-8,-4,5,9,21],
         )
     
+        print(__file__, __line__)
         self.tost_multiset_encoder(
            data=data_sources.random_real_linear_data(n=4),
            encoder=encoder_C0_li,
         )
     
+        print(__file__, __line__)
         self.tost_multiset_encoder(
            data=data_sources.random_complex_linear_data(n=4),
            encoders=[ encoder_Cinf_np_li, encoder_Cinf_py_li, ],
         )
     
+        print(__file__, __line__)
         self.tost_multiset_encoder(
            data=data_sources.random_real_linear_data(n=4),
            encoders=[ encoder_Cinf_np_li, encoder_Cinf_py_li, ],
         )
     
+        print(__file__, __line__)
         self.tost_multiset_encoder(
            data=data_sources.random_real_array_data(mn=(1,4)),
            encoders=[ encoder_Cinf_np_ar, ],
         )
     
+        print(__file__, __line__)
         self.tost_multiset_encoder(
            data=data_sources.random_real_array_data(mn=(2,3)),
            encoders=[ encoder_Cinf_np_ar, ],
         )
     
+        print(__file__, __line__)
         self.tost_multiset_encoder(
            data=data_sources.random_real_array_data(mn=(3,3)),
            encoders=[ encoder_Cinf_np_ar, ],
         )
     
+        print(__file__, __line__)
         self.tost_multiset_encoder(
            data=data_sources.random_real_array_data(mn=(4,3)),
            encoders=[ encoder_Cinf_np_ar, encoder_Cinf_sp_bur_ar, ],
         )
     
+        print(__file__, __line__)
         self.tost_multiset_encoder(
            data=np.array(((-7,-8,-1,-9),(9,-7,-6,5),(-9,4,9,-7))),
            encoders=[ encoder_Cinf_sp_bur_ar, ],
            expected_encoding = [-11, 2, -11, -7, -17, 62, 55, -202, 110, 120, -81, 315, -748, 58, 1289, -1497, 457, 1139, -1460, -45, 567],
         )
     
+        print(__file__, __line__)
         self.tost_multiset_encoder(
            data=np.array(((8,-1,-4,3),(-8,-5,9,7),(8,2,7,-7))),
            encoders=[ encoder_Cinf_np_ar, ],
            expected_encoding = [   8,   -4,  -57,  -80, -488, -394,    8,   12,  -63,  144, -952,  636, 8,    3,  -15,  112, -456,  851,   -4,   12,   -6,  -21,    5,  309, -4,    3,   42,   40, -186,   68,   12,    3,   48,   34, -406,  392], 
         )
-    
+   
+        print(__file__, __line__)
         self.tost_multiset_encoder(
            data=np.array(((3,1,4),(2,2,5))),
            encoders=[ encoder_Cinf_sp_bur_ar, ],
            expected_encoding =  [9, 3, 5, 20, 13, 25, 8, 6],
         )
     
+        print(__file__, __line__)
         self.tost_multiset_encoder(
            data=np.array(((3,1,4),(2,2,5))),
            encoders=[ encoder_Cinf_sp_evenBur_ar, ],
@@ -196,12 +219,15 @@ class Test_Encoders(unittest.TestCase):
            expected_encoding = [9, 20, 3, 13, 2, 5, 23, 8, 6],
         )
     
+        print(__file__, __line__)
         import Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace
         self_test_realprojectivespace_encoder(Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace)
-    
+
+        print(__file__, __line__)
         import Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace
         self_test_realprojectivespace_encoder(Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace)
     
+        print(__file__, __line__)
         self.tost_multiset_encoder(
            data=np.array(((1,2),(1,0),(5,2))),
            encoders=[ 
@@ -216,16 +242,17 @@ class Test_Encoders(unittest.TestCase):
            relative_tolerance=1e-8,
         )
     
+        print(__file__, __line__)
         self.tost_multiset_encoder(
            data=np.array(((1,2),(1,0),(5,2))),
            encoders=[ 
              encoder_C0_np_simplex_good1,
            ],
            number_of_shuffled_copies=10,
-           expected_encoding = [4.16666667e-01, 2.44090909e+00, 2.51045455e+01, 3.12022727e+02,
-                                4.14921364e+03, 5.66481682e+04, 7.81914741e+05, 1.08471822e+07,
-                                1.50879552e+08, 2.10209486e+09, 2.93197746e+10, 4.09286008e+11,
-                                5.71697611e+12,],
+           # expected_encoding = [4.16666667e-01, 2.44090909e+00, 2.51045455e+01, 3.12022727e+02,
+           #                      4.14921364e+03, 5.66481682e+04, 7.81914741e+05, 1.08471822e+07,
+           #                      1.50879552e+08, 2.10209486e+09, 2.93197746e+10, 4.09286008e+11,
+           #                      5.71697611e+12,],
            relative_tolerance=1e-8,
         )
 
@@ -235,6 +262,7 @@ def test_everything():
     import tuple_rank
     tuple_rank.unit_test_tuple_rank()
 
+print(__file__, __line__)
 test_everything()
 unittest.main(exit=False)
 

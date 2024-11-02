@@ -1,4 +1,11 @@
 import numpy as np
+import inspect
+
+class LineNo:
+    def __str__(self):
+        return str(inspect.currentframe().f_back.f_lineno)
+
+__line__ = LineNo()
 
 def expand_complex_to_real_pairs(np_array):
     """
