@@ -246,6 +246,17 @@ class Test_Encoders(unittest.TestCase):
         self.tost_multiset_encoder(
            data=np.array(((1,2),(1,0),(5,2))),
            encoders=[ 
+             encoder_C0_np_simplex_bug1, 
+             encoder_C0_np_simplex_bug2, 
+           ],
+           number_of_shuffled_copies=10,
+           relative_tolerance=1e-8,
+        )
+    
+        print(__file__, __line__)
+        self.tost_multiset_encoder(
+           data=np.array(((1,2),(1,0),(5,2))),
+           encoders=[ 
              encoder_C0_np_simplex_good1,
            ],
            number_of_shuffled_copies=10,
