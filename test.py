@@ -234,7 +234,7 @@ class Test_Encoders(unittest.TestCase):
              encoder_C0_np_simplex_bug1, 
              encoder_C0_np_simplex_bug2, 
            ],
-           number_of_shuffled_copies=10,
+           number_of_shuffled_copies=100,
            expected_encoding = [1.74545455e+00, 1.13000000e+01, 8.73272727e+01, 7.28500000e+02,
                                 6.30183636e+03, 5.54913000e+04, 4.93020782e+05, 4.40096450e+06,
                                 3.93891451e+07, 3.53100751e+08, 3.16863401e+09, 2.84549414e+10,
@@ -249,7 +249,7 @@ class Test_Encoders(unittest.TestCase):
              encoder_C0_np_simplex_bug1, 
              encoder_C0_np_simplex_bug2, 
            ],
-           number_of_shuffled_copies=10,
+           number_of_shuffled_copies=100,
            relative_tolerance=1e-8,
         )
     
@@ -259,7 +259,7 @@ class Test_Encoders(unittest.TestCase):
            encoders=[ 
              encoder_C0_np_simplex_good1,
            ],
-           number_of_shuffled_copies=10,
+           number_of_shuffled_copies=100,
            # expected_encoding = [4.16666667e-01, 2.44090909e+00, 2.51045455e+01, 3.12022727e+02,
            #                      4.14921364e+03, 5.66481682e+04, 7.81914741e+05, 1.08471822e+07,
            #                      1.50879552e+08, 2.10209486e+09, 2.93197746e+10, 4.09286008e+11,
