@@ -598,7 +598,7 @@ def make_simplex_eji_ordering(c_bits_and_null):
     The following simplex_eji_ordering contains the implied basis element ordering (greatest first)
     which defined the simplex in which we the point delta stands.
     """
-    simplex_eji_ordering = [ (c1-c2).pop() for c1,c2 in pairwise(c_bits_and_null) ] # The set c1-c2 shuld contain only one element, so pop() should return it.
+    simplex_eji_ordering = [ (c1-c2).pop() for c1,c2 in pairwise(c_bits_and_null) ] # The set c1-c2 should contain only one element, so pop() should return it.
     return simplex_eji_ordering
 
 def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta, use_n2k2=False):
