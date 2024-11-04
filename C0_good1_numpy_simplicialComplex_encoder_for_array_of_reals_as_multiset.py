@@ -7,7 +7,7 @@
 # Christopher Lester
 
 from itertools import pairwise
-from tools import invert_perm
+#from tools import invert_perm
 import numpy as np
 #import tuple_rank
 import unittest
@@ -211,9 +211,7 @@ def make_c_dc_pairs_n2k2(delta):
     ###     # swap j=0 with j=1
     ###     a,b,c,d = c,d,a,b
     
-    if False:
-        pass
-    elif c+d >=d >= a+b >= b: # C'
+    if c+d >=d >= a+b >= b: # C'
         simplex = "left"
         c_dc_pairs = [
             ({(0,1), (1,1)},       b),
@@ -271,12 +269,15 @@ def make_c_dc_pairs_n2k2(delta):
     
 
 def make_c_dc_pairs(n , k,  # Only need n and/or k if doing "original initialisation" of x_with_coeffs 
-         delta, # Each key in the dict is an (j,i) tuple representing Patrick's e^j_i with j in [0,n-1] and i in [0,k-1].  The associated value is the coefficient of that e^j_i basis vector in the associated element of (\Delta_k)^n.
-        # e.g delta = {  
-        #     (0,0) : 0.5, (0,1) : 0.2, (0,2) : 0.1,    #a point in the 1st simplex (simplex 0)
-        #     (1,2) : 0.25,                             #a point in the 2nd simplex (simplex 1)
-        #     (2,0) : 0.1,                              #a point in the 3rd simplex (simplex 2)
-        #   }, 
+                    delta,
+                    # Each key in the delta dict is an (j,i) tuple representing Patrick's e^j_i with j in [0,n-1] and
+                    # i in [0,k-1].  The associated value is the coefficient of that e^j_i basis vector in the
+                    # associated element of (\Delta_k)^n.
+                    # e.g delta = {
+                    #     (0,0) : 0.5, (0,1) : 0.2, (0,2) : 0.1,    #a point in the 1st simplex (simplex 0)
+                    #     (1,2) : 0.25,                             #a point in the 2nd simplex (simplex 1)
+                    #     (2,0) : 0.1,                              #a point in the 3rd simplex (simplex 2)
+                    #   },
         prune_zeros = False,  # False is recommended default! See comments below.
         ):
     """
@@ -284,9 +285,7 @@ def make_c_dc_pairs(n , k,  # Only need n and/or k if doing "original initialisa
     The simplex vertex, c, is coded as a list of (j,i) values representing e^j_i, i.e. the ith basis vector of the j-th simplex.
     E.g. if the simplex vertex is c=[(0,1),(2,2)] then c represents e^0_1+e^2_2. 
     The coefficient dc,  attached to c, says how much of c is needed to represent the component of delta in that direction.
-    """
 
-    """
     Pruning entries with dc=0 might seem like a good idea.  However:
 
        (1) pruning zeros may also destroy regularity/predictability;  e.g. people might prefer to see c_dc_pairs always have the same length as the number of non-origin simplex points.
@@ -304,7 +303,12 @@ def make_c_dc_pairs(n , k,  # Only need n and/or k if doing "original initialisa
     #[print(_) for _ in dc_vals]
 
     c_dc_pairs = [ ({ (j,max(moo)) for j in range(n) if (moo:=[ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == j ]) }, dc_vals[index]) for index in range(len(flat_sums)) if not prune_zeros or dc_vals[index] != 0 ] # See set note below
-    """A set rather than a list is used to hold the coordinate vectors because later we want to find out "elements in one set not in another" ... and so if we had used lists we would have to construct a set from a list later anyway.  Fortunately the objects represented are sets anyway (they represent sums of dissimilar basis elements which are vertices, and sums are order independent).  The set creation comprehension does not produce duplicate elements squashed by the set, though, so if it's later needed they could be changed back to a list here (instead of set) so long as the later set-difference calculation is done some other way."""
+    """A set rather than a list is used to hold the coordinate vectors because later we want to find out 
+    "elements in one set not in another" ... and so if we had used lists we would have to construct a set from a 
+    list later anyway.  Fortunately the objects represented are sets anyway (they represent sums of dissimilar
+     basis elements which are vertices, and sums are order independent).  The set creation comprehension does not 
+     produce duplicate elements squashed by the set, though, so if it's later needed they could be changed back to a 
+     list here (instead of set) so long as the later set-difference calculation is done some other way."""
 
     #print("c_dc_pairs from flat_sums = ")
     #[print(_) for _ in c_dc_pairs]
