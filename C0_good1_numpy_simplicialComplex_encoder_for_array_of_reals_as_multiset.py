@@ -107,8 +107,9 @@ class Maximal_Simplex_Vertex:
     vertex: set[Eji]
 
 @dataclass
-class Simplex_Vertices:
-    """These are stored in a list and  are ordered from big to small under the same ordering used to order eji's."""
+class Maximal_Simplex_Vertices:
+    """These are stored in a list which is required to be ordered from big to small
+    under the same ordering used to order eji's."""
     vertices: list[Maximal_Simplex_Vertex]
 
 @dataclass
@@ -116,7 +117,7 @@ class Maximal_Simplex:
     """Class to hold any of the big simplices which (before barycentric subdivision)
     form the beginnings of our simplicial complex.  It holds an eij_ordering."""
     eji_ordering: Eji_Ordering
-    simplex_vertices: Simplex_Vertices
+    vertices: Maximal_Simplex_Vertices
 
 def ell(c, k, shrink=False):
     """
@@ -360,7 +361,7 @@ def pr(r, big_n):
     # Method below makes negative numbers from positive integer r if r is big enough!  Floating point wrap around! Must make r real
     return np.power(np.float64(r), np.arange(big_n)) # Starting at zeroeth power so that r can be both zero and non-zero without constraint.
 
-def make_simplex_eji_ordering(simplex_vertices: Simplex_Vertices):
+def make_simplex_eji_ordering(simplex_vertices: Maximal_Simplex_Vertices):
     """
     The following simplex_eji_ordering contains the implied basis element ordering (greatest first)
     which defined the simplex in which we the point delta stands.
@@ -376,7 +377,7 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta, use_n2k2=False):
     else:
         c_dc_pairs = make_c_dc_pairs(n,k,delta)
  
-    ####TEST_REMOVE#### vertices = Simplex_Vertices([ c for c,_ in c_dc_pairs ])
+    ####TEST_REMOVE#### vertices = Maximal_Simplex_Vertices([ c for c,_ in c_dc_pairs ])
     ####TEST_REMOVE#### #print("vertices (before modding by S(n)) =")
     ####TEST_REMOVE#### #[ print(c) for c in vertices ]
 
@@ -790,7 +791,7 @@ class Test_c_dc_pair_generation(unittest.TestCase):
 
 class Test_simplex_eji_ordering_generation(unittest.TestCase):
     def test1(self):
-        vertices = Simplex_Vertices([
+        vertices = Maximal_Simplex_Vertices([
             {Eji(0, 2), Eji(1, 2), Eji(2, 2), Eji(3, 2)},
             {Eji(0, 2), Eji(1, 1), Eji(2, 2), Eji(3, 2)},
             {Eji(0, 2), Eji(1, 1), Eji(2, 2), Eji(3, 1)},
@@ -826,7 +827,7 @@ class Test_simplex_eji_ordering_generation(unittest.TestCase):
 
     def test2(self):
 
-        vertices = Simplex_Vertices([
+        vertices = Maximal_Simplex_Vertices([
                              {(0, 2), (1, 2), (2, 2), (3, 2)},
                              {(0, 2), (1, 1), (2, 2), (3, 2)},
                              {(0, 2), (1, 1), (2, 2), (3, 1)},
