@@ -3,7 +3,7 @@
 from sys import version_info
 
 if not version_info >= (3, 7):
-   assert(False, "Need at least python 3.7 as rely on dictionaries being ordered!")
+   assert False, "We need at least python 3.7 as we rely on dictionaries being ordered!"
 
 # USE WITH CAUTION!  No known bugs, but not tested to destruction.
 # This is a re-implementation of C0_bug2_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset.py but aiming to fix the bug in the part of the code which mods out S(n).
@@ -83,18 +83,25 @@ def encode(data, use_n2k2_optimisation=False):
 #                  }.
 #
 
-@dataclass
-class Maximal_Simplex:
-    """Class to hold any of the big simplices which (before barycentric subdivision)
-    form the beginnings of our simplicial complex.  It holds an eij_ordering."""
-    pass
-
+from collections import namedtuple
+Eji = namedtuple("Eji", ["j", "i"])
 
 @dataclass
 class Eji_Ordering:
     """Class to hold eij orderings (biggest first)."""
-    pass
-
+    eji_vals: list[Eji]
+    
+@dataclass
+class Simplex_Vertices:
+    """These are stored in a list and are are ordered from big to small under the same ordering used to order eji's."""
+    vertices: list[set[Eji]]
+    
+@dataclass
+class Maximal_Simplex:
+    """Class to hold any of the big simplices which (before barycentric subdivision)
+    form the beginnings of our simplicial complex.  It holds an eij_ordering."""
+    eji_ordering: Eji_Ordering
+    simplex_vertices: Simplex_Vertices
 
 def ell(c, k, shrink=False):
     """
@@ -344,7 +351,7 @@ def make_simplex_eji_ordering(c_bits_and_null):
     which defined the simplex in which we the point delta stands.
     """
     simplex_eji_ordering = [ (c1-c2).pop() for c1,c2 in pairwise(c_bits_and_null) ] # The set c1-c2 should contain only one element, so pop() should return it.
-    return simplex_eji_ordering
+    return Eji_Ordering(simplex_eji_ordering)
 
 def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta, use_n2k2=False):
 
@@ -785,7 +792,7 @@ class Test_simplex_eji_ordering_generation(unittest.TestCase):
                           ]
         ordering_calculated = make_simplex_eji_ordering(c_bits_and_null)
 
-        ordering_expected = [
+        ordering_expected = Eji_Ordering([
                              (1, 2),
                              (3, 2),
                              (1, 1),
@@ -798,7 +805,7 @@ class Test_simplex_eji_ordering_generation(unittest.TestCase):
                              (2, 2),
                              (2, 1),
                              (2, 0),
-                          ]
+                          ])
         self.assertEqual(ordering_calculated, ordering_expected)
 
 
