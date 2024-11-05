@@ -121,10 +121,10 @@ class Maximal_Simplex_Vertices:
         for v_larger, v_smaller in pairwise(self.vertices):
             v_larger.check_valid()
             v_smaller.check_valid()
-            print("LARGER SMALLER ",v_larger,v_smaller)
+            #print("LARGER SMALLER ",v_larger,v_smaller)
             gain = v_larger - v_smaller
             loss = v_smaller - v_larger
-            assert len(gain) == 1
+            assert len(gain) == 1, "Every vertex should have an Eji not contained in the next vertex."
             if loss:  # Something got deleted, so check that what was deleted grew in i
                 assert len(loss) == 1
                 for eji_loss in loss:
@@ -180,7 +180,7 @@ def ell(c, k, shrink=False):
     """
     
     assert isinstance(k,int), "k should be an integer."
-    assert k>=0, "k should be a non-negative integer."
+    assert k >= 0, "k should be a non-negative integer."
     len_c = len(c)
     assert len({ j for j,_ in c }) == len_c, "No j should repeat."
 
@@ -230,9 +230,10 @@ def make_flat_sums(n,k,delta, sort=False, prepend_zero=False):
       {                (n-1,2)} :                               delta[(n-1,2)],
     }.
 
-    However, for practial implementation purposes we "represent" the above by the following more abbreviated structure
+    However, for practical implementation purposes we "represent" the above by the following more abbreviated structure
     (a list of tuples)
-    in which for each key the first index is j in [0,n-1], the second index is a tuple containing the i values in the basis sum, 
+    in which for each key the first index is j in [0,n-1], the second index is
+    a tuple containing the i values in the basis sum,
     I.e. key (j,r) below encodes key sum([ (j,i) for i in r]) above. The example below uses k=3 again
     
     flat_sums = [
@@ -851,6 +852,7 @@ class Test_simplex_eji_ordering_generation(unittest.TestCase):
             Eji(2, 0),
         ])
         ordering_expected.check_valid()
+
         self.assertEqual(ordering_calculated, ordering_expected)
 
 
