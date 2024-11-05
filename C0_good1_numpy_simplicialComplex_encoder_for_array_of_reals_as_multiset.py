@@ -116,9 +116,11 @@ class Maximal_Simplex_Vertex:
 class Maximal_Simplex_Vertices:
     """These are stored in a list which is required to be ordered from big to small
     under the same ordering used to order eji's."""
-    vertices: list[Maximal_Simplex_Vertex]
+    _vertex_list: list[Maximal_Simplex_Vertex]
     def check_valid(self):
-        for v_larger, v_smaller in pairwise(self.vertices):
+        """This function asserts all sorts of things that should be true for a valid object.
+        Use it in unit-tests to raise assertion errors."""
+        for v_larger, v_smaller in pairwise(self._vertex_list):
             v_larger.check_valid()
             v_smaller.check_valid()
             #print("LARGER SMALLER ",v_larger,v_smaller)
@@ -394,7 +396,7 @@ def make_simplex_eji_ordering(simplex_vertices: Maximal_Simplex_Vertices):
     The following simplex_eji_ordering contains the implied basis element ordering (greatest first)
     which defined the simplex in which we the point delta stands.
     """
-    c_bits_and_null = simplex_vertices.vertices + [Maximal_Simplex_Vertex()]
+    c_bits_and_null = simplex_vertices._vertex_list + [Maximal_Simplex_Vertex()]
     simplex_eji_ordering = [ (v1-v2).pop() for v1,v2 in pairwise(c_bits_and_null) ] # The set c1-c2 should contain only one element, so pop() should return it.
     return Eji_Ordering(simplex_eji_ordering)
 
