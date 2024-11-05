@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+from sys import version_info
+
+if not version_info >= (3, 7):
+   assert(False, "Need at least python 3.7 as rely on dictionaries being ordered!")
+
 # USE WITH CAUTION!  No known bugs, but not tested to destruction.
 # This is a re-implementation of C0_bug2_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset.py but aiming to fix the bug in the part of the code which mods out S(n).
 
@@ -11,6 +16,7 @@ from itertools import pairwise
 import numpy as np
 #import tuple_rank
 import unittest
+from dataclasses import dataclass
 
 
 def encode(data, use_n2k2_optimisation=False):
@@ -76,6 +82,19 @@ def encode(data, use_n2k2_optimisation=False):
 #                    (1,0):0.05,              (1,2):0.90, 
 #                  }.
 #
+
+@dataclass
+class Maximal_Simplex:
+    """Class to hold any of the big simplices which (before barycentric subdivision)
+    form the beginnings of our simplicial complex.  It holds an eij_ordering."""
+    pass
+
+
+@dataclass
+class Eji_Ordering:
+    """Class to hold eij orderings (biggest first)."""
+    pass
+
 
 def ell(c, k, shrink=False):
     """
