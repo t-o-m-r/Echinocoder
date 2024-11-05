@@ -3,7 +3,7 @@
 from sys import version_info
 
 if not version_info >= (3, 7):
-   assert False, "We need at least python 3.7 as we rely on dictionaries being ordered!"
+    assert False, "We need at least python 3.7 as we rely on dictionaries being ordered!"
 
 # USE WITH CAUTION!  No known bugs, but not tested to destruction.
 # This is a re-implementation of C0_bug2_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset.py but aiming to fix the bug in the part of the code which mods out S(n).
@@ -90,12 +90,27 @@ Eji = namedtuple("Eji", ["j", "i"])
 class Eji_Ordering:
     """Class to hold eij orderings (biggest first)."""
     eji_vals: list[Eji]
-    
+    def check_valid(self):
+        j_vals = [e.j for e in self.eji_vals]
+        i_vals = [e.i for e in self.eji_vals]
+
+        presumed_n = max(j_vals, default=-1)+1
+        presumed_k = max(i_vals, default=-1)+1
+        assert presumed_n*presumed_k == len(self.eji_vals), "Expect n*k entries in the ordering!"
+        assert set(self.eji_vals) == {Eji(j,i)
+                                        for j in range(presumed_n)
+                                        for i in range(presumed_k)}, "Each Eji value shjould appear once!"
+
+
+@dataclass
+class Maximal_Simplex_Vertex:
+    vertex: set[Eji]
+
 @dataclass
 class Simplex_Vertices:
-    """These are stored in a list and are are ordered from big to small under the same ordering used to order eji's."""
-    vertices: list[set[Eji]]
-    
+    """These are stored in a list and  are ordered from big to small under the same ordering used to order eji's."""
+    vertices: list[Maximal_Simplex_Vertex]
+
 @dataclass
 class Maximal_Simplex:
     """Class to hold any of the big simplices which (before barycentric subdivision)
@@ -774,7 +789,42 @@ class Test_c_dc_pair_generation(unittest.TestCase):
         self.assertEqual(c_dc_pairs_expected, c_dc_pairs_calculated)
 
 class Test_simplex_eji_ordering_generation(unittest.TestCase):
-    def test(self):
+    def test1(self):
+        vertices = Simplex_Vertices([
+            {Eji(0, 2), Eji(1, 2), Eji(2, 2), Eji(3, 2)},
+            {Eji(0, 2), Eji(1, 1), Eji(2, 2), Eji(3, 2)},
+            {Eji(0, 2), Eji(1, 1), Eji(2, 2), Eji(3, 1)},
+            {Eji(0, 2), Eji(1, 0), Eji(2, 2), Eji(3, 1)},
+            {Eji(0, 2), Eji(2, 2), Eji(3, 1)},
+            {Eji(0, 1), Eji(2, 2), Eji(3, 1)},
+            {Eji(0, 1), Eji(2, 2), Eji(3, 0)},
+            {Eji(0, 1), Eji(2, 2)},
+            {Eji(0, 0), Eji(2, 2)},
+            {Eji(2, 2)},
+            {Eji(2, 1)},
+            {Eji(2, 0)},
+        ])
+
+        ordering_calculated = make_simplex_eji_ordering(vertices)
+
+        ordering_expected = Eji_Ordering([
+            Eji(1, 2),
+            Eji(3, 2),
+            Eji(1, 1),
+            Eji(1, 0),
+            Eji(0, 2),
+            Eji(3, 1),
+            Eji(3, 0),
+            Eji(0, 1),
+            Eji(0, 0),
+            Eji(2, 2),
+            Eji(2, 1),
+            Eji(2, 0),
+        ])
+        ordering_expected.check_valid()
+        self.assertEqual(ordering_calculated, ordering_expected)
+
+    def test2(self):
 
         vertices = Simplex_Vertices([
                              {(0, 2), (1, 2), (2, 2), (3, 2)},
@@ -794,19 +844,20 @@ class Test_simplex_eji_ordering_generation(unittest.TestCase):
         ordering_calculated = make_simplex_eji_ordering(vertices)
 
         ordering_expected = Eji_Ordering([
-                             (1, 2),
-                             (3, 2),
-                             (1, 1),
-                             (1, 0),
-                             (0, 2),
-                             (3, 1),
-                             (3, 0),
-                             (0, 1),
-                             (0, 0),
-                             (2, 2),
-                             (2, 1),
-                             (2, 0),
+                             Eji(1, 2),
+                             Eji(3, 2),
+                             Eji(1, 1),
+                             Eji(1, 0),
+                             Eji(0, 2),
+                             Eji(3, 1),
+                             Eji(3, 0),
+                             Eji(0, 1),
+                             Eji(0, 0),
+                             Eji(2, 2),
+                             Eji(2, 1),
+                             Eji(2, 0),
                           ])
+        ordering_expected.check_valid()
         self.assertEqual(ordering_calculated, ordering_expected)
 
 
