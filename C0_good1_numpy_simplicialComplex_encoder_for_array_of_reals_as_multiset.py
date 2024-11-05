@@ -345,11 +345,12 @@ def pr(r, big_n):
     # Method below makes negative numbers from positive integer r if r is big enough!  Floating point wrap around! Must make r real
     return np.power(np.float64(r), np.arange(big_n)) # Starting at zeroeth power so that r can be both zero and non-zero without constraint.
 
-def make_simplex_eji_ordering(c_bits_and_null):
+def make_simplex_eji_ordering(simplex_vertices: Simplex_Vertices):
     """
     The following simplex_eji_ordering contains the implied basis element ordering (greatest first)
     which defined the simplex in which we the point delta stands.
     """
+    c_bits_and_null = simplex_vertices.vertices + [set()]
     simplex_eji_ordering = [ (c1-c2).pop() for c1,c2 in pairwise(c_bits_and_null) ] # The set c1-c2 should contain only one element, so pop() should return it.
     return Eji_Ordering(simplex_eji_ordering)
 
@@ -360,15 +361,15 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta, use_n2k2=False):
     else:
         c_dc_pairs = make_c_dc_pairs(n,k,delta)
  
-    ####TEST_REMOVE#### c_bits_and_null = [ c for c,_ in c_dc_pairs ] + [set()]
-    ####TEST_REMOVE#### #print("c_bits (before modding by S(n)) =")
-    ####TEST_REMOVE#### #[ print(c) for c in c_bits_and_null ]
+    ####TEST_REMOVE#### vertices = Simplex_Vertices([ c for c,_ in c_dc_pairs ])
+    ####TEST_REMOVE#### #print("vertices (before modding by S(n)) =")
+    ####TEST_REMOVE#### #[ print(c) for c in vertices ]
 
     ####TEST_REMOVE#### """
     ####TEST_REMOVE#### The following simplex_eji_ordering contains the implied basis element ordering (greatest first)
     ####TEST_REMOVE#### which defined the simplex in which we the point delta stands.
     ####TEST_REMOVE#### """
-    ####TEST_REMOVE#### simplex_eji_ordering = make_simplex_eji_ordering(c_bits_and_null)
+    ####TEST_REMOVE#### simplex_eji_ordering = make_simplex_eji_ordering(vertices)
     ####TEST_REMOVE#### #print("simplex_eji_ordering (before mod S(n)) =")
     ####TEST_REMOVE#### #[ print(eji) for eji in simplex_eji_ordering ]
 
@@ -775,7 +776,7 @@ class Test_c_dc_pair_generation(unittest.TestCase):
 class Test_simplex_eji_ordering_generation(unittest.TestCase):
     def test(self):
 
-        c_bits_and_null = [
+        vertices = Simplex_Vertices([
                              {(0, 2), (1, 2), (2, 2), (3, 2)},
                              {(0, 2), (1, 1), (2, 2), (3, 2)},
                              {(0, 2), (1, 1), (2, 2), (3, 1)},
@@ -788,9 +789,9 @@ class Test_simplex_eji_ordering_generation(unittest.TestCase):
                              {(2, 2)},
                              {(2, 1)},
                              {(2, 0)},
-                             set(),
-                          ]
-        ordering_calculated = make_simplex_eji_ordering(c_bits_and_null)
+                          ])
+
+        ordering_calculated = make_simplex_eji_ordering(vertices)
 
         ordering_expected = Eji_Ordering([
                              (1, 2),
