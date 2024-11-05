@@ -104,10 +104,10 @@ class Eji_Ordering:
 
 @dataclass
 class Maximal_Simplex_Vertex:
-    vertex: set[Eji] = field(default_factory=set)
+    _vertex_set: set[Eji] = field(default_factory=set)
 
     def __sub__(self, other):
-        return self.vertex - other.vertex
+        return self._vertex_set - other._vertex_set
 
     def check_valid(self):
         pass
