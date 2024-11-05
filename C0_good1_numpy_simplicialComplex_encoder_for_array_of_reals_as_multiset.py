@@ -2,6 +2,8 @@
 
 from sys import version_info
 
+import numpy
+
 if not version_info >= (3, 7):
     assert False, "We need at least python 3.7 as we rely on dictionaries being ordered!"
 
@@ -83,6 +85,39 @@ def encode(data, use_n2k2_optimisation=False):
 #                  }.
 #
 
+@dataclass
+class Point_In_Simplex:
+    """
+    A point inside a k-simplex is defined by k reals values delta_i with the property that:
+
+    * 0 <= delta_i for all i in 0,1,2,...,k-1, and
+    * sum_{i=0}^{k-1} delta_i <= 1.
+
+    The purpose of this class is to hold and manipulate such delta_i, and to manage conversions
+    between such things and other coordinate systems.
+    """
+    _coefficients : numpy.array
+
+    def check_valid(self):
+        assert sum(self._coefficients) <= 1, "Total of simplex coordinates should not exceed 1."
+        for delta in self._coefficients:
+            assert delta >= 0, "Every simplex coordinate should be non-negative."
+            pass
+class UnitTest(unittest.TestCase):
+        def test(self):
+            a = Point_In_Simplex([2,2,3])
+            self.assertRaises(Exception, a.check_valid)
+
+            b = Point_In_Simplex([0.5,0.25,0.25])
+            b.check_valid()
+
+            c = Point_In_Simplex([0.5,0.25,0.25])
+            c.check_valid()
+
+            d = Point_In_Simplex([0,-0.3,0])
+            self.assertRaises(Exception, d.check_valid)
+
+
 from collections import namedtuple
 Eji = namedtuple("Eji", ["j", "i"])
 
@@ -101,13 +136,9 @@ class Eji_Ordering:
                                        for j in range(presumed_n)
                                        for i in range(presumed_k)}, "Each Eji value shjould appear once!"
 
-
 @dataclass
 class Maximal_Simplex_Vertex:
     _vertex_set: set[Eji] = field(default_factory=set)
-
-    #def __sub__(self, other):
-    #    return self._vertex_set - other._vertex_set
 
     def check_valid(self):
         # every j index in the set must appear at most once
@@ -149,26 +180,26 @@ class Maximal_Simplex_Vertices:
                     break
                 assert eji_gain.i == 0
 
-
-@dataclass
-class Maximal_Simplex:
-    """Class to hold any of the big simplices which (before barycentric subdivision)
-    form the beginnings of our simplicial complex.  It holds an eij_ordering."""
-    eji_ordering: Eji_Ordering
-    vertices: Maximal_Simplex_Vertices
+#@dataclass
+#class Maximal_Simplex:
+#    """Class to hold any of the big simplices which (before barycentric subdivision)
+#    form the beginnings of our simplicial complex.  It holds an eij_ordering."""
+#    eji_ordering: Eji_Ordering
+#    vertices: Maximal_Simplex_Vertices
+#
+#    def __init__(self, ):
+#        pass
 
 def ell(c, k, shrink=False):
     """
     The function ell(c, k) can (in principle) be anything that satisfies the properties listed below.
     In practice, presumably some choices are better than others for efficiency reasons or reasons of practicality.
     TODO: Therefore one should experiment with alternatives that go beyond the choices made here!
-  
 
     INPUT REQUIREMENTS:
     * The input k shall be a non-negative integer
     * The input c shall be a (possibly empty) set of (j,i) pairs, with j in [0,n-1] and i in [0,k-1].
     * The set of j values in c shall have no repeates.  I.e. if there are three pairs in c then one pair will have j=0, one pair will have j=1 and one pair will have j=2.  [Aside: this restricts the length of c to be at most n.]
-
 
     What properties should ell satisfy? 
    
@@ -187,7 +218,6 @@ def ell(c, k, shrink=False):
         ell( {(2,5),(1,42),(0,100)}, 101)     (sets differ in content)
         ell( {(1,5),(2,43),(0,100)}, 101)     (43!=42)
         ell( {(1,5),       (0,100)}, 101)     (sets differ in length)
-    
     """
     
     assert isinstance(k,int), "k should be an integer."
@@ -197,18 +227,18 @@ def ell(c, k, shrink=False):
 
     #print("c was = ",c)
 
-    i_vals_sorted_by_j_vals = [i for _,i in sorted(list(c)) ] # Fortunaltey j comes first in (j,i) so this will work.
-    # Note that above we do not bother storing the j values as we know they will be 0,1,..,len(c)-1 given the input preconditions.
-    # Thus we will be done if we can hash i_vals_sorted_by_j_vals to a non-colliding value.
-    #print("i_vals_sorted_by_j_vals = ",i_vals_sorted_by_j_vals)
+    i_vals_sorted_by_j_vals = [i for _,i in sorted(list(c)) ] # Fortunately j comes first in (j,i) so this will work.
+    # Note that above we do not bother storing the j values as we know they will be 0,1,..,len(c)-1 given
+    # the input preconditions.  Thus we will be done if we can hash i_vals_sorted_by_j_vals to a non-colliding value.
+    # print("i_vals_sorted_by_j_vals = ",i_vals_sorted_by_j_vals)
 
     # Either of the two lines below should work identically. Just use one!
-    #ell_value = sum(( i*(k**(len_c-1-pos))          for pos,i in enumerate(i_vals_sorted_by_j_vals) ))  +  sum((k**i for i in range(len_c)))
+    # ell_value = sum(( i*(k**(len_c-1-pos))  for pos,i in enumerate(i_vals_sorted_by_j_vals) ))  +  sum((k**i for i in range(len_c)))
     ell_value_integer = sum(( i*(k**(len_c-1-pos)) + k**pos for pos,i in enumerate(i_vals_sorted_by_j_vals) ))
 
-    #print("ell_value before nonlinear tfm= ",ell_value_integer)
+    # print("ell_value before nonlinear tfm= ",ell_value_integer)
     
-    #At this point ell is an integer in 0,1,2,3,4,5, ...
+    # At this point ell is an integer in 0,1,2,3,4,5, ...
     # We may wish to non-linearly transform it into (-pi/2,pi/2)
    
     if shrink:
@@ -220,11 +250,9 @@ def ell(c, k, shrink=False):
 
     return ell_value
 
-
-
 def make_flat_sums(n,k,delta, sort=False, prepend_zero=False):
     """
-    Conceptually, the dict flat_sums (for k=3) should "represent" the following map
+    Conceptually, the dict flat_sums (for k=3) should "represent" the following map:
     
     flat_sums = {
       {(0,0)+(0,1)+(0,2)} : delta[(0,0)]+delta[(0,1)]+delta[(0,2)],
@@ -261,18 +289,16 @@ def make_flat_sums(n,k,delta, sort=False, prepend_zero=False):
       (n-1,   (1,2,),                delta[(n-1,1)]+delta[(n-1,2)]),
       (n-1,     (2,),                               delta[(n-1,2)]),
     ]
-
-
     """
+
     flat_sums=[ (j, tuple(range(i_min, k)), sum([delta.get((j,i), 0) for i in range(i_min,k) ])) for j in range(n) for i_min in range(k) ]
-    #print("flat_sums unsorted",flat_sums)
+    # print("flat_sums unsorted",flat_sums)
     if sort:
         flat_sums = sorted(flat_sums, key=lambda x : (x[2], len(x[1])) ) # Sort by delta sum, but break ties in favour of longer sums
-        #print("flat_sums sorted",flat_sums)
+        # print("flat_sums sorted",flat_sums)
     if prepend_zero:
         flat_sums = [ ( None, tuple(), 0) ] + flat_sums
     return flat_sums
-
 
 def make_c_dc_pairs_n2k2(delta):
     # Each key in the "delta" dict is an (j,i) tuple representing Patrick's e^j_i with j in [0,n-1] and i in [0,k-1].  The associated value is the coefficient of that e^j_i basis vector in the associated element of (\Delta_k)^n.
@@ -285,7 +311,6 @@ def make_c_dc_pairs_n2k2(delta):
     b=delta[(0,1)]
     c=delta[(1,0)]
     d=delta[(1,1)]
-
 
     # TEST DONT!!!!!
     ### if a+b < max([b,c+d,d]):
@@ -463,7 +488,7 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta, use_n2k2=False):
 def vector_to_simplex_point(vec):
     k = len(vec)
     vec = np.array(vec)
-    return 1.0/(k*(1.0+np.power(2.0,vec))) # TODO: This somewhat crude parametrisation does not use the WHOLE of the simplex -- so it's a bit wasteful. It also has terrible dynamic range problems and even unit issues. Might want to address all of these points with a better mapping.
+    return 1.0/(k*(1.0+np.power(2.0,vec))) # TODO: This somewhat crude parameterisation does not use the WHOLE of the simplex -- so it's a bit wasteful. It also has terrible dynamic range problems and even unit issues. Might want to address all of these points with a better mapping.
 
 def vectors_to_delta(vecs):
     n=len(vecs)
@@ -477,7 +502,7 @@ def vectors_to_delta(vecs):
         simplex_point = vector_to_simplex_point(vec)
         k_this = len(vec)
         if k!=k_this:
-            raise Exception("Vectos supplied to vectors_to_delta are not all the same dimension!")
+            raise Exception("Vectors supplied to vectors_to_delta are not all the same dimension!")
         for i in range(k):
             delta[(j,i)]=simplex_point[i]
     return delta
