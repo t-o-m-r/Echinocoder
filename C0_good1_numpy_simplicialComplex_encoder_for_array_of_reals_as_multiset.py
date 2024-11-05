@@ -86,7 +86,7 @@ def encode(data, use_n2k2_optimisation=False):
 #
 
 @dataclass
-class Point_In_Simplex:
+class Position_within_Simplex:
     """
     A point inside a k-simplex is defined by k reals values delta_i with the property that:
 
@@ -102,21 +102,17 @@ class Point_In_Simplex:
         assert sum(self._coefficients) <= 1, "Total of simplex coordinates should not exceed 1."
         for delta in self._coefficients:
             assert delta >= 0, "Every simplex coordinate should be non-negative."
-            pass
-class UnitTest(unittest.TestCase):
-        def test(self):
-            a = Point_In_Simplex([2,2,3])
-            self.assertRaises(Exception, a.check_valid)
 
-            b = Point_In_Simplex([0.5,0.25,0.25])
-            b.check_valid()
+@dataclass
+class Position_within_Simplex_Product:
+    """
+    Conceptually this holds "n" copies of Point_in_simplex.
+    """
+    _list_of_positions : list[Position_within_Simplex]
 
-            c = Point_In_Simplex([0.5,0.25,0.25])
-            c.check_valid()
-
-            d = Point_In_Simplex([0,-0.3,0])
-            self.assertRaises(Exception, d.check_valid)
-
+    def check_valid(self):
+        for pos in self._list_of_positions:
+            pos.check_valid()
 
 from collections import namedtuple
 Eji = namedtuple("Eji", ["j", "i"])
@@ -882,6 +878,25 @@ class Test_simplex_eji_ordering_generation(unittest.TestCase):
 
         self.assertEqual(ordering_calculated, ordering_expected)
 
+class TestSimplexPositions(unittest.TestCase):
+        def test_pos_within_simplex(self):
+            a = Position_within_Simplex([2, 2, 3])
+            self.assertRaises(Exception, a.check_valid)
+
+            b = Position_within_Simplex([0.5, 0.25, 0.25])
+            b.check_valid()
+
+            c = Position_within_Simplex([1.0/3.0, 1.0/3.0, 1.0/3.0])
+            c.check_valid()
+
+            d = Position_within_Simplex([0, -0.23, 0])
+            self.assertRaises(Exception, d.check_valid)
+
+            big_1 = Position_within_Simplex_Product([b, c, b, b, b])
+            big_1.check_valid()
+
+            big_2 = Position_within_Simplex_Product([b, c, b, b, d])
+            self.assertRaises(Exception, big_2.check_valid)
 
 
 class Test_perm_detection(unittest.TestCase):
