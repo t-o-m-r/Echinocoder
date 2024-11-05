@@ -106,8 +106,8 @@ class Eji_Ordering:
 class Maximal_Simplex_Vertex:
     _vertex_set: set[Eji] = field(default_factory=set)
 
-    def __sub__(self, other):
-        return self._vertex_set - other._vertex_set
+    #def __sub__(self, other):
+    #    return self._vertex_set - other._vertex_set
 
     def check_valid(self):
         # every j index in the set must appear at most once
@@ -119,6 +119,13 @@ class Maximal_Simplex_Vertices:
     """These are stored in a list which is required to be ordered from big to small
     under the same ordering used to order eji's."""
     _vertex_list: list[Maximal_Simplex_Vertex]
+
+    def to_Eji_ordering(self) -> Eji_Ordering:
+        vertices_and_null = self._vertex_list + [Maximal_Simplex_Vertex()]
+        simplex_eji_ordering = [(v1._vertex_set - v2._vertex_set).pop() for v1, v2 in pairwise(
+            vertices_and_null)]  # The set c1-c2 should contain only one element, so pop() should return it.
+        return Eji_Ordering(simplex_eji_ordering)
+
     def check_valid(self):
         """This function asserts all sorts of things that should be true for a valid object.
         Use it in unit-tests to raise assertion errors."""
@@ -126,8 +133,8 @@ class Maximal_Simplex_Vertices:
             v_larger.check_valid()
             v_smaller.check_valid()
             #print("LARGER SMALLER ",v_larger,v_smaller)
-            gain = v_larger - v_smaller
-            loss = v_smaller - v_larger
+            gain = v_larger._vertex_set - v_smaller._vertex_set
+            loss = v_smaller._vertex_set - v_larger._vertex_set
             assert len(gain) == 1, "Every vertex should have an Eji not contained in the next vertex."
             if loss:  # Something got deleted, so check that what was deleted grew in i
                 assert len(loss) == 1
@@ -393,15 +400,6 @@ def pr(r, big_n):
     # Method below makes negative numbers from positive integer r if r is big enough!  Floating point wrap around! Must make r real
     return np.power(np.float64(r), np.arange(big_n)) # Starting at zeroeth power so that r can be both zero and non-zero without constraint.
 
-def make_simplex_eji_ordering(simplex_vertices: Maximal_Simplex_Vertices):
-    """
-    The following simplex_eji_ordering contains the implied basis element ordering (greatest first)
-    which defined the simplex in which we the point delta stands.
-    """
-    c_bits_and_null = simplex_vertices._vertex_list + [Maximal_Simplex_Vertex()]
-    simplex_eji_ordering = [ (v1-v2).pop() for v1,v2 in pairwise(c_bits_and_null) ] # The set c1-c2 should contain only one element, so pop() should return it.
-    return Eji_Ordering(simplex_eji_ordering)
-
 def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta, use_n2k2=False):
 
     if use_n2k2 and n==2 and k==2:
@@ -417,7 +415,7 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta, use_n2k2=False):
     ####TEST_REMOVE#### The following simplex_eji_ordering contains the implied basis element ordering (greatest first)
     ####TEST_REMOVE#### which defined the simplex in which we the point delta stands.
     ####TEST_REMOVE#### """
-    ####TEST_REMOVE#### simplex_eji_ordering = make_simplex_eji_ordering(vertices)
+    ####TEST_REMOVE#### simplex_eji_ordering = vertices.to_eji_ordering()
     ####TEST_REMOVE#### #print("simplex_eji_ordering (before mod S(n)) =")
     ####TEST_REMOVE#### #[ print(eji) for eji in simplex_eji_ordering ]
 
@@ -839,7 +837,7 @@ class Test_simplex_eji_ordering_generation(unittest.TestCase):
         ])
         vertices.check_valid()
 
-        ordering_calculated = make_simplex_eji_ordering(vertices)
+        ordering_calculated = vertices.to_Eji_ordering()
 
         ordering_expected = Eji_Ordering([
             Eji(1, 2),
