@@ -89,17 +89,17 @@ Eji = namedtuple("Eji", ["j", "i"])
 @dataclass
 class Eji_Ordering:
     """Class to hold eij orderings (biggest first)."""
-    eji_vals: list[Eji]
+    _eji_list: list[Eji]
     def check_valid(self):
-        j_vals = [e.j for e in self.eji_vals]
-        i_vals = [e.i for e in self.eji_vals]
+        j_vals = [e.j for e in self._eji_list]
+        i_vals = [e.i for e in self._eji_list]
 
         presumed_n = max(j_vals, default=-1)+1
         presumed_k = max(i_vals, default=-1)+1
-        assert presumed_n*presumed_k == len(self.eji_vals), "Expect n*k entries in the ordering!"
-        assert set(self.eji_vals) == {Eji(j,i)
-                                        for j in range(presumed_n)
-                                        for i in range(presumed_k)}, "Each Eji value shjould appear once!"
+        assert presumed_n*presumed_k == len(self._eji_list), "Expect n*k entries in the ordering!"
+        assert set(self._eji_list) == {Eji(j, i)
+                                       for j in range(presumed_n)
+                                       for i in range(presumed_k)}, "Each Eji value shjould appear once!"
 
 
 @dataclass
