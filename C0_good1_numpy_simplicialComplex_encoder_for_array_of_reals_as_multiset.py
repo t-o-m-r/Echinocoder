@@ -96,23 +96,62 @@ class Position_within_Simplex:
     The purpose of this class is to hold and manipulate such delta_i, and to manage conversions
     between such things and other coordinate systems.
     """
-    _coefficients : numpy.array
+    _np_ar : numpy.array
+
+    def __getitem__(self, item):
+        return self._np_ar[item]
+
+    def __init__(self, x):
+        self._np_ar = np.array(x)
+
+    def __eq__(self, other):
+        return (self._np_ar == other._np_ar).all()
 
     def check_valid(self):
-        assert sum(self._coefficients) <= 1, "Total of simplex coordinates should not exceed 1."
-        for delta in self._coefficients:
-            assert delta >= 0, "Every simplex coordinate should be non-negative."
+        #print("  XOO", self._np_ar)
+        assert sum(self._np_ar) <= 1, "Total of simplex coordinates should not exceed 1."
+        for coeff in self._np_ar:
+            #print("    YOO", coeff)
+            assert coeff >= 0, "Every simplex coordinate should be non-negative."
 
 @dataclass
 class Position_within_Simplex_Product:
     """
     Conceptually this holds "n" copies of Point_in_simplex.
+    However, for performance reasons we hold it as a numpy array, with
+    first index j in [0,n-1] identified the product, and
+    second index i in [0,k-1] identifies the position within the j-th simplex.
     """
-    _list_of_positions : list[Position_within_Simplex]
+    _np_ar : numpy.array
+
+    def __init__(self, x):
+        #print("CONSTRUCTING 1")
+        if isinstance(x, np.ndarray):
+            #print("CONSTRUCTING 2")
+            self._np_ar = x
+        elif isinstance(x, list) and x and isinstance(x[0], Position_within_Simplex):
+            #print("CONSTRUCTING 3")
+            self._np_ar = np.array([pos._np_ar for pos in x])
+        else:
+            # Hope for best:
+            #print("CONSTRUCTING 4")
+            self._np_ar = np.array(x)
+
+    def __getitem__(self, item):
+        """
+        If called with one index, get Position_within_Simplex.
+        If called with two indices, get coeff directly from within Position_within_Simplex.
+        """
+        if isinstance(item, tuple):
+            # Get coeff directly from within Position_within_Simplex.
+            return self._np_ar[tuple]
+
+        # Get Position_within_Simplex.
+        return Position_within_Simplex(self._np_ar[item])
 
     def check_valid(self):
-        for pos in self._list_of_positions:
-            pos.check_valid()
+        for pos in self._np_ar:
+            Position_within_Simplex(pos).check_valid()
 
 from collections import namedtuple
 Eji = namedtuple("Eji", ["j", "i"])
@@ -421,7 +460,7 @@ def pr(r, big_n):
     # Method below makes negative numbers from positive integer r if r is big enough!  Floating point wrap around! Must make r real
     return np.power(np.float64(r), np.arange(big_n)) # Starting at zeroeth power so that r can be both zero and non-zero without constraint.
 
-def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta, use_n2k2=False):
+def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta : Position_within_Simplex_Product, use_n2k2=False):
 
     if use_n2k2 and n==2 and k==2:
         c_dc_pairs = make_c_dc_pairs_n2k2(delta)
@@ -880,23 +919,52 @@ class Test_simplex_eji_ordering_generation(unittest.TestCase):
 
 class TestSimplexPositions(unittest.TestCase):
         def test_pos_within_simplex(self):
-            a = Position_within_Simplex([2, 2, 3])
-            self.assertRaises(Exception, a.check_valid)
+            aBad = Position_within_Simplex([2, 2, 3])
+            self.assertRaises(Exception, aBad.check_valid)
 
-            b = Position_within_Simplex([0.5, 0.25, 0.25])
+            a = Position_within_Simplex([0.1, 0.25, 0.15])
+            a.check_valid()
+
+            b = Position_within_Simplex(np.array([0.5, 0.25, 0.25]))
             b.check_valid()
+            self.assertEqual(b, Position_within_Simplex([0.5, 0.25, 0.25])) # Not using np.array
 
             c = Position_within_Simplex([1.0/3.0, 1.0/3.0, 1.0/3.0])
             c.check_valid()
 
-            d = Position_within_Simplex([0, -0.23, 0])
-            self.assertRaises(Exception, d.check_valid)
+            #print("\nAOO")
+            dBad = Position_within_Simplex([0, -0.23, 0])
+            #print("BOO")
+            try:
+                #print("COO")
+                dBad.check_valid()
+                #print("DOO")
+                assert False, "We should not get here!"
+            except:
+                pass
 
-            big_1 = Position_within_Simplex_Product([b, c, b, b, b])
+            big_1 = Position_within_Simplex_Product([b, c, a, a, b])
             big_1.check_valid()
+            #big_1_0 = big_1[0]
+            #print("Big_1[0] is ",big_1_0)
+            #print("b        is ", b)
+            self.assertEqual(big_1[0], b)
+            self.assertEqual(big_1[1], c)
+            self.assertEqual(big_1[2], a)
+            self.assertEqual(big_1[3], a)
+            self.assertEqual(big_1[4], b)
 
-            big_2 = Position_within_Simplex_Product([b, c, b, b, d])
-            self.assertRaises(Exception, big_2.check_valid)
+            big_2 = Position_within_Simplex_Product([[0.1, 0.2], [0.3, 0.4]])
+            self.assertEqual(big_2[0], Position_within_Simplex([0.1, 0.2]))
+            self.assertEqual(big_2[1], Position_within_Simplex([0.3, 0.4]))
+
+            big_3 = Position_within_Simplex_Product([b, c, b, b, dBad])
+            self.assertRaises(Exception, big_3.check_valid)
+
+
+
+
+
 
 
 class Test_perm_detection(unittest.TestCase):
