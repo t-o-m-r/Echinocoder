@@ -110,7 +110,9 @@ class Maximal_Simplex_Vertex:
         return self._vertex_set - other._vertex_set
 
     def check_valid(self):
-        pass
+        # every j index in the set must appear at most once
+        j_vals = { eji.j for eji in self._vertex_set }
+        assert len(j_vals) == len(self._vertex_set)
 
 @dataclass
 class Maximal_Simplex_Vertices:
