@@ -957,12 +957,6 @@ class TestSimplexPositions(unittest.TestCase):
             big_3 = Position_within_Simplex_Product([b, c, b, b, dBad])
             self.assertRaises(Exception, big_3.check_valid)
 
-
-
-
-
-
-
 class Test_perm_detection(unittest.TestCase):
     def test(self):
 
@@ -977,10 +971,6 @@ class Test_perm_detection(unittest.TestCase):
         self.assertEqual(simple_ordering_on_j_vals_from_left_expected, ordering_from_left_calculated)
         self.assertEqual(simple_ordering_on_j_vals_from_right_expected, ordering_from_right_calculated)
 
-
-
-
 if __name__ == "__main__":
     test_simplex_embedding()
     unittest.main(exit=False)
-
