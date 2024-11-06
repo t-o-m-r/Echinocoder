@@ -346,17 +346,17 @@ def make_flat_sums(delta, sort=False, prepend_zero=False):
         flat_sums = [ ( None, tuple(), 0) ] + flat_sums
     return flat_sums
 
-def make_c_dc_pairs_n2k2(delta):
+def make_c_dc_pairs_n2k2(delta: Position_within_Simplex_Product):
     # Each key in the "delta" dict is an (j,i) tuple representing Patrick's e^j_i with j in [0,n-1] and i in [0,k-1].  The associated value is the coefficient of that e^j_i basis vector in the associated element of (\Delta_k)^n.
     # e.g delta = {  
     #     (0,0) : 0.5, (0,1) : 0.2, (0,2) : 0.1,    #a point in the 1st simplex (simplex 0)
     #     (1,2) : 0.25,                             #a point in the 2nd simplex (simplex 1)
     #     (2,0) : 0.1,                              #a point in the 3rd simplex (simplex 2)
     #   }
-    a=delta[(0,0)]
-    b=delta[(0,1)]
-    c=delta[(1,0)]
-    d=delta[(1,1)]
+    a=delta[0,0]
+    b=delta[0,1]
+    c=delta[1,0]
+    d=delta[1,1]
 
     # TEST DONT!!!!!
     ### if a+b < max([b,c+d,d]):

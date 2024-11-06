@@ -84,7 +84,6 @@ class Test_flat_sums(unittest.TestCase):
             [9, 10, 22], # the third vector in the list
             [-2, 3, 6],  # the fourth vector in the list
         ])
-        print("TEST DELTA",delta)
 
         flat_sums_expected = [
           (0, (0,1,2,), delta[0,0]+delta[0,1]+delta[0,2]),
