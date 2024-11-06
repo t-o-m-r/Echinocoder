@@ -360,6 +360,15 @@ class Test_perm_detection(unittest.TestCase):
         self.assertEqual(simple_ordering_on_j_vals_from_right_expected, ordering_from_right_calculated)
 
 
+class Test_canonicalisation(unittest.TestCase):
+    def test(self):
+        v = Maximal_Simplex_Vertex({Eji(2,3), Eji(1,5), Eji(4,2)})
+        v_canonical_expected = Maximal_Simplex_Vertex({Eji(0,2), Eji(1,3), Eji(2,5)})
+        v_canonical_calculated = v.get_canonical_vertex()
+        self.assertEqual(v_canonical_expected, v_canonical_calculated)
+
+
+
 def run_unit_tests():
     unittest.main(exit=False)
 

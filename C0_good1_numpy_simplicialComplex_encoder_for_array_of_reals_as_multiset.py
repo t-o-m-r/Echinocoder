@@ -177,6 +177,13 @@ class Eji_Ordering:
 class Maximal_Simplex_Vertex:
     _vertex_set: set[Eji] = field(default_factory=set)
 
+    def get_canonical_vertex(self):
+        """Mod out by Sn for this single vertex, ignoring any others."""
+        # Method: sort the Eji by the i index, then populate the j's in order.
+        sorted_eji_list = sorted(list(self._vertex_set), key=lambda eji: eji.i)
+        renumbered_eji_list = [ Eji(j=j, i=eji.i) for j,eji in enumerate(sorted_eji_list)]
+        return Maximal_Simplex_Vertex(set(renumbered_eji_list))
+
     def check_valid(self):
         # every j index in the set must appear at most once
         j_vals = { eji.j for eji in self._vertex_set }
@@ -531,7 +538,9 @@ def map_Delta_k_to_the_n_to_c_l_dc_triples(delta : Position_within_Simplex_Produ
 def vector_to_simplex_point(vec):
     k = len(vec)
     vec = np.array(vec)
-    return 1.0/(k*(1.0+np.power(2.0,vec))) # TODO: This somewhat crude parameterisation does not use the WHOLE of the simplex -- so it's a bit wasteful. It also has terrible dynamic range problems and even unit issues. Might want to address all of these points with a better mapping.
+    return 1.0/(k*(1.0+np.power(2.0,vec))) # TODO: This somewhat crude parameterisation does not use the WHOLE
+    # of the simplex -- so it's a bit wasteful. It also has terrible dynamic range problems and even unit issues.
+    # Might want to address all of these points with a better mapping.
 
 def vectors_to_delta(vecs):
     n=len(vecs)
@@ -559,7 +568,7 @@ def make_perm_from_simplex(simplex_eji_ordering, from_right=False):
     return list({ j[0] : None for j in simplex_eji_ordering  }) # Uses insertion order preservation
 
 def test_simplex_embedding():
-    
+
     import test_PKH_alg
     suite = unittest.TestLoader().loadTestsFromModule(test_PKH_alg)
     unittest.TextTestRunner(verbosity=2).run(suite)
