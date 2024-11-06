@@ -25,10 +25,10 @@ def encode(data, use_n2k2_optimisation=False):
 
     n,m = data.shape
     #print(f"Size (m,n)=({m},{n})")
-    _, ans = map_Delta_k_to_the_n_to_c_l_dc_triples(n=n, k=m, delta=vectors_to_delta(data), use_n2k2=use_n2k2_optimisation)
+    _, ans = map_Delta_k_to_the_n_to_c_l_dc_triples(delta=vectors_to_delta(data), use_n2k2=use_n2k2_optimisation)
 
     #Interleave the two outputs in debug mode:
-    # _, ans2 = map_Delta_k_to_the_n_to_c_l_dc_triples(n=n, k=m, delta=vectors_to_delta(data), use_n2k2=True)
+    # _, ans2 = map_Delta_k_to_the_n_to_c_l_dc_triples(delta=vectors_to_delta(data), use_n2k2=True)
     #return [ val for pair in zip(ans,ans2) for val in pair ]
 
     return ans
@@ -466,7 +466,9 @@ def pr(r, big_n):
     # Method below makes negative numbers from positive integer r if r is big enough!  Floating point wrap around! Must make r real
     return np.power(np.float64(r), np.arange(big_n)) # Starting at zeroeth power so that r can be both zero and non-zero without constraint.
 
-def map_Delta_k_to_the_n_to_c_l_dc_triples(n, k, delta : Position_within_Simplex_Product, use_n2k2=False):
+def map_Delta_k_to_the_n_to_c_l_dc_triples(delta : Position_within_Simplex_Product, use_n2k2=False):
+
+    n,k = delta.shape
 
     if use_n2k2 and n==2 and k==2:
         c_dc_pairs = make_c_dc_pairs_n2k2(delta)
@@ -557,10 +559,15 @@ def make_perm_from_simplex(simplex_eji_ordering, from_right=False):
     return list({ j[0] : None for j in simplex_eji_ordering  }) # Uses insertion order preservation
 
 def test_simplex_embedding():
-    short = map_Delta_k_to_the_n_to_c_l_dc_triples
+    
+    import test_PKH_alg
+    suite = unittest.TestLoader().loadTestsFromModule(test_PKH_alg)
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
     """
-    ans1 = short(n=3, k=3, 
+    short = map_Delta_k_to_the_n_to_c_l_dc_triples
+
+    ans1 = short(n=3, k=3,
                  delta = {  (0,1) : 0.5, (1,2) : 0.25 }, )
 
     # Next three all similar to each other.
@@ -633,10 +640,7 @@ def test_simplex_embedding():
                                              [0.10, 0.00, 0.50],
                                              [0.01, 0.03, 0.20]])
 
-    n,k = np.shape(delta)
-
-    ans8 = short(n=n, k=k, 
-            delta=delta)
+    ans8 = map_Delta_k_to_the_n_to_c_l_dc_triples(delta=delta)
 
     """
     print("Ans1 was ",ans1)
@@ -674,7 +678,4 @@ def test_simplex_embedding():
 
 if __name__ == "__main__":
     test_simplex_embedding()
-    import test_PKH_alg
-    suite = unittest.TestLoader().loadTestsFromModule(test_PKH_alg)
-    unittest.TextTestRunner(verbosity=2).run(suite)
-    #unittest.main(exit=False)
+       #unittest.main(exit=False)
