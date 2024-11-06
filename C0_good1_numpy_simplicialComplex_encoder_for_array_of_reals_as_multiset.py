@@ -932,16 +932,8 @@ class TestSimplexPositions(unittest.TestCase):
             c = Position_within_Simplex([1.0/3.0, 1.0/3.0, 1.0/3.0])
             c.check_valid()
 
-            #print("\nAOO")
             dBad = Position_within_Simplex([0, -0.23, 0])
-            #print("BOO")
-            try:
-                #print("COO")
-                dBad.check_valid()
-                #print("DOO")
-                assert False, "We should not get here!"
-            except:
-                pass
+            self.assertRaises(Exception, dBad.check_valid)
 
             big_1 = Position_within_Simplex_Product([b, c, a, a, b])
             big_1.check_valid()
