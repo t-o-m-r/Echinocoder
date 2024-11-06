@@ -144,7 +144,7 @@ class Position_within_Simplex_Product:
         """
         if isinstance(item, tuple):
             # Get coeff directly from within Position_within_Simplex.
-            return self._np_ar[tuple]
+            return self._np_ar[item]
 
         # Get Position_within_Simplex.
         return Position_within_Simplex(self._np_ar[item])
@@ -954,9 +954,13 @@ class TestSimplexPositions(unittest.TestCase):
             self.assertEqual(big_1[3], a)
             self.assertEqual(big_1[4], b)
 
-            big_2 = Position_within_Simplex_Product([[0.1, 0.2], [0.3, 0.4]])
+            big_2 = Position_within_Simplex_Product([[0.1, 0.2], [0.3, 0.11]])
             self.assertEqual(big_2[0], Position_within_Simplex([0.1, 0.2]))
-            self.assertEqual(big_2[1], Position_within_Simplex([0.3, 0.4]))
+            self.assertEqual(big_2[1], Position_within_Simplex([0.3, 0.11]))
+            self.assertEqual(big_2[0, 0], 0.1)
+            self.assertEqual(big_2[0, 1], 0.2)
+            self.assertEqual(big_2[1, 0], 0.3)
+            self.assertEqual(big_2[1, 1], 0.11)
 
             big_3 = Position_within_Simplex_Product([b, c, b, b, dBad])
             self.assertRaises(Exception, big_3.check_valid)
