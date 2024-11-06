@@ -123,19 +123,21 @@ class Position_within_Simplex_Product:
     second index i in [0,k-1] identifies the position within the j-th simplex.
     """
     _np_ar : numpy.array
+    shape : tuple
 
     def __init__(self, x):
-        #print("CONSTRUCTING 1")
         if isinstance(x, np.ndarray):
-            #print("CONSTRUCTING 2")
             self._np_ar = x
         elif isinstance(x, list) and x and isinstance(x[0], Position_within_Simplex):
-            #print("CONSTRUCTING 3")
             self._np_ar = np.array([pos._np_ar for pos in x])
         else:
             # Hope for best:
-            #print("CONSTRUCTING 4")
             self._np_ar = np.array(x)
+        # In all cases:
+        self._set_shape()
+
+    def _set_shape(self):
+        self.shape = np.shape(self._np_ar)
 
     def __getitem__(self, item):
         """
@@ -287,7 +289,7 @@ def ell(c, k, shrink=False):
 
 def make_flat_sums(delta, sort=False, prepend_zero=False):
     #print("MFS",delta)
-    n, k = np.shape(delta._np_ar)
+    n, k = np.shape(delta)
     """
     Conceptually, the dict flat_sums (for k=3) should "represent" the following map:
     
@@ -438,7 +440,7 @@ def make_c_dc_pairs(#n , k,  # Only need n and/or k if doing "original initialis
        Hence, do not prune zeros unless you have a good reason!
     """
 
-    n,k = np.shape(delta._np_ar)
+    n,k = np.shape(delta)
 
     flat_sums = make_flat_sums(delta, sort=True)
     #print("flat_sums sorted with zero start =",flat_sums)
@@ -631,7 +633,7 @@ def test_simplex_embedding():
                                              [0.10, 0.00, 0.50],
                                              [0.01, 0.03, 0.20]])
 
-    n,k = np.shape(delta._np_ar)
+    n,k = np.shape(delta)
 
     ans8 = short(n=n, k=k, 
             delta=delta)
@@ -899,7 +901,7 @@ class Test_c_dc_pair_generation(unittest.TestCase):
                20,], #0.20
         ])
 
-        #n,k = np.shape(delta._np_ar)
+        #n,k = np.shape(delta)
 
         c_dc_pairs_expected = [
                                  ({(0, 2), (1, 2), (2, 2), (3, 2)}, 10),
