@@ -61,23 +61,6 @@ class Test_Ell(unittest.TestCase):
 class Test_flat_sums(unittest.TestCase):
     def test(self):
 
-        # n=4
-        # k=3
-
-        #delta = {}
-        #delta[(0,0)]=1
-        #delta[(0,1)]=4
-        #delta[(0,2)]=2
-        #delta[(1,0)]=1
-        #delta[(1,1)]=54
-        #delta[(1,2)]=6
-        #delta[(2,0)]=9
-        #delta[(2,1)]=10
-        #delta[(2,2)]=22
-        #delta[(3,0)]=-2
-        #delta[(3,1)]=3
-        #delta[(3,2)]=6
-
         delta = Position_within_Simplex_Product([
             [1, 4, 2],   # the first vector in the list
             [1, 54, 6],  # the second vector in the list
@@ -99,34 +82,15 @@ class Test_flat_sums(unittest.TestCase):
           (3,   (1,2,),            delta[3,1]+delta[3,2]),
           (3,     (2,),                       delta[3,2]),
         ]
-        flat_sums_calculated = make_flat_sums(#n,k,
-                                               delta)
+        flat_sums_calculated = make_flat_sums(delta)
         self.assertEqual(flat_sums_expected, flat_sums_calculated)
 
         flat_sums_expected = [ (None, tuple(), 0), ] + flat_sums_expected
 
-        flat_sums_calculated = make_flat_sums(#n, k, 
-                                            delta, prepend_zero = True)
+        flat_sums_calculated = make_flat_sums(delta, prepend_zero = True)
         self.assertEqual(flat_sums_expected, flat_sums_calculated)
 
     def test_with_omitted_zeros(self):
-
-        # n=4
-        # k=3
-
-        # delta=dict()
-        # delta[(0,0)]=1
-        # # Omit! delta[(0,1)]=4
-        # delta[(0,2)]=2
-        # delta[(1,0)]=1
-        # delta[(1,1)]=54
-        # delta[(1,2)]=6
-        # delta[(2,0)]=9
-        # delta[(2,1)]=10
-        # delta[(2,2)]=22
-        # delta[(3,0)]=-2
-        # delta[(3,1)]=3
-        # Omit! delta[(3,2)]=6
 
         delta = Position_within_Simplex_Product([
             [1, 0, 2],   # the first vector in the list
@@ -155,23 +119,6 @@ class Test_flat_sums(unittest.TestCase):
 
     def test_one_note_sorted_example(self):
 
-        #n=4
-        #k=3
-
-        #delta=dict()
-        #delta[(0,0)]=0+ 0 
-        #delta[(0,1)]=0+ 3
-        #delta[(0,2)]=0+22
-        #delta[(1,0)]=0+00
-        #delta[(1,1)]=0+11
-        #delta[(1,2)]=0+10
-        #delta[(2,0)]=0+10
-        #delta[(2,1)]=0+00
-        #delta[(2,2)]=0+50
-        #delta[(3,0)]=0+ 1
-        #delta[(3,1)]=0+ 3
-        #delta[(3,2)]=0+20
-
         # am sneakily writing 0+ 0 for 0.00 to turn decimals into integers, just for testing. This is naughty as delta coords should be in [0,1] but it is OK for this test
         delta=Position_within_Simplex_Product([[0+ 0, 0+ 3, 0+22,],
                                                [0+00, 0+11, 0+10,],
@@ -179,42 +126,25 @@ class Test_flat_sums(unittest.TestCase):
                                                [0+ 1, 0+ 3, 0+20,]])
 
         flat_sums_expected = [
-          (1,     (2,), 0+10), #                           delta[(1,2)]),
-          (3,     (2,), 0+20), #                           delta[(3,2)]),
-          (1,   (1,2,), 0+21), #              delta[(1,1)]+delta[(1,2)]),
-          (1, (0,1,2,), 0+21), # delta[(1,0)]+delta[(1,1)]+delta[(1,2)]),
-          (0,     (2,), 0+22), #                           delta[(0,2)]),
-          (3,   (1,2,), 0+23), #              delta[(3,1)]+delta[(3,2)]),
-          (3, (0,1,2,), 0+24), # delta[(3,0)]+delta[(3,1)]+delta[(3,2)]),
-          (0,   (1,2,), 0+25), #              delta[(0,1)]+delta[(0,2)]),
-          (0, (0,1,2,), 0+25), # delta[(0,0)]+delta[(0,1)]+delta[(0,2)]),
-          (2,     (2,), 0+50), #                           delta[(2,2)]),
-          (2,   (1,2,), 0+50), #              delta[(2,1)]+delta[(2,2)]),
-          (2, (0,1,2,), 0+60), # delta[(2,0)]+delta[(2,1)]+delta[(2,2)]),
+          (1,     (2,), 0+10), #                       delta[1,2]),
+          (3,     (2,), 0+20), #                       delta[3,2]),
+          (1,   (1,2,), 0+21), #            delta[1,1]+delta[1,2]),
+          (1, (0,1,2,), 0+21), # delta[1,0]+delta[1,1]+delta[1,2]),
+          (0,     (2,), 0+22), #                       delta[0,2]),
+          (3,   (1,2,), 0+23), #            delta[3,1]+delta[3,2]),
+          (3, (0,1,2,), 0+24), # delta[3,0]+delta[3,1]+delta[3,2]),
+          (0,   (1,2,), 0+25), #            delta[0,1]+delta[0,2]),
+          (0, (0,1,2,), 0+25), # delta[0,0]+delta[0,1]+delta[0,2]),
+          (2,     (2,), 0+50), #                       delta[2,2]),
+          (2,   (1,2,), 0+50), #            delta[2,1]+delta[2,2]),
+          (2, (0,1,2,), 0+60), # delta[2,0]+delta[2,1]+delta[2,2]),
         ]
-        flat_sums_calculated = make_flat_sums(#n,k,
-                                             delta, sort=True)
+        flat_sums_calculated = make_flat_sums(delta, sort=True)
         self.assertEqual(flat_sums_expected, flat_sums_calculated)
 
 class Test_c_dc_pair_generation(unittest.TestCase):
     def test(self):
         self.maxDiff=None
-        # n=4
-        # k=3
-        # 
-        # delta=dict()
-        # delta[(0,0)]= 0 #0.00
-        # delta[(0,1)]= 3 #0.03
-        # delta[(0,2)]=22 #0.22
-        # delta[(1,0)]= 0 #0.00
-        # delta[(1,1)]=11 #0.11
-        # delta[(1,2)]=10 #0.10
-        # delta[(2,0)]=10 #0.10
-        # delta[(2,1)]= 0 #0.00
-        # delta[(2,2)]=50 #0.50
-        # delta[(3,0)]= 1 #0.01
-        # delta[(3,1)]= 3 #0.03
-        # delta[(3,2)]=20 #0.20
 
         delta=Position_within_Simplex_Product([
                [ 0, #0.00
@@ -230,8 +160,6 @@ class Test_c_dc_pair_generation(unittest.TestCase):
                 3, #0.03
                20,], #0.20
         ])
-
-        #n,k = np.shape(delta)
 
         c_dc_pairs_expected = [
                                  (Maximal_Simplex_Vertex({(0, 2), (1, 2), (2, 2), (3, 2)}), 10),
@@ -312,9 +240,7 @@ class TestSimplexPositions(unittest.TestCase):
 
             big_1 = Position_within_Simplex_Product([b, c, a, a, b])
             big_1.check_valid()
-            #big_1_0 = big_1[0]
-            #print("Big_1[0] is ",big_1_0)
-            #print("b        is ", b)
+            
             self.assertEqual(big_1[0], b)
             self.assertEqual(big_1[1], c)
             self.assertEqual(big_1[2], a)
@@ -335,7 +261,7 @@ class TestSimplexPositions(unittest.TestCase):
 class Test_perm_detection(unittest.TestCase):
     def test(self):
 
-        simplex_eji_ordering = [ (1, 2), (3, 2), (1, 1), (0, 2), (3, 1), (3, 0), (0, 1), (1, 0), (0, 0), (2, 2), (2, 1), (2, 0), ]
+        simplex_eji_ordering = [ (1, 2), (3, 2), Eji(1, 1), (0, 2), (3, 1), (3, 0), (0, 1), (1, 0), (0, 0), (2, 2), (2, 1), (2, 0), ]
 
         simple_ordering_on_j_vals_from_left_expected = [ 1, 3, 0, 2 ] # j vals read from left, ignoring repeats
         simple_ordering_on_j_vals_from_right_expected = [ 2, 0, 1, 3 ] # j vals read from right, ignoring repeats
@@ -347,14 +273,15 @@ class Test_perm_detection(unittest.TestCase):
         self.assertEqual(simple_ordering_on_j_vals_from_right_expected, ordering_from_right_calculated)
 
 
-class Test_canonicalisation(unittest.TestCase):
+class Test_canonicalisation_and_MSV(unittest.TestCase):
     def test(self):
         v = Maximal_Simplex_Vertex({Eji(2,3), Eji(1,5), Eji(4,2)})
         v_canonical_expected = Maximal_Simplex_Vertex({Eji(0,2), Eji(1,3), Eji(2,5)})
         v_canonical_calculated = v.get_canonical_vertex()
         self.assertEqual(v_canonical_expected, v_canonical_calculated)
 
-
+        vBad = Maximal_Simplex_Vertex({Eji(2,3), Eji(2,5), Eji(4,2)}) # Bad since 2 repeats in the j
+        self.assertRaises(Exception, vBad.check_valid)
 
 def run_unit_tests():
     unittest.main(exit=False)
