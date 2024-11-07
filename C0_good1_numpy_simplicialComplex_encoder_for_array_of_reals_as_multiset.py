@@ -1,42 +1,14 @@
 #!/usr/bin/env python3
 
-from sys import version_info
-
-import numpy
-
-if not version_info >= (3, 7):
-    assert False, "We need at least python 3.7 as we rely on dictionaries being ordered!"
-
 # USE WITH CAUTION!  No known bugs, but not tested to destruction.
 # This is a re-implementation of C0_bug2_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset.py but aiming to fix the bug in the part of the code which mods out S(n).
-
+#
 # Patrick Kennedy-Hunt
 # Christopher Lester
-
-from itertools import pairwise
-#from tools import invert_perm
-import numpy as np
-#import tuple_rank
-import unittest
-from dataclasses import dataclass, field
-
-
-def encode(data, use_n2k2_optimisation=False):
-
-    n,m = data.shape
-    #print(f"Size (m,n)=({m},{n})")
-    _, ans = map_Delta_k_to_the_n_to_c_l_dc_triples(delta=vectors_to_delta(data), use_n2k2=use_n2k2_optimisation)
-
-    #Interleave the two outputs in debug mode:
-    # _, ans2 = map_Delta_k_to_the_n_to_c_l_dc_triples(delta=vectors_to_delta(data), use_n2k2=True)
-    #return [ val for pair in zip(ans,ans2) for val in pair ]
-
-    return ans
-
-
-# Where used in this file the expression Deltak (or $\Delta^k$ in TeX) 
+#
+# Where used in this file the expression Deltak (or $\Delta^k$ in TeX)
 # refers to the space inside a unit k-simplex.
-# A point in Deltak could be parameterised by  k real numbers: 
+# A point in Deltak could be parameterised by  k real numbers:
 #
 #      x_0, x_1, ... , x_(k-1)
 #
@@ -50,16 +22,16 @@ def encode(data, use_n2k2_optimisation=False):
 #
 # The implementation below  also handles points that live inside spaces which are
 # products of n copies of Deltak. These would be in $(\Delta^k)^n$ in TeX, but
-# in the sourcecode we term this space Deltakn.  
+# in the sourcecode we term this space Deltakn.
 #
 # For practical reasons, the implementation below mostly stores points in Deltak
 # or in Deltakn not as lists, i.e. not as
 #
 #  x = [x_0, x_1, ... , x_(k-1)]
 #
-# but instead stores them as dictionaries mapping key index pairs (j,i) to the 
-# simplex coordinates. In these key index pairs (j,i) the value j in [0,n-1] 
-# indexes the copy of Deltak within Dektakn,  and the i value in [0,k-1] 
+# but instead stores them as dictionaries mapping key index pairs (j,i) to the
+# simplex coordinates. In these key index pairs (j,i) the value j in [0,n-1]
+# indexes the copy of Deltak within Dektakn,  and the i value in [0,k-1]
 # indexes the coordinate position within Deltak.
 #
 # For example:, for n=2 and k=2 ...
@@ -79,11 +51,29 @@ def encode(data, use_n2k2_optimisation=False):
 # and a point delta = x*y  within Detlakn would be stored as
 #
 #          delta = { **x, **y }
-#                = { 
-#                    (0,0):0.25,  (0,1):0.50, (0,2):0.10, 
-#                    (1,0):0.05,              (1,2):0.90, 
+#                = {
+#                    (0,0):0.25,  (0,1):0.50, (0,2):0.10,
+#                    (1,0):0.05,              (1,2):0.90,
 #                  }.
-#
+
+from sys import version_info
+if not version_info >= (3, 7):
+    assert False, "We need at least python 3.7 as we rely on dictionaries being ordered!"
+
+from itertools import pairwise
+import numpy as np
+import unittest
+from dataclasses import dataclass, field
+
+def encode(data, use_n2k2_optimisation=False):
+
+    _, ans = map_Delta_k_to_the_n_to_c_l_dc_triples(delta=vectors_to_delta(data), use_n2k2=use_n2k2_optimisation)
+
+    #Interleave the two outputs in debug mode:
+    # _, ans2 = map_Delta_k_to_the_n_to_c_l_dc_triples(delta=vectors_to_delta(data), use_n2k2=True)
+    #return [ val for pair in zip(ans,ans2) for val in pair ]
+
+    return ans
 
 @dataclass
 class Position_within_Simplex:
@@ -96,7 +86,7 @@ class Position_within_Simplex:
     The purpose of this class is to hold and manipulate such delta_i, and to manage conversions
     between such things and other coordinate systems.
     """
-    _np_ar : numpy.array
+    _np_ar : np.array
 
     def __getitem__(self, item):
         return self._np_ar[item]
@@ -122,7 +112,7 @@ class Position_within_Simplex_Product:
     first index j in [0,n-1] identified the product, and
     second index i in [0,k-1] identifies the position within the j-th simplex.
     """
-    _np_ar : numpy.array
+    _np_ar : np.array
     shape : tuple
 
     def __init__(self, x):
