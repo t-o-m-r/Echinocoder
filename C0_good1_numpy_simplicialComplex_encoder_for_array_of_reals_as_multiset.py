@@ -192,7 +192,7 @@ class Position_within_Simplex_Product:
     """
     Conceptually this holds "n" copies of Point_in_simplex.
     However, for performance reasons we hold it as a numpy array, with
-    first index j in [0,n-1] identified the product, and
+    first index j in [0,n-1] identifies the simplex, and the
     second index i in [0,k-1] identifies the position within the j-th simplex.
     """
     _np_ar : np.array
