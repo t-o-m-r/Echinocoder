@@ -240,7 +240,7 @@ class TestSimplexPositions(unittest.TestCase):
 
             big_1 = Position_within_Simplex_Product([b, c, a, a, b])
             big_1.check_valid()
-            
+
             self.assertEqual(big_1[0], b)
             self.assertEqual(big_1[1], c)
             self.assertEqual(big_1[2], a)
@@ -261,13 +261,13 @@ class TestSimplexPositions(unittest.TestCase):
 class Test_perm_detection(unittest.TestCase):
     def test(self):
 
-        simplex_eji_ordering = [ (1, 2), (3, 2), Eji(1, 1), (0, 2), (3, 1), (3, 0), (0, 1), (1, 0), (0, 0), (2, 2), (2, 1), (2, 0), ]
+        simplex_eji_ordering = Eji_Ordering([ (1, 2), (3, 2), Eji(1, 1), (0, 2), (3, 1), (3, 0), (0, 1), (1, 0), (0, 0), (2, 2), (2, 1), (2, 0), ])
 
         simple_ordering_on_j_vals_from_left_expected = [ 1, 3, 0, 2 ] # j vals read from left, ignoring repeats
         simple_ordering_on_j_vals_from_right_expected = [ 2, 0, 1, 3 ] # j vals read from right, ignoring repeats
 
-        ordering_from_left_calculated = make_perm_from_simplex(simplex_eji_ordering)
-        ordering_from_right_calculated = make_perm_from_simplex(simplex_eji_ordering, from_right=True)
+        ordering_from_left_calculated = simplex_eji_ordering.get_perm()
+        ordering_from_right_calculated = simplex_eji_ordering.get_perm(from_right=True)
 
         self.assertEqual(simple_ordering_on_j_vals_from_left_expected, ordering_from_left_calculated)
         self.assertEqual(simple_ordering_on_j_vals_from_right_expected, ordering_from_right_calculated)
@@ -277,7 +277,7 @@ class Test_canonicalisation_and_MSV(unittest.TestCase):
     def test(self):
         v = Maximal_Simplex_Vertex({Eji(2,3), Eji(1,5), Eji(4,2)})
         v_canonical_expected = Maximal_Simplex_Vertex({Eji(0,2), Eji(1,3), Eji(2,5)})
-        v_canonical_calculated = v.get_canonical_vertex()
+        v_canonical_calculated = v.get_canonical_form()
         self.assertEqual(v_canonical_expected, v_canonical_calculated)
 
         vBad = Maximal_Simplex_Vertex({Eji(2,3), Eji(2,5), Eji(4,2)}) # Bad since 2 repeats in the j

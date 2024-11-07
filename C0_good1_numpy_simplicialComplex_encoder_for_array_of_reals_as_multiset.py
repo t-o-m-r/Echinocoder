@@ -235,6 +235,33 @@ Eji = namedtuple("Eji", ["j", "i"])
 class Eji_Ordering:
     """Class to hold eij orderings (biggest first)."""
     _eji_list: list[Eji]
+
+    def get_perm(self, from_right=False):
+            # Note that setting from_right does not (in general) reverse the answer even though it reverses the input.
+            # I.e. perm_from_right(ordering)[::-1] is not in general the same as perm_from_left(ordering[::-1]).
+
+            if from_right:
+                return list({j[0]: None for j in self._eji_list[::-1]})  # Uses insertion order preservation
+            else:
+                return list({j[0]: None for j in self._eji_list      })  # Uses insertion order preservation
+
+    def get_canonical_form(self):
+        """Detects the perm needed to take our simplex to canonical form."""
+
+    ####TEST_REMOVE####
+    ####TEST_REMOVE#### # First detect the perm needed to take our simplex to canonical form:
+    ####TEST_REMOVE#### perm = make_perm_from_simplex(simplex_eji_ordering, from_right=True) # It is not critical whether we come from right or left, since any canonical form will do. I choose from_right as it matches the conventin I used in some OneNote nootbooks while I was getting to grips with things. from_left would be faster as no need to reverse a list internally.  Consider moving to from_left later.
+    ####TEST_REMOVE#### #print("perm = ",perm)
+    ####TEST_REMOVE####
+    ####TEST_REMOVE#### # Actually we need the inverse perm!
+    ####TEST_REMOVE#### inverse_perm = invert_perm(perm)
+    ####TEST_REMOVE#### #print("inverse perm = ", inverse_perm)
+
+    ####TEST_REMOVE#### # Don't actually need the next thing -- but compute it for debug purposes "just in case"
+    ####TEST_REMOVE#### simplex_eji_ordering_after_mod_Sn = [ (inverse_perm[j], i) for (j,i) in simplex_eji_ordering ]
+    ####TEST_REMOVE#### #print("simplex_eji_ordering (after mod S(n)) =")
+    ####TEST_REMOVE#### #[ print(eji) for eji in simplex_eji_ordering_after_mod_Sn ]
+
     def check_valid(self):
         j_vals = [e.j for e in self._eji_list]
         i_vals = [e.i for e in self._eji_list]
@@ -255,8 +282,8 @@ class Maximal_Simplex_Vertex:
 
     def __iter__(self):
         return iter(self._vertex_set)
-    
-    def get_canonical_vertex(self):
+
+    def get_canonical_form(self):
         """Mod out by Sn for this single vertex, ignoring any others."""
         # Method: sort the Eji by the i index, then populate the j's in order.
         sorted_eji_list = sorted(list(self._vertex_set), key=lambda eji: eji.i)
@@ -579,14 +606,6 @@ def vectors_to_delta(vecs):
         for i in range(k):
             delta[j,i]=simplex_point[i]
     return Position_within_Simplex_Product(delta)
-
-
-def make_perm_from_simplex(simplex_eji_ordering, from_right=False):
-    # Note that setting from_right does not (in general) reverse the answer even though it reverses the input.
-    # I.e. perm_from_right(ordering)[::-1] is not in general the same as perm_from_left(ordering[::-1]).
-    if from_right:
-      simplex_eji_ordering=simplex_eji_ordering[::-1]
-    return list({ j[0] : None for j in simplex_eji_ordering  }) # Uses insertion order preservation
 
 def test_simplex_embedding():
 
