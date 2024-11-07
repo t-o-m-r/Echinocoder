@@ -91,11 +91,12 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'], use_n2k2_
     n, k = data.shape # Valid whether input_is_in_DeltakToN is True or False
 
     if type(data) == Position_within_Simplex_Product:
-        delta = data # Don't translate data as already in (Delta^k)^n.
+        delta = data # Don't reformat the data as the data is already in (Delta^k)^n.
     elif input_is_in_DeltakToN:
+        # Reformat the data as supposedly the coefficients are correct but the type is not:
         delta = Position_within_Simplex_Product(data)
-        delta.check_valid()
     else:
+        # Embed each vector in a simplex:
         delta = vectors_to_delta(data) # convert (R^k)^n to (Delta^k)^n.
 
     if use_n2k2_optimisation and n == 2 and k == 2:
