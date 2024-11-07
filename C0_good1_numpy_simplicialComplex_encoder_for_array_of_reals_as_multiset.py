@@ -107,19 +107,15 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'], use_n2k2_
     else:
         c_dc_pairs = make_c_dc_pairs(delta)
 
-    ####TEST_REMOVE#### vertices = Maximal_Simplex_Vertices([ c for c,_ in c_dc_pairs ])
-    ####TEST_REMOVE#### #print("vertices (before modding by S(n)) =")
-    ####TEST_REMOVE#### #[ print(c) for c in vertices ]
+    simplex = Maximal_Simplex([ c for c,_ in c_dc_pairs ])
+    print("simplex (before modding by S(n)) =")
+    [print(vertex) for vertex in simplex._vertex_list]
+    print("simplex_eji_ordering (before mod S(n)) = ")
+    [print(eji) for eji in simplex.get_Eji_ordering()]
 
-    ####TEST_REMOVE#### """
-    ####TEST_REMOVE#### The following simplex_eji_ordering contains the implied basis element ordering (greatest first)
-    ####TEST_REMOVE#### which defined the simplex in which we the point delta stands.
-    ####TEST_REMOVE#### """
-    ####TEST_REMOVE#### simplex_eji_ordering = vertices.to_eji_ordering()
-    ####TEST_REMOVE#### #print("simplex_eji_ordering (before mod S(n)) =")
-    ####TEST_REMOVE#### #[ print(eji) for eji in simplex_eji_ordering ]
-
-    ####TEST_REMOVE#### # We must canonicalise the simplex by detecting and modding out the relevant perm of S(n).
+    print("simplex_eji_ordering (after mod S(n)) = ")
+    [print(eji) for eji in simplex.get_Eji_ordering().get_canonical_form()]
+    # We could canonicalise the simplex by detecting and modding out the relevant perm of S(n).
 
     ####TEST_REMOVE####
     ####TEST_REMOVE#### # First detect the perm needed to take our simplex to canonical form:
@@ -239,6 +235,12 @@ class Eji_Ordering:
     """Class to hold eij orderings (biggest first)."""
     _eji_list: list[Eji]
 
+    def __len__(self):
+        return len(self._eji_list)
+
+    def __iter__(self):
+        return iter(self._eji_list)
+
     def get_j_order(self, from_right=False):
         """
         Returns a list of j-values in the order in which they first appear.
@@ -263,9 +265,12 @@ class Eji_Ordering:
     def get_perm(self):
         """
         This returns the perm of [0,1,2,..,nk-1] which would take the observed j-order to
-        the canonical order [0,1,2,...,nk-1].
+        the canonical order [nk-1,nk-2,...,2,1,0].
+        This order is a bit silly (it's backwards). But this is a throwback to early hand calculations and
+        a convention that they established (that the largest Eji comes first).
+        TODO: Consider reimplementing with the opposite convention!
         """
-        return tools.invert_perm(self.get_j_order())
+        return tools.invert_perm(self.get_j_order(from_right=True))
 
     def get_canonical_form(self):
         """Returns the ordering in canonical form."""
@@ -309,16 +314,26 @@ class Maximal_Simplex_Vertex:
         assert len(j_vals) == len(self._vertex_set)
 
 @dataclass
-class Maximal_Simplex_Vertices:
+class Maximal_Simplex:
     """These are stored in a list which is required to be ordered from big to small
     under the same ordering used to order eji's."""
     _vertex_list: list[Maximal_Simplex_Vertex]
+    _eji_ordering_cache: Eji_Ordering
 
-    def to_Eji_ordering(self) -> Eji_Ordering:
+    def __init__(self, list_of_vertices):
+        self._vertex_list = list_of_vertices
+        self._eji_ordering_cache = None
+
+    def get_Eji_ordering(self) -> Eji_Ordering:
+        # If already calculated, return the eji ordering from cache:
+        if self._eji_ordering_cache is not None:
+            return self._eji_ordering_cache
+
+        # Need to initialise eji ordering cache:
         vertices_and_null = self._vertex_list + [Maximal_Simplex_Vertex()]
-        simplex_eji_ordering = [(v1._vertex_set - v2._vertex_set).pop() for v1, v2 in pairwise(
-            vertices_and_null)]  # The set c1-c2 should contain only one element, so pop() should return it.
-        return Eji_Ordering(simplex_eji_ordering)
+        self._eji_ordering_cache = Eji_Ordering([(v1._vertex_set - v2._vertex_set).pop() for v1, v2 in pairwise(
+            vertices_and_null)]) # The set c1-c2 should contain only one element, so pop() should return it.
+        return self._eji_ordering_cache
 
     def check_valid(self):
         """This function asserts all sorts of things that should be true for a valid object.

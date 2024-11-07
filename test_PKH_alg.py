@@ -184,7 +184,7 @@ class Test_c_dc_pair_generation(unittest.TestCase):
 
 class Test_simplex_eji_ordering_generation(unittest.TestCase):
     def test1(self):
-        vertices = Maximal_Simplex_Vertices([
+        vertices = Maximal_Simplex([
             Maximal_Simplex_Vertex({Eji(0, 2), Eji(1, 2), Eji(2, 2), Eji(3, 2)}),
             Maximal_Simplex_Vertex({Eji(0, 2), Eji(1, 1), Eji(2, 2), Eji(3, 2)}),
             Maximal_Simplex_Vertex({Eji(0, 2), Eji(1, 1), Eji(2, 2), Eji(3, 1)}),
@@ -200,7 +200,7 @@ class Test_simplex_eji_ordering_generation(unittest.TestCase):
         ])
         vertices.check_valid()
 
-        ordering_calculated = vertices.to_Eji_ordering()
+        ordering_calculated = vertices.get_Eji_ordering()
 
         ordering_expected = Eji_Ordering([
             Eji(1, 2),
@@ -264,8 +264,9 @@ class Test_perm_detection(unittest.TestCase):
         simplex_eji_ordering = Eji_Ordering(
             [(1, 2), (3, 2), (1, 1), (0, 2), (3, 1), (3, 0), (0, 1), (1, 0), (0, 0), (2, 2), (2, 1), (2, 0)])
         simplex_eji_canonical_ordering_expected = Eji_Ordering(
-            [(0, 2), (1, 2), (0, 1), (2, 2), (1, 1), (1, 0), (2, 1), (0, 0), (2, 0), (3, 2), (3, 1), (3, 0)])
-
+            [(2, 2), (3, 2), (2, 1), (1, 2), (3, 1), (3, 0), (1, 1), (2, 0), (1, 0), (0, 2), (0, 1), (0, 0)])
+        # Note the (arguably annoying) convention I chose to do this from the right!!
+        
         simple_ordering_on_j_vals_from_left_expected = [ 1, 3, 0, 2 ] # j vals read from left, ignoring repeats
         simple_ordering_on_j_vals_from_right_expected = [ 2, 0, 1, 3 ] # j vals read from right, ignoring repeats
 
