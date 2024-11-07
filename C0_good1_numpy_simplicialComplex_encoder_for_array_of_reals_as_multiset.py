@@ -250,6 +250,12 @@ class Eji_Ordering:
 class Maximal_Simplex_Vertex:
     _vertex_set: set[Eji] = field(default_factory=set)
 
+    def __len__(self) -> int:
+        return len(self._vertex_set)
+
+    def __iter__(self):
+        return iter(self._vertex_set)
+    
     def get_canonical_vertex(self):
         """Mod out by Sn for this single vertex, ignoring any others."""
         # Method: sort the Eji by the i index, then populate the j's in order.
@@ -439,50 +445,50 @@ def make_c_dc_pairs_n2k2(delta: Position_within_Simplex_Product):
     if c+d >=d >= a+b >= b: # C'
         simplex = "left"
         c_dc_pairs = [
-            ({(0,1), (1,1)},       b),
-            ({(0,0), (1,1)},       a),
-            ({       (1,1)},   d-a-b),
-            ({       (1,0)},       c),
+            (Maximal_Simplex_Vertex({(0,1), (1,1)}),       b),
+            (Maximal_Simplex_Vertex({(0,0), (1,1)}),       a),
+            (Maximal_Simplex_Vertex({       (1,1)}),   d-a-b),
+            (Maximal_Simplex_Vertex({       (1,0)}),       c),
             ]
     elif c+d >= a+b >= b >= d: # A'
         simplex = "left"
         c_dc_pairs = [
-            ({(0,1), (1,1)},       d),
-            ({(0,1), (1,0)},     b-d),
-            ({(0,0), (1,0)},       a),
-            ({       (1,0)}, c+d-a-b),
+            (Maximal_Simplex_Vertex({(0,1), (1,1)}),       d),
+            (Maximal_Simplex_Vertex({(0,1), (1,0)}),     b-d),
+            (Maximal_Simplex_Vertex({(0,0), (1,0)}),       a),
+            (Maximal_Simplex_Vertex({       (1,0)}), c+d-a-b),
             ]
     elif c+d >= a+b >= d >= b: # B'
         simplex = "left"
         c_dc_pairs = [
-            ({(0,1), (1,1)},       b),
-            ({(0,0), (1,1)},     d-b),
-            ({(0,0), (1,0)},   a+b-d),
-            ({       (1,0)}, c+d-a-b),
+            (Maximal_Simplex_Vertex({(0,1), (1,1)}),       b),
+            (Maximal_Simplex_Vertex({(0,0), (1,1)}),     d-b),
+            (Maximal_Simplex_Vertex({(0,0), (1,0)}),   a+b-d),
+            (Maximal_Simplex_Vertex({       (1,0)}), c+d-a-b),
             ]
     elif a+b >= c+d >= d >= b: # A
         simplex = "left"
         c_dc_pairs = [
-            ({(0,1), (1,1)},       b),
-            ({(0,0), (1,1)},     d-b),
-            ({(0,0), (1,0)},       c),
-            ({(0,0)},        a-c+b-d),
+            (Maximal_Simplex_Vertex({(0,1), (1,1)}),       b),
+            (Maximal_Simplex_Vertex({(0,0), (1,1)}),     d-b),
+            (Maximal_Simplex_Vertex({(0,0), (1,0)}),       c),
+            (Maximal_Simplex_Vertex({(0,0)}),        a-c+b-d),
             ]
     elif a+b >= c+d >= b >= d: # B
         simplex = "mid"
         c_dc_pairs = [
-            ({(0,1), (1,1)},       d),
-            ({(0,1), (1,0)},     b-d),
-            ({(0,0), (1,0)},   c+d-b),
-            ({(0,0)},        a-c+b-d),
+            (Maximal_Simplex_Vertex({(0,1), (1,1)}),       d),
+            (Maximal_Simplex_Vertex({(0,1), (1,0)}),     b-d),
+            (Maximal_Simplex_Vertex({(0,0), (1,0)}),   c+d-b),
+            (Maximal_Simplex_Vertex({(0,0)}),        a-c+b-d),
             ]
     elif a+b >= b >= c+d >= d: # C
         simplex = "right"
         c_dc_pairs = [
-            ({(0,1), (1,1)},       d),
-            ({(0,1), (1,0)},       c),
-            ({(0,1)},          b-c-d),
-            ({(0,0)},              a),
+            (Maximal_Simplex_Vertex({(0,1), (1,1)}),       d),
+            (Maximal_Simplex_Vertex({(0,1), (1,0)}),       c),
+            (Maximal_Simplex_Vertex({(0,1)}),          b-c-d),
+            (Maximal_Simplex_Vertex({(0,0)}),              a),
             ]
     else:
         simplex = None
@@ -529,8 +535,8 @@ def make_c_dc_pairs(#n , k,  # Only need n and/or k if doing "original initialis
     #print("dc_vals from flat_sums = ")
     #[print(_) for _ in dc_vals]
 
-    c_dc_pairs = [({(j, max(moo)) for j in range(n) if
-                    (moo := [min(iis) for (jj, iis, _) in flat_sums[index:] if jj == j])}, dc_vals[index]) for index in
+    c_dc_pairs = [(Maximal_Simplex_Vertex({Eji(j, max(moo)) for j in range(n) if
+                    (moo := [min(iis) for (jj, iis, _) in flat_sums[index:] if jj == j])}), dc_vals[index]) for index in
                   range(len(flat_sums))  #if not prune_zeros or dc_vals[index] != 0
                   ]  # See set note below
 

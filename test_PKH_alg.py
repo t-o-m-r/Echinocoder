@@ -198,7 +198,7 @@ class Test_flat_sums(unittest.TestCase):
 
 class Test_c_dc_pair_generation(unittest.TestCase):
     def test(self):
-
+        self.maxDiff=None
         # n=4
         # k=3
         # 
@@ -234,18 +234,18 @@ class Test_c_dc_pair_generation(unittest.TestCase):
         #n,k = np.shape(delta)
 
         c_dc_pairs_expected = [
-                                 ({(0, 2), (1, 2), (2, 2), (3, 2)}, 10),
-                                 ({(0, 2), (1, 1), (2, 2), (3, 2)}, 10),
-                                 ({(0, 2), (1, 1), (2, 2), (3, 1)}, 1),
-                                 ({(0, 2), (1, 0), (2, 2), (3, 1)}, 0),
-                                 ({(0, 2), (2, 2), (3, 1)}, 1),
-                                 ({(0, 1), (2, 2), (3, 1)}, 1),
-                                 ({(0, 1), (2, 2), (3, 0)}, 1),
-                                 ({(0, 1), (2, 2)}, 1),
-                                 ({(0, 0), (2, 2)}, 0),
-                                 ({(2, 2)}, 25),
-                                 ({(2, 1)}, 0),
-                                 ({(2, 0)}, 10),
+                                 (Maximal_Simplex_Vertex({(0, 2), (1, 2), (2, 2), (3, 2)}), 10),
+                                 (Maximal_Simplex_Vertex({(0, 2), (1, 1), (2, 2), (3, 2)}), 10),
+                                 (Maximal_Simplex_Vertex({(0, 2), (1, 1), (2, 2), (3, 1)}), 1),
+                                 (Maximal_Simplex_Vertex({(0, 2), (1, 0), (2, 2), (3, 1)}), 0),
+                                 (Maximal_Simplex_Vertex({(0, 2), (2, 2), (3, 1)}), 1),
+                                 (Maximal_Simplex_Vertex({(0, 1), (2, 2), (3, 1)}), 1),
+                                 (Maximal_Simplex_Vertex({(0, 1), (2, 2), (3, 0)}), 1),
+                                 (Maximal_Simplex_Vertex({(0, 1), (2, 2)}), 1),
+                                 (Maximal_Simplex_Vertex({(0, 0), (2, 2)}), 0),
+                                 (Maximal_Simplex_Vertex({(2, 2)}), 25),
+                                 (Maximal_Simplex_Vertex({(2, 1)}), 0),
+                                 (Maximal_Simplex_Vertex({(2, 0)}), 10),
                               ]
 
         c_dc_pairs_calculated = make_c_dc_pairs(delta)
