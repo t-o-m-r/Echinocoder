@@ -267,7 +267,8 @@ class Eji_Ordering:
         This returns the perm of [0,1,2,..,nk-1] which would take the observed j-order to
         the canonical order [nk-1,nk-2,...,2,1,0].
         This order is a bit silly (it's backwards). But this is a throwback to early hand calculations and
-        a convention that they established (that the largest Eji comes first).
+        a convention that they established (that the largest Eji comes first).  One could just as easily have used
+        the opposite order, although a bunch of other things would have to change to compensate.
         TODO: Consider reimplementing with the opposite convention!
         """
         return tools.invert_perm(self.get_j_order(from_right=True))

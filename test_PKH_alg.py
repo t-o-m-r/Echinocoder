@@ -266,7 +266,7 @@ class Test_perm_detection(unittest.TestCase):
         simplex_eji_canonical_ordering_expected = Eji_Ordering(
             [(2, 2), (3, 2), (2, 1), (1, 2), (3, 1), (3, 0), (1, 1), (2, 0), (1, 0), (0, 2), (0, 1), (0, 0)])
         # Note the (arguably annoying) convention I chose to do this from the right!!
-        
+
         simple_ordering_on_j_vals_from_left_expected = [ 1, 3, 0, 2 ] # j vals read from left, ignoring repeats
         simple_ordering_on_j_vals_from_right_expected = [ 2, 0, 1, 3 ] # j vals read from right, ignoring repeats
 
