@@ -57,6 +57,9 @@
 #                  }.
 
 from sys import version_info
+
+import tools
+
 if not version_info >= (3, 7):
     assert False, "We need at least python 3.7 as we rely on dictionaries being ordered! See DIC_ORDER_USED"
 
@@ -236,31 +239,38 @@ class Eji_Ordering:
     """Class to hold eij orderings (biggest first)."""
     _eji_list: list[Eji]
 
-    def get_perm(self, from_right=False):
+    def get_j_order(self, from_right=False):
+        """
+        Returns a list of j-values in the order in which they first appear.
+        By default, we read from beginning of list. Otherwise (if from_right=True) we read from the other end.
+        E.g.
+                    Eji(2,_), Eji(5,_), Eji(2,_), Eji(9,_), ...
+        would generate
+                    [2, 5, 9, ...
+        since 2 is the first j-value to appear, 5 the next, and 9 is the third (appearing after an ignored j=2 repeat).
+        """
+        # Do we want 0,1,2,3,4,5 (starting from left) or 5,4,3,2,1,0 (starting from right) ? Select with from_right.
+
         # Note that setting from_right does not (in general) reverse the answer even though it reverses the input.
         # I.e. perm_from_right(ordering)[::-1] is not in general the same as perm_from_left(ordering[::-1]).
 
         if from_right:
             return list({j[0]: None for j in self._eji_list[::-1]}) # Uses insertion order preservation! DIC_ORDER_USED
         else:
+            # Default!
             return list({j[0]: None for j in self._eji_list      }) # Uses insertion order preservation! DIC_ORDER_USED
 
+    def get_perm(self):
+        """
+        This returns the perm of [0,1,2,..,nk-1] which would take the observed j-order to
+        the canonical order [0,1,2,...,nk-1].
+        """
+        return tools.invert_perm(self.get_j_order())
+
     def get_canonical_form(self):
-        """Detects the perm needed to take our simplex to canonical form."""
-
-    ####TEST_REMOVE####
-    ####TEST_REMOVE#### # First detect the perm needed to take our simplex to canonical form:
-    ####TEST_REMOVE#### perm = make_perm_from_simplex(simplex_eji_ordering, from_right=True) # It is not critical whether we come from right or left, since any canonical form will do. I choose from_right as it matches the conventin I used in some OneNote nootbooks while I was getting to grips with things. from_left would be faster as no need to reverse a list internally.  Consider moving to from_left later.
-    ####TEST_REMOVE#### #print("perm = ",perm)
-    ####TEST_REMOVE####
-    ####TEST_REMOVE#### # Actually we need the inverse perm!
-    ####TEST_REMOVE#### inverse_perm = invert_perm(perm)
-    ####TEST_REMOVE#### #print("inverse perm = ", inverse_perm)
-
-    ####TEST_REMOVE#### # Don't actually need the next thing -- but compute it for debug purposes "just in case"
-    ####TEST_REMOVE#### simplex_eji_ordering_after_mod_Sn = [ (inverse_perm[j], i) for (j,i) in simplex_eji_ordering ]
-    ####TEST_REMOVE#### #print("simplex_eji_ordering (after mod S(n)) =")
-    ####TEST_REMOVE#### #[ print(eji) for eji in simplex_eji_ordering_after_mod_Sn ]
+        """Returns the ordering in canonical form."""
+        perm = self.get_perm()
+        return Eji_Ordering([Eji(perm[j], i) for (j, i) in self._eji_list])
 
     def check_valid(self):
         j_vals = [e.j for e in self._eji_list]

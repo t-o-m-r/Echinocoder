@@ -261,17 +261,22 @@ class TestSimplexPositions(unittest.TestCase):
 class Test_perm_detection(unittest.TestCase):
     def test(self):
 
-        simplex_eji_ordering = Eji_Ordering([ (1, 2), (3, 2), Eji(1, 1), (0, 2), (3, 1), (3, 0), (0, 1), (1, 0), (0, 0), (2, 2), (2, 1), (2, 0), ])
+        simplex_eji_ordering = Eji_Ordering(
+            [(1, 2), (3, 2), (1, 1), (0, 2), (3, 1), (3, 0), (0, 1), (1, 0), (0, 0), (2, 2), (2, 1), (2, 0)])
+        simplex_eji_canonical_ordering_expected = Eji_Ordering(
+            [(0, 2), (1, 2), (0, 1), (2, 2), (1, 1), (1, 0), (2, 1), (0, 0), (2, 0), (3, 2), (3, 1), (3, 0)])
 
         simple_ordering_on_j_vals_from_left_expected = [ 1, 3, 0, 2 ] # j vals read from left, ignoring repeats
         simple_ordering_on_j_vals_from_right_expected = [ 2, 0, 1, 3 ] # j vals read from right, ignoring repeats
 
-        ordering_from_left_calculated = simplex_eji_ordering.get_perm()
-        ordering_from_right_calculated = simplex_eji_ordering.get_perm(from_right=True)
+        ordering_from_left_calculated = simplex_eji_ordering.get_j_order()
+        ordering_from_right_calculated = simplex_eji_ordering.get_j_order(from_right=True)
 
         self.assertEqual(simple_ordering_on_j_vals_from_left_expected, ordering_from_left_calculated)
         self.assertEqual(simple_ordering_on_j_vals_from_right_expected, ordering_from_right_calculated)
 
+        simplex_eji_canonical_ordering_calculated = simplex_eji_ordering.get_canonical_form()
+        self.assertEqual(simplex_eji_canonical_ordering_calculated,simplex_eji_canonical_ordering_expected)
 
 class Test_canonicalisation_and_MSV(unittest.TestCase):
     def test(self):
