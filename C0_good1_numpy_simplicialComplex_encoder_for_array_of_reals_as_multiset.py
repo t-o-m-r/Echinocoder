@@ -466,22 +466,11 @@ def make_flat_sums(delta, sort=False, prepend_zero=False):
     return flat_sums
 
 def make_c_dc_pairs_n2k2(delta: Position_within_Simplex_Product):
-    # Each key in the "delta" dict is an (j,i) tuple representing Patrick's e^j_i with j in [0,n-1] and i in [0,k-1].  The associated value is the coefficient of that e^j_i basis vector in the associated element of (\Delta_k)^n.
-    # e.g delta = {  
-    #     (0,0) : 0.5, (0,1) : 0.2, (0,2) : 0.1,    #a point in the 1st simplex (simplex 0)
-    #     (1,2) : 0.25,                             #a point in the 2nd simplex (simplex 1)
-    #     (2,0) : 0.1,                              #a point in the 3rd simplex (simplex 2)
-    #   }
     a=delta[0,0]
     b=delta[0,1]
     c=delta[1,0]
     d=delta[1,1]
 
-    # TEST DONT!!!!!
-    ### if a+b < max([b,c+d,d]):
-    ###     # swap j=0 with j=1
-    ###     a,b,c,d = c,d,a,b
-    
     if c+d >=d >= a+b >= b: # C'
         simplex = "left"
         c_dc_pairs = [
@@ -536,49 +525,33 @@ def make_c_dc_pairs_n2k2(delta: Position_within_Simplex_Product):
 
     return c_dc_pairs
 
-
-    
-
-def make_c_dc_pairs(#n , k,  # Only need n and/or k if doing "original initialisation" of x_with_coeffs
-                    delta,
-                    # Each key in the delta dict is an (j,i) tuple representing Patrick's e^j_i with j in [0,n-1] and
-                    # i in [0,k-1].  The associated value is the coefficient of that e^j_i basis vector in the
-                    # associated element of (\Delta_k)^n.
-                    # e.g delta = {
-                    #     (0,0) : 0.5, (0,1) : 0.2, (0,2) : 0.1,    #a point in the 1st simplex (simplex 0)
-                    #     (1,2) : 0.25,                             #a point in the 2nd simplex (simplex 1)
-                    #     (2,0) : 0.1,                              #a point in the 3rd simplex (simplex 2)
-                    #   },
-                    # prune_zeros = False,  # False is recommended default! See comments below.
-        ):
+def make_c_dc_pairs(delta : Position_within_Simplex_Product):
     """
-    We output a list of c_dc_pairs.  Each pair (c,dc) contains a simplex vertex, c, together with a coefficient, dc.
-    The simplex vertex, c, is coded as a list of (j,i) values representing e^j_i, i.e. the ith basis vector of the j-th simplex.
-    E.g. if the simplex vertex is c=[(0,1),(2,2)] then c represents e^0_1+e^2_2. 
-    The coefficient dc,  attached to c, says how much of c is needed to represent the component of delta in that direction.
+    We output a list of c_dc_pairs.  Each pair (c,dc) contains a Maximal_Simplex_Vertex, c, together with a
+    coefficient, dc. The simplex vertex, c, is coded as a list of (j,i) values representing e^j_i, i.e. the ith basis
+    vector of the j-th simplex. E.g. if the simplex vertex is c=[(0,1),(2,2)] then c represents e^0_1+e^2_2.
+    The coefficient dc, attached to c, says how much of c is needed to represent the component of delta in that
+    direction.
 
     Pruning entries with dc=0 might seem like a good idea.  However:
 
        (1) pruning zeros may also destroy regularity/predictability;  e.g. people might prefer to see c_dc_pairs always have the same length as the number of non-origin simplex points.
-       (2) pruning zeros requires  a test for equality on a floating point number, which is a bit silly.  Default should therefore be NOT pruning zeros,
+       (2) pruning zeros requires a test for equality on a floating point number, which is a bit silly.  Default should therefore be NOT pruning zeros,
        (3) worst of all, pruning zeors makes it impossible to identify and canonicalise the simplex vertices.
 
-       Hence, do not prune zeros unless you have a good reason!
+    Hence, we do not prune zeros!
     """
 
     n,k = np.shape(delta)
 
     flat_sums = make_flat_sums(delta, sort=True)
-    #print("flat_sums sorted with zero start =",flat_sums)
 
     dc_vals = [ sum2-sum1 for (j1,i1_vals, sum1),(j2,i2_vals, sum2) in pairwise([(None, tuple(), 0), ]+flat_sums) ]
-    #print("dc_vals from flat_sums = ")
-    #[print(_) for _ in dc_vals]
 
     c_dc_pairs = [(Maximal_Simplex_Vertex({Eji(j, max(moo)) for j in range(n) if
                     (moo := [min(iis) for (jj, iis, _) in flat_sums[index:] if jj == j])}), dc_vals[index]) for index in
-                  range(len(flat_sums))  #if not prune_zeros or dc_vals[index] != 0
-                  ]  # See set note below
+                    range(len(flat_sums))  #if not prune_zeros or dc_vals[index] != 0
+                    ]  # See set note below
 
     """A set rather than a list is used to hold the coordinate vectors because later we want to find out 
     "elements in one set not in another" ... and so if we had used lists we would have to construct a set from a 
@@ -586,9 +559,6 @@ def make_c_dc_pairs(#n , k,  # Only need n and/or k if doing "original initialis
      basis elements which are vertices, and sums are order independent).  The set creation comprehension does not 
      produce duplicate elements squashed by the set, though, so if it's later needed they could be changed back to a 
      list here (instead of set) so long as the later set-difference calculation is done some other way."""
-
-    #print("c_dc_pairs from flat_sums = ")
-    #[print(_) for _ in c_dc_pairs]
 
     return c_dc_pairs
 
