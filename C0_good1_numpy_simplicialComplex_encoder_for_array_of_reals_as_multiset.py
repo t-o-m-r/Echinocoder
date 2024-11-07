@@ -58,7 +58,7 @@
 
 from sys import version_info
 if not version_info >= (3, 7):
-    assert False, "We need at least python 3.7 as we rely on dictionaries being ordered!"
+    assert False, "We need at least python 3.7 as we rely on dictionaries being ordered! See DIC_ORDER_USED"
 
 from itertools import pairwise
 import numpy as np
@@ -237,13 +237,13 @@ class Eji_Ordering:
     _eji_list: list[Eji]
 
     def get_perm(self, from_right=False):
-            # Note that setting from_right does not (in general) reverse the answer even though it reverses the input.
-            # I.e. perm_from_right(ordering)[::-1] is not in general the same as perm_from_left(ordering[::-1]).
+        # Note that setting from_right does not (in general) reverse the answer even though it reverses the input.
+        # I.e. perm_from_right(ordering)[::-1] is not in general the same as perm_from_left(ordering[::-1]).
 
-            if from_right:
-                return list({j[0]: None for j in self._eji_list[::-1]})  # Uses insertion order preservation
-            else:
-                return list({j[0]: None for j in self._eji_list      })  # Uses insertion order preservation
+        if from_right:
+            return list({j[0]: None for j in self._eji_list[::-1]}) # Uses insertion order preservation! DIC_ORDER_USED
+        else:
+            return list({j[0]: None for j in self._eji_list      }) # Uses insertion order preservation! DIC_ORDER_USED
 
     def get_canonical_form(self):
         """Detects the perm needed to take our simplex to canonical form."""
