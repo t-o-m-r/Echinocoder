@@ -269,6 +269,9 @@ class Eji_Ordering:
 
     def get_canonical_form(self):
         """Returns the ordering in canonical form."""
+        # This implementation gets a j-ordering, treats it as a perm, then inverts that perm, then applies it.
+        # That seems rather laborious. There is probably a better way.
+        # TODO: Find a better way!
         perm = self.get_perm()
         return Eji_Ordering([Eji(perm[j], i) for (j, i) in self._eji_list])
 
