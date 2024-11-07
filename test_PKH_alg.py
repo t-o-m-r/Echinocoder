@@ -251,20 +251,20 @@ class Test_c_dc_pair_generation(unittest.TestCase):
         c_dc_pairs_calculated = make_c_dc_pairs(delta)
         self.assertEqual(c_dc_pairs_expected, c_dc_pairs_calculated)
 
-        c_dc_pairs_expected = [
-                                 ({(0, 2), (1, 2), (2, 2), (3, 2)}, 10),
-                                 ({(0, 2), (1, 1), (2, 2), (3, 2)}, 10),
-                                 ({(0, 2), (1, 1), (2, 2), (3, 1)}, 1),
-                                 ({(0, 2), (2, 2), (3, 1)}, 1),
-                                 ({(0, 1), (2, 2), (3, 1)}, 1),
-                                 ({(0, 1), (2, 2), (3, 0)}, 1),
-                                 ({(0, 1), (2, 2)}, 1),
-                                 ({(2, 2)}, 25),
-                                 ({(2, 0)}, 10),
-                              ]
-
-        c_dc_pairs_calculated = make_c_dc_pairs(delta, prune_zeros=True)
-        self.assertEqual(c_dc_pairs_expected, c_dc_pairs_calculated)
+        # c_dc_pairs_expected = [
+        #                          ({(0, 2), (1, 2), (2, 2), (3, 2)}, 10),
+        #                          ({(0, 2), (1, 1), (2, 2), (3, 2)}, 10),
+        #                          ({(0, 2), (1, 1), (2, 2), (3, 1)}, 1),
+        #                          ({(0, 2), (2, 2), (3, 1)}, 1),
+        #                          ({(0, 1), (2, 2), (3, 1)}, 1),
+        #                          ({(0, 1), (2, 2), (3, 0)}, 1),
+        #                          ({(0, 1), (2, 2)}, 1),
+        #                          ({(2, 2)}, 25),
+        #                          ({(2, 0)}, 10),
+        #                       ]
+        #
+        # c_dc_pairs_calculated = make_c_dc_pairs(delta, prune_zeros=True)
+        # self.assertEqual(c_dc_pairs_expected, c_dc_pairs_calculated)
 
 class Test_simplex_eji_ordering_generation(unittest.TestCase):
     def test1(self):

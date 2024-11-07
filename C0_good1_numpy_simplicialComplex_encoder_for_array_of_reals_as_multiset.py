@@ -430,7 +430,7 @@ def make_c_dc_pairs(#n , k,  # Only need n and/or k if doing "original initialis
                     #     (1,2) : 0.25,                             #a point in the 2nd simplex (simplex 1)
                     #     (2,0) : 0.1,                              #a point in the 3rd simplex (simplex 2)
                     #   },
-        prune_zeros = False,  # False is recommended default! See comments below.
+                    # prune_zeros = False,  # False is recommended default! See comments below.
         ):
     """
     We output a list of c_dc_pairs.  Each pair (c,dc) contains a simplex vertex, c, together with a coefficient, dc.
@@ -456,7 +456,11 @@ def make_c_dc_pairs(#n , k,  # Only need n and/or k if doing "original initialis
     #print("dc_vals from flat_sums = ")
     #[print(_) for _ in dc_vals]
 
-    c_dc_pairs = [ ({ (j,max(moo)) for j in range(n) if (moo:=[ min(iis) for (jj,iis,_) in flat_sums[index:] if jj == j ]) }, dc_vals[index]) for index in range(len(flat_sums)) if not prune_zeros or dc_vals[index] != 0 ] # See set note below
+    c_dc_pairs = [({(j, max(moo)) for j in range(n) if
+                    (moo := [min(iis) for (jj, iis, _) in flat_sums[index:] if jj == j])}, dc_vals[index]) for index in
+                  range(len(flat_sums))  #if not prune_zeros or dc_vals[index] != 0
+                  ]  # See set note below
+
     """A set rather than a list is used to hold the coordinate vectors because later we want to find out 
     "elements in one set not in another" ... and so if we had used lists we would have to construct a set from a 
     list later anyway.  Fortunately the objects represented are sets anyway (they represent sums of dissimilar
