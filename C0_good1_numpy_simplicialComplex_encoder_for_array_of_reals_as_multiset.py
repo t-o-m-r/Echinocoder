@@ -65,15 +65,90 @@ import numpy as np
 import unittest
 from dataclasses import dataclass, field
 
-def encode(data, use_n2k2_optimisation=False):
+def encode(data, use_n2k2_optimisation=False, input_is_in_DeltakToN=False):
+    """
+    By default, this function takes as input list of vectors in R^N to encode in a perutation invariant way.
+    E.g. to encode the three two-vectors [1,2], [4,2] and [2,0] one might supply it with
 
-    _, ans = map_Delta_k_to_the_n_to_c_l_dc_triples(delta=vectors_to_delta(data), use_n2k2=use_n2k2_optimisation)
+        data = np.array([[1,2], [4,2], [2,0]]).
 
-    #Interleave the two outputs in debug mode:
-    # _, ans2 = map_Delta_k_to_the_n_to_c_l_dc_triples(delta=vectors_to_delta(data), use_n2k2=True)
-    #return [ val for pair in zip(ans,ans2) for val in pair ]
+    However, if the flag "input_is_in_DkToN" is set to true, the input is assumed to be already mapped into
+    simplex coordinates for a space which is an n-fold product of k-simplices.  This feature is to allow
+    simple unit tests.
 
-    return ans
+    Args:
+        data:
+        use_n2k2_optimisation:
+
+    Returns:
+        embedding
+    """
+
+    n, k = data.shape # Valid whether input_is_in_DeltakToN is True or False
+
+    if input_is_in_DeltakToN:
+        delta = data # Don't translate data as already in (Delta^k)^n.
+    else:
+        delta = vectors_to_delta(data) # convert (R^k)^n to (Delta^k)^n.
+
+    if use_n2k2_optimisation and n == 2 and k == 2:
+        c_dc_pairs = make_c_dc_pairs_n2k2(delta)
+    else:
+        c_dc_pairs = make_c_dc_pairs(delta)
+
+    ####TEST_REMOVE#### vertices = Maximal_Simplex_Vertices([ c for c,_ in c_dc_pairs ])
+    ####TEST_REMOVE#### #print("vertices (before modding by S(n)) =")
+    ####TEST_REMOVE#### #[ print(c) for c in vertices ]
+
+    ####TEST_REMOVE#### """
+    ####TEST_REMOVE#### The following simplex_eji_ordering contains the implied basis element ordering (greatest first)
+    ####TEST_REMOVE#### which defined the simplex in which we the point delta stands.
+    ####TEST_REMOVE#### """
+    ####TEST_REMOVE#### simplex_eji_ordering = vertices.to_eji_ordering()
+    ####TEST_REMOVE#### #print("simplex_eji_ordering (before mod S(n)) =")
+    ####TEST_REMOVE#### #[ print(eji) for eji in simplex_eji_ordering ]
+
+    ####TEST_REMOVE#### # We must canonicalise the simplex by detecting and modding out the relevant perm of S(n).
+
+    ####TEST_REMOVE####
+    ####TEST_REMOVE#### # First detect the perm needed to take our simplex to canonical form:
+    ####TEST_REMOVE#### perm = make_perm_from_simplex(simplex_eji_ordering, from_right=True) # It is not critical whether we come from right or left, since any canonical form will do. I choose from_right as it matches the conventin I used in some OneNote nootbooks while I was getting to grips with things. from_left would be faster as no need to reverse a list internally.  Consider moving to from_left later.
+    ####TEST_REMOVE#### #print("perm = ",perm)
+    ####TEST_REMOVE####
+    ####TEST_REMOVE#### # Actually we need the inverse perm!
+    ####TEST_REMOVE#### inverse_perm = invert_perm(perm)
+    ####TEST_REMOVE#### #print("inverse perm = ", inverse_perm)
+
+    ####TEST_REMOVE#### # Don't actually need the next thing -- but compute it for debug purposes "just in case"
+    ####TEST_REMOVE#### simplex_eji_ordering_after_mod_Sn = [ (inverse_perm[j], i) for (j,i) in simplex_eji_ordering ]
+    ####TEST_REMOVE#### #print("simplex_eji_ordering (after mod S(n)) =")
+    ####TEST_REMOVE#### #[ print(eji) for eji in simplex_eji_ordering_after_mod_Sn ]
+
+    ####TEST_REMOVE#### # Now 'canonicalise' the vertices in c_dc_pairs using that perm:
+    ####TEST_REMOVE#### c_dc_pairs_after_mod_Sn = [ ({ (inverse_perm[j], i) for (j,i) in c }, dc)  for (c,dc) in c_dc_pairs   ]
+
+    # TEST DON'T APPLY PERM!!!!! It was a mistake!!!!!
+    c_dc_pairs_after_mod_Sn = c_dc_pairs
+
+    # print("c_dc_pairs (after modding by S(n)) =")
+    # [ print(c) for c in c_dc_pairs_after_mod_Sn ]
+
+    shrink = True
+    c_l_dc_triples = [(c, ell(c, k, shrink=shrink), dc) for (c, dc) in c_dc_pairs_after_mod_Sn]
+    # print("c_l_dc_triples (after modding by S(n)) =")
+    # [ print(c) for c in c_l_dc_triples ]
+    big_n = 2 * n * k + 1
+    # Please someone re-implement this dot product without so many comprehensions ... or at any rate BETTER:
+    # Want output here to be sum_i pr(r_i, big_n) x_i)
+    # where, in effect, r_i and x_i would be defined by
+    # [ blah for _, r_i, x_i in c_l_dc_triples ]
+
+    # print("pr(20)=",pr(20,big_n))
+    point_in_R_bigN = sum([d * pr(ell, big_n) for _, ell, d in c_l_dc_triples]) + np.zeros(big_n)  # Addition of zero
+    # term at end ensures that we still get a zero vec (not 0) in the event that c_l_dc_triples is empty!
+
+    return point_in_R_bigN
+
 
 @dataclass
 class Position_within_Simplex:
@@ -466,68 +541,6 @@ def make_c_dc_pairs(#n , k,  # Only need n and/or k if doing "original initialis
 def pr(r, big_n):
     # Method below makes negative numbers from positive integer r if r is big enough!  Floating point wrap around! Must make r real
     return np.power(np.float64(r), np.arange(big_n)) # Starting at zeroeth power so that r can be both zero and non-zero without constraint.
-
-def map_Delta_k_to_the_n_to_c_l_dc_triples(delta : Position_within_Simplex_Product, use_n2k2=False):
-
-    n,k = delta.shape
-
-    if use_n2k2 and n==2 and k==2:
-        c_dc_pairs = make_c_dc_pairs_n2k2(delta)
-    else:
-        c_dc_pairs = make_c_dc_pairs(delta)
- 
-    ####TEST_REMOVE#### vertices = Maximal_Simplex_Vertices([ c for c,_ in c_dc_pairs ])
-    ####TEST_REMOVE#### #print("vertices (before modding by S(n)) =")
-    ####TEST_REMOVE#### #[ print(c) for c in vertices ]
-
-    ####TEST_REMOVE#### """
-    ####TEST_REMOVE#### The following simplex_eji_ordering contains the implied basis element ordering (greatest first)
-    ####TEST_REMOVE#### which defined the simplex in which we the point delta stands.
-    ####TEST_REMOVE#### """
-    ####TEST_REMOVE#### simplex_eji_ordering = vertices.to_eji_ordering()
-    ####TEST_REMOVE#### #print("simplex_eji_ordering (before mod S(n)) =")
-    ####TEST_REMOVE#### #[ print(eji) for eji in simplex_eji_ordering ]
-
-    ####TEST_REMOVE#### # We must canonicalise the simplex by detecting and modding out the relevant perm of S(n).
-
-
-    ####TEST_REMOVE#### 
-    ####TEST_REMOVE#### # First detect the perm needed to take our simplex to canonical form:
-    ####TEST_REMOVE#### perm = make_perm_from_simplex(simplex_eji_ordering, from_right=True) # It is not critical whether we come from right or left, since any canonical form will do. I choose from_right as it matches the conventin I used in some OneNote nootbooks while I was getting to grips with things. from_left would be faster as no need to reverse a list internally.  Consider moving to from_left later.
-    ####TEST_REMOVE#### #print("perm = ",perm)
-    ####TEST_REMOVE#### 
-    ####TEST_REMOVE#### # Actually we need the inverse perm!
-    ####TEST_REMOVE#### inverse_perm = invert_perm(perm)
-    ####TEST_REMOVE#### #print("inverse perm = ", inverse_perm)
-
-    ####TEST_REMOVE#### # Don't actually need the next thing -- but compute it for debug purposes "just in case"
-    ####TEST_REMOVE#### simplex_eji_ordering_after_mod_Sn = [ (inverse_perm[j], i) for (j,i) in simplex_eji_ordering ] 
-    ####TEST_REMOVE#### #print("simplex_eji_ordering (after mod S(n)) =")
-    ####TEST_REMOVE#### #[ print(eji) for eji in simplex_eji_ordering_after_mod_Sn ]
-
-    ####TEST_REMOVE#### # Now 'canonicalise' the vertices in c_dc_pairs using that perm:
-    ####TEST_REMOVE#### c_dc_pairs_after_mod_Sn = [ ({ (inverse_perm[j], i) for (j,i) in c }, dc)  for (c,dc) in c_dc_pairs   ]
-
-    # TEST DON'T APPLY PERM!!!!! It was a mistake!!!!!
-    c_dc_pairs_after_mod_Sn = c_dc_pairs
-
-    #print("c_dc_pairs (after modding by S(n)) =")
-    #[ print(c) for c in c_dc_pairs_after_mod_Sn ]
-    
-    shrink = True
-    c_l_dc_triples = [ (c, ell(c,k,shrink=shrink), dc) for (c,dc) in c_dc_pairs_after_mod_Sn ]
-    #print("c_l_dc_triples (after modding by S(n)) =")
-    #[ print(c) for c in c_l_dc_triples ]
-    big_n = 2*n*k + 1
-    # Please someone re-implement this dot product without so many comprehensions ... or at any rate BETTER:
-    # Want output here to be sum_i pr(r_i, big_n) x_i)
-    # where, in effect, r_i and x_i would be defined by
-    # [ blah for _, r_i, x_i in c_l_dc_triples ]
-
-    #print("pr(20)=",pr(20,big_n))
-    point_in_R_bigN = sum([d * pr(ell, big_n) for _, ell, d in c_l_dc_triples]) + np.zeros(big_n)  # Addition of zero term at end ensures that we still get a zero vec (not 0) in the event that c_l_dc_triples is empty!
-
-    return c_l_dc_triples, point_in_R_bigN 
 
 def vector_to_simplex_point(vec):
     k = len(vec)
