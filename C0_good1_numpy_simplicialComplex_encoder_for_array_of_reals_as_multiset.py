@@ -123,22 +123,21 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
     daughter_simplex_vertices = [
         Eji_LinComb(n,k,[c for c,_ in c_dc_pairs_sorted_by_dc[:i+1]]) for i in range(len(c_dc_pairs_sorted_by_dc))
     ]
-    print("Daughter simplex vertices before S(n)")
+    print("\nDaughter simplex vertices before S(n)")
     [print(ejilc) for ejilc in daughter_simplex_vertices]
+    print("\nDaughter simplex vertices after S(n)")
+    [print(ejilc.get_canonical_form()) for ejilc in daughter_simplex_vertices]
 
+    #[print(vertex) for vertex in simplex.get_vertex_list()] # Only needed for debug.
+    #print("simplex_eji_ordering (before mod S(n)) = ") # Only needed for debug.
+    #[print(eji) for eji in simplex.get_Eji_ordering()] # Only needed for debug.
 
+    #print("simplex_eji_ordering (after mod S(n)) = ") # Only needed for debug.
+    #[print(eji) for eji in simplex.get_Eji_ordering().get_canonical_form()] # Only needed for debug.
 
-
-    [print(vertex) for vertex in simplex.get_vertex_list()] # Only needed for debug.
-    print("simplex_eji_ordering (before mod S(n)) = ") # Only needed for debug.
-    [print(eji) for eji in simplex.get_Eji_ordering()] # Only needed for debug.
-
-    print("simplex_eji_ordering (after mod S(n)) = ") # Only needed for debug.
-    [print(eji) for eji in simplex.get_Eji_ordering().get_canonical_form()] # Only needed for debug.
-
-    print("simplex (after modding by S(n)) =") # Only needed for debug.
+    #print("simplex (after modding by S(n)) =") # Only needed for debug.
     #print(simplex.get_canonical_form()) # Only needed for debug.
-    [print(vertex) for vertex in simplex.get_canonical_form().get_vertex_list()] # Only needed for debug.
+    #[print(vertex) for vertex in simplex.get_canonical_form().get_vertex_list()] # Only needed for debug.
 
     ####TEST_REMOVE#### # Now 'canonicalise' the vertices in c_dc_pairs using that perm:
     ####TEST_REMOVE#### c_dc_pairs_after_mod_Sn = [ ({ (inverse_perm[j], i) for (j,i) in c }, dc)  for (c,dc) in c_dc_pairs   ]
@@ -355,8 +354,12 @@ class Eji_LinComb:
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def get_canonical_form(self):
-        pass
+    def get_canonical_form(self) -> Union['Eji_LinComb']:
+        ans = Eji_LinComb.__new__(Eji_LinComb)
+        ans._index = self._index
+        ans._eji_counts = tools.sort_np_array_rows_lexicographically(self._eji_counts)
+        return ans
+
 
 
 @dataclass

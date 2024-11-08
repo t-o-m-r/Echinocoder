@@ -74,11 +74,16 @@ class Test_Eji_Linear_Combinations(unittest.TestCase):
         self.assertEqual(emptyLinComb.index(), 0)
 
         y = Eji_LinComb(0,0)
-        y._setup_debug(1, np.array([[0, 0, 2],
-                                          [0, 1, 1],
-                                          [1, 0, 3],
+        y._setup_debug(5, np.array([[0, 0, 3],
+                                          [1, 1, 1],
+                                          [0, 4, 3],
                                           [0, 0, 2],]))
-        y_canonical = y.get_canonical_form()
+        y_canonical = Eji_LinComb(0,0)
+        y_canonical._setup_debug(5, np.array([[0, 0, 2],
+                                                    [0, 0, 3],
+                                                    [0, 4, 3],
+                                                    [1, 1, 1]]))
+        self.assertEqual(y.get_canonical_form(), y_canonical)
 
 class Test_flat_sums(unittest.TestCase):
     def test(self):
