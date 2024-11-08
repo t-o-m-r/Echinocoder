@@ -58,6 +58,28 @@ class Test_Ell(unittest.TestCase):
         self.assertEqual(ell({(0,1), (1,2), (2,1)}, k), 29)  #   0  + k**0 + k**1 + k**2
         self.assertEqual(ell({(0,1), (1,2), (2,2)}, k), 30)  #   0  + k**0 + k**1 + k**2
 
+class Test_Eji_Linear_Combinations(unittest.TestCase):
+    def test(self):
+        n, k = 5, 4
+        v1 = Maximal_Simplex_Vertex({Eji(2, 1), Eji(3, 0)})
+        v2 = Maximal_Simplex_Vertex({Eji(2, 1), Eji(4, 2)})
+        emptyLinComb = Eji_LinComb(n,k)
+        x = Eji_LinComb(n,k)
+        x12 = Eji_LinComb(n,k,[v1,v2])
+        self.assertEqual(x, emptyLinComb)
+        x.add(v1)
+        x.add(v2)
+        self.assertEqual(x, x12)
+        self.assertEqual(x12.index(), 2)
+        self.assertEqual(emptyLinComb.index(), 0)
+
+        y = Eji_LinComb(0,0)
+        y._setup_debug(1, np.array([[0, 0, 2],
+                                          [0, 1, 1],
+                                          [1, 0, 3],
+                                          [0, 0, 2],]))
+        y_canonical = y.get_canonical_form()
+
 class Test_flat_sums(unittest.TestCase):
     def test(self):
 
@@ -323,6 +345,31 @@ class Test_canonicalisation_and_MSV(unittest.TestCase):
         # Fiddle with cache(s) and test again:
         msv_canonical.get_canonical_form()
         self.assertEqual(msv_canonical, msv_original.get_canonical_form())
+
+class Test_tools(unittest.TestCase):
+    def test_lex_sort(self):
+        unsorted_1 = np.array([[1, 0, 2],
+                               [0, 5, 2],
+                               [3, 0, 8]])
+        sorted_1 = np.array([[0, 5, 2],
+                             [1, 0, 2],
+                             [3, 0, 8]])
+        assert (sorted_1 == tools.sort_np_array_rows_lexicographically(unsorted_1)).all()
+
+        unsorted_2 = np.array([[1, 0, 2, 1],
+                               [0, 5, 2, 4],
+                               [4, 5, 2, 8],
+                               [3, 0, 7, 2],
+                               [0, 5, 2, 1],
+                               [3, 0, 8, 2]])
+        sorted_2 = np.array([[0, 5, 2, 1],
+                             [0, 5, 2, 4],
+                             [1, 0, 2, 1],
+                             [3, 0, 7, 2],
+                             [3, 0, 8, 2],
+                             [4, 5, 2, 8]])
+        assert (sorted_2 == tools.sort_np_array_rows_lexicographically(unsorted_2)).all()
+
 
 def run_unit_tests():
     unittest.main(exit=False)

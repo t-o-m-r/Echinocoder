@@ -58,6 +58,8 @@
 
 from sys import version_info
 
+import numpy
+
 import tools
 
 if not version_info >= (3, 7):
@@ -69,7 +71,8 @@ import unittest
 from dataclasses import dataclass, field
 from typing import Union
 
-def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'], use_n2k2_optimisation=False, input_is_in_DeltakToN=False) -> np.ndarray:
+def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
+           use_n2k2_optimisation=False, input_is_in_DeltakToN=False) -> np.ndarray:
     """
     By default, this function takes as input a length-n list of k-vectors (i.e. points in (R^k)^n)
     to encode in a perutation invariant way in R^(2nk+1).
@@ -107,20 +110,35 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'], use_n2k2_
     else:
         c_dc_pairs = make_c_dc_pairs(delta)
 
-    simplex = Maximal_Simplex([ c for c,_ in c_dc_pairs ])
+    c_dc_pairs_sorted_by_dc = sorted(c_dc_pairs, key=lambda x: x[1], reverse=True) # largest dc first.
+    print("c_dc_pairs .... in order of decreasing dc.") # Only needed for debug.
+    [print(_) for _ in c_dc_pairs_sorted_by_dc] # Only needed for debug.
 
-    print("simplex (before modding by S(n)) =")
-    #print(simplex)
-    [print(vertex) for vertex in simplex.get_vertex_list()]
-    print("simplex_eji_ordering (before mod S(n)) = ")
-    [print(eji) for eji in simplex.get_Eji_ordering()]
+    simplex = Maximal_Simplex([c for c, _ in c_dc_pairs])  # Only needed for debug.
+    # print("simplex (before modding by S(n)) =")  # Only needed for debug.
+    # print(simplex) # Only needed for debug.
 
-    print("simplex_eji_ordering (after mod S(n)) = ")
-    [print(eji) for eji in simplex.get_Eji_ordering().get_canonical_form()]
+    # Barycentric-subdivide the mother simplex "simplex" into smaller ones, of which the "daugter_simplex"
+    # is the one containing our important point.
+    daughter_simplex_vertices = [
+        Eji_LinComb(n,k,[c for c,_ in c_dc_pairs_sorted_by_dc[:i+1]]) for i in range(len(c_dc_pairs_sorted_by_dc))
+    ]
+    print("Daughter simplex vertices before S(n)")
+    [print(ejilc) for ejilc in daughter_simplex_vertices]
 
-    print("simplex (after modding by S(n)) =")
-    #print(simplex.get_canonical_form())
-    [print(vertex) for vertex in simplex.get_canonical_form().get_vertex_list()]
+
+
+
+    [print(vertex) for vertex in simplex.get_vertex_list()] # Only needed for debug.
+    print("simplex_eji_ordering (before mod S(n)) = ") # Only needed for debug.
+    [print(eji) for eji in simplex.get_Eji_ordering()] # Only needed for debug.
+
+    print("simplex_eji_ordering (after mod S(n)) = ") # Only needed for debug.
+    [print(eji) for eji in simplex.get_Eji_ordering().get_canonical_form()] # Only needed for debug.
+
+    print("simplex (after modding by S(n)) =") # Only needed for debug.
+    #print(simplex.get_canonical_form()) # Only needed for debug.
+    [print(vertex) for vertex in simplex.get_canonical_form().get_vertex_list()] # Only needed for debug.
 
     ####TEST_REMOVE#### # Now 'canonicalise' the vertices in c_dc_pairs using that perm:
     ####TEST_REMOVE#### c_dc_pairs_after_mod_Sn = [ ({ (inverse_perm[j], i) for (j,i) in c }, dc)  for (c,dc) in c_dc_pairs   ]
@@ -306,6 +324,39 @@ class Maximal_Simplex_Vertex:
 
     def get_permuted_by(self, perm):
         return Maximal_Simplex_Vertex({Eji(perm[eji.j], eji.i) for eji in self._vertex_set})
+
+@dataclass
+class Eji_LinComb:
+    _index : int
+    _eji_counts : np.ndarray
+
+    def index(self):
+        """How many things were added together to make this Linear Combination."""
+        return self._index
+
+    def __init__(self, n: int, k: int, list_of_Maximal_Simplex_Vertices: list[Maximal_Simplex_Vertex] | None = None):
+        self._index = 0
+        self._eji_counts = np.zeros((n, k), dtype=int)
+        if list_of_Maximal_Simplex_Vertices:
+            for msv in list_of_Maximal_Simplex_Vertices: self.add(msv)
+
+    def _setup_debug(self, index: int, eji_counts: np.ndarray): # Really just for unit tests. Don't use in main alg code.
+        self._index = index
+        self._eji_counts = eji_counts
+
+    def add(self, msv: Maximal_Simplex_Vertex):
+        self._index += 1
+        for j, i in msv: self._eji_counts[j, i] += 1
+
+
+    def __eq__(self, other):
+        return self._index == other._index and np.array_equal(self._eji_counts, other._eji_counts)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def get_canonical_form(self):
+        pass
 
 
 @dataclass
