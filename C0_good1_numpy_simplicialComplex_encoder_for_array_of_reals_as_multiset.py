@@ -108,10 +108,10 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'], use_n2k2_
         c_dc_pairs = make_c_dc_pairs(delta)
 
     simplex = Maximal_Simplex([ c for c,_ in c_dc_pairs ])
-    
+
     print("simplex (before modding by S(n)) =")
     #print(simplex)
-    [print(vertex) for vertex in simplex._vertex_list]
+    [print(vertex) for vertex in simplex.get_vertex_list()]
     print("simplex_eji_ordering (before mod S(n)) = ")
     [print(eji) for eji in simplex.get_Eji_ordering()]
 
@@ -120,24 +120,7 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'], use_n2k2_
 
     print("simplex (after modding by S(n)) =")
     #print(simplex.get_canonical_form())
-    [print(vertex) for vertex in simplex.get_canonical_form()._vertex_list]
-
-
-    # We could canonicalise the simplex by detecting and modding out the relevant perm of S(n).
-
-    ####TEST_REMOVE####
-    ####TEST_REMOVE#### # First detect the perm needed to take our simplex to canonical form:
-    ####TEST_REMOVE#### perm = make_perm_from_simplex(simplex_eji_ordering, from_right=True) # It is not critical whether we come from right or left, since any canonical form will do. I choose from_right as it matches the conventin I used in some OneNote nootbooks while I was getting to grips with things. from_left would be faster as no need to reverse a list internally.  Consider moving to from_left later.
-    ####TEST_REMOVE#### #print("perm = ",perm)
-    ####TEST_REMOVE####
-    ####TEST_REMOVE#### # Actually we need the inverse perm!
-    ####TEST_REMOVE#### inverse_perm = invert_perm(perm)
-    ####TEST_REMOVE#### #print("inverse perm = ", inverse_perm)
-
-    ####TEST_REMOVE#### # Don't actually need the next thing -- but compute it for debug purposes "just in case"
-    ####TEST_REMOVE#### simplex_eji_ordering_after_mod_Sn = [ (inverse_perm[j], i) for (j,i) in simplex_eji_ordering ]
-    ####TEST_REMOVE#### #print("simplex_eji_ordering (after mod S(n)) =")
-    ####TEST_REMOVE#### #[ print(eji) for eji in simplex_eji_ordering_after_mod_Sn ]
+    [print(vertex) for vertex in simplex.get_canonical_form().get_vertex_list()]
 
     ####TEST_REMOVE#### # Now 'canonicalise' the vertices in c_dc_pairs using that perm:
     ####TEST_REMOVE#### c_dc_pairs_after_mod_Sn = [ ({ (inverse_perm[j], i) for (j,i) in c }, dc)  for (c,dc) in c_dc_pairs   ]
@@ -163,7 +146,6 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'], use_n2k2_
     # term at end ensures that we still get a zero vec (not 0) in the event that c_l_dc_triples is empty!
 
     return point_in_R_bigN
-
 
 @dataclass
 class Position_within_Simplex:
@@ -348,6 +330,9 @@ class Maximal_Simplex:
         perm = self.get_Eji_ordering().get_perm()
         self._canonical_simplex = Maximal_Simplex([vertex.get_permuted_by(perm) for vertex in self._vertex_list])
         return self._canonical_simplex
+
+    def get_vertex_list(self) -> list[Maximal_Simplex_Vertex]:
+        return self._vertex_list
 
     def get_Eji_ordering(self) -> Eji_Ordering:
         # If already calculated, return the eji ordering from cache:
