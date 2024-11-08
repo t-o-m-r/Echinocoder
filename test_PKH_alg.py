@@ -289,6 +289,41 @@ class Test_canonicalisation_and_MSV(unittest.TestCase):
         vBad = Maximal_Simplex_Vertex({Eji(2,3), Eji(2,5), Eji(4,2)}) # Bad since 2 repeats in the j
         self.assertRaises(Exception, vBad.check_valid)
 
+        msv_original = Maximal_Simplex([
+            Maximal_Simplex_Vertex({Eji(j=0, i=2), Eji(j=1, i=2), Eji(j=3, i=2), Eji(j=2, i=2)}),
+            Maximal_Simplex_Vertex({Eji(j=1, i=1), Eji(j=0, i=2), Eji(j=3, i=2), Eji(j=2, i=2)}), 
+            Maximal_Simplex_Vertex({Eji(j=1, i=1), Eji(j=0, i=2), Eji(j=3, i=1), Eji(j=2, i=2)}), 
+            Maximal_Simplex_Vertex({Eji(j=1, i=0), Eji(j=0, i=2), Eji(j=3, i=1), Eji(j=2, i=2)}), 
+            Maximal_Simplex_Vertex({Eji(j=3, i=1), Eji(j=0, i=2), Eji(j=2, i=2)}), 
+            Maximal_Simplex_Vertex({Eji(j=0, i=1), Eji(j=3, i=1), Eji(j=2, i=2)}), 
+            Maximal_Simplex_Vertex({Eji(j=0, i=1), Eji(j=3, i=0), Eji(j=2, i=2)}), 
+            Maximal_Simplex_Vertex({Eji(j=0, i=1), Eji(j=2, i=2)}), 
+            Maximal_Simplex_Vertex({Eji(j=2, i=2), Eji(j=0, i=0)}), 
+            Maximal_Simplex_Vertex({Eji(j=2, i=2)}), 
+            Maximal_Simplex_Vertex({Eji(j=2, i=1)}), 
+            Maximal_Simplex_Vertex({Eji(j=2, i=0)})])
+
+        msv_canonical = Maximal_Simplex([
+            Maximal_Simplex_Vertex({Eji(j=0, i=2), Eji(j=3, i=2), Eji(j=1, i=2), Eji(j=2, i=2)}),
+            Maximal_Simplex_Vertex({Eji(j=3, i=1), Eji(j=0, i=2), Eji(j=1, i=2), Eji(j=2, i=2)}),
+            Maximal_Simplex_Vertex({Eji(j=3, i=1), Eji(j=0, i=2), Eji(j=1, i=2), Eji(j=2, i=1)}),
+            Maximal_Simplex_Vertex({Eji(j=0, i=2), Eji(j=1, i=2), Eji(j=2, i=1), Eji(j=3, i=0)}),
+            Maximal_Simplex_Vertex({Eji(j=0, i=2), Eji(j=1, i=2), Eji(j=2, i=1)}),
+            Maximal_Simplex_Vertex({Eji(j=1, i=1), Eji(j=2, i=1), Eji(j=0, i=2)}),
+            Maximal_Simplex_Vertex({Eji(j=1, i=1), Eji(j=2, i=0), Eji(j=0, i=2)}),
+            Maximal_Simplex_Vertex({Eji(j=1, i=1), Eji(j=0, i=2)}),
+            Maximal_Simplex_Vertex({Eji(j=1, i=0), Eji(j=0, i=2)}),
+            Maximal_Simplex_Vertex({Eji(j=0, i=2)}),
+            Maximal_Simplex_Vertex({Eji(j=0, i=1)}),
+            Maximal_Simplex_Vertex({Eji(j=0, i=0)})])
+
+
+        self.assertEqual(msv_canonical, msv_original.get_canonical_form())
+
+        # Fiddle with cache(s) and test again:
+        msv_canonical.get_canonical_form()
+        self.assertEqual(msv_canonical, msv_original.get_canonical_form())
+
 def run_unit_tests():
     unittest.main(exit=False)
 

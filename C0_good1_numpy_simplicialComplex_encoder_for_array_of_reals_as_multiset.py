@@ -109,12 +109,19 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'], use_n2k2_
 
     simplex = Maximal_Simplex([ c for c,_ in c_dc_pairs ])
     print("simplex (before modding by S(n)) =")
+    #print(simplex)
     [print(vertex) for vertex in simplex._vertex_list]
     print("simplex_eji_ordering (before mod S(n)) = ")
     [print(eji) for eji in simplex.get_Eji_ordering()]
 
     print("simplex_eji_ordering (after mod S(n)) = ")
     [print(eji) for eji in simplex.get_Eji_ordering().get_canonical_form()]
+
+    print("simplex (after modding by S(n)) =")
+    #print(simplex.get_canonical_form())
+    [print(vertex) for vertex in simplex.get_canonical_form()._vertex_list]
+
+
     # We could canonicalise the simplex by detecting and modding out the relevant perm of S(n).
 
     ####TEST_REMOVE####
@@ -314,16 +321,32 @@ class Maximal_Simplex_Vertex:
         j_vals = { eji.j for eji in self._vertex_set }
         assert len(j_vals) == len(self._vertex_set)
 
+    def get_permuted_by(self, perm):
+        return Maximal_Simplex_Vertex({Eji(perm[eji.j], eji.i) for eji in self._vertex_set})
+
+
 @dataclass
 class Maximal_Simplex:
     """These are stored in a list which is required to be ordered from big to small
     under the same ordering used to order eji's."""
     _vertex_list: list[Maximal_Simplex_Vertex]
-    _eji_ordering_cache: Eji_Ordering
+    _eji_ordering_cache: Union["Eji_Ordering", "None"] = field(compare=False) # don't compare caches on equality test
+    _canonical_simplex: Union["Maximal_Simplex", "None"] = field(compare=False) # don't compare caches on equality test
 
     def __init__(self, list_of_vertices):
         self._vertex_list = list_of_vertices
         self._eji_ordering_cache = None
+        self._canonical_simplex = None
+
+    def get_canonical_form(self):
+        # If already calculated, return the canonical simplex from cache:
+        if self._canonical_simplex is not None:
+            return self._canonical_simplex
+
+        # Need to initialise canonical simplex cache:
+        perm = self.get_Eji_ordering().get_perm()
+        self._canonical_simplex = Maximal_Simplex([vertex.get_permuted_by(perm) for vertex in self._vertex_list])
+        return self._canonical_simplex
 
     def get_Eji_ordering(self) -> Eji_Ordering:
         # If already calculated, return the eji ordering from cache:
