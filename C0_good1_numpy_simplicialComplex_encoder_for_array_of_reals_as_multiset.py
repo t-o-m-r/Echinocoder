@@ -108,6 +108,7 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'], use_n2k2_
         c_dc_pairs = make_c_dc_pairs(delta)
 
     simplex = Maximal_Simplex([ c for c,_ in c_dc_pairs ])
+    
     print("simplex (before modding by S(n)) =")
     #print(simplex)
     [print(vertex) for vertex in simplex._vertex_list]
