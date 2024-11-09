@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
 import unittest
+
+import numpy as np
+
 from C0_good1_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset import *
 
 class Test_Ell(unittest.TestCase):
@@ -84,6 +87,44 @@ class Test_Eji_Linear_Combinations(unittest.TestCase):
                                                     [0, 4, 3],
                                                     [1, 1, 1]]))
         self.assertEqual(y.get_canonical_form(), y_canonical)
+
+        z1 = Eji_LinComb(0, 0)
+        z2 = Eji_LinComb(0, 0)
+        z3 = Eji_LinComb(0, 0)
+        z4 = Eji_LinComb(0, 0)
+        z1._setup_debug(5, np.array([[0, 0, 3],
+                                           [1, 1, 1],
+                                           [0, 4, 3],
+                                           [0, 0, 2], ]))
+        z2._setup_debug(5, np.array([[0, 0, 3],
+                                           [1, 1, 1],
+                                           [0, 4, 3 + np.iinfo(np.uint8).max+1], # + 0x100
+                                           #[0, 4, 3 + 0x100],  # + 0x100
+                                           [0, 0, 2], ]))
+        z3._setup_debug(5, np.array([[0, 0, 3],
+                                           [1, 1, 1],
+                                           [0, 4, 3 + np.iinfo(np.uint16).max+1], # + 0x10000
+                                           #[0, 4, 3 + 0x10000],  # + 0x10000
+                                           [0, 0, 2], ]))
+        z4._setup_debug(5, np.array([[0, 0, 3],
+                                           [1, 1, 1],
+                                           [0, 4, 3 + np.iinfo(np.uint32).max+1],  # + 0x100000000
+                                           #[0, 4, 3 + 0x100000000], # + 0x100000000
+                                           [0, 0, 2], ]))
+        print("\n")
+        print(f"z1 = {z1}")
+        print(f"z2 = {z2}")
+        print(f"z3 = {z3}")
+        print(f"z4 = {z4}")
+        # If Eji_LinComb.INT_TYPE changes from unit16 then the Equal/NotEqual choices below would change.
+        self.assertNotEqual(z1.__hash__(), z2.__hash__()) # since distinguishable at uint16
+        self.assertEqual   (z1.__hash__(), z3.__hash__()) # since indistinguishable at uint16
+        self.assertEqual   (z1.__hash__(), z4.__hash__()) # since indistinguishable at uint16
+
+        import hashlib
+        m = hashlib.md5(np.array((3, 4, 5)))
+        hash = int.from_bytes(m.digest(), 'big')
+        self.assertEqual(hash, 11334969359266172727733649456890768914)
 
 class Test_flat_sums(unittest.TestCase):
     def test(self):

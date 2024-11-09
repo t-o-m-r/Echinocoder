@@ -70,7 +70,7 @@ import numpy as np
 import unittest
 from dataclasses import dataclass, field
 from typing import Union
-
+import hashlib
 def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
            use_n2k2_optimisation=False, input_is_in_DeltakToN=False) -> np.ndarray:
     """
@@ -95,6 +95,9 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
     """
 
     n, k = data.shape # Valid whether input_is_in_DeltakToN is True or False
+
+    if n*k > np.iinfo(Eji_LinComb.INT_TYPE).max:
+        raise ValueError("Part of alg stores vertices in Eji_LinComb.INT_TYPE for has so can't work for nk above a threshold.")
 
     if type(data) == Position_within_Simplex_Product:
         delta = data # Don't reformat the data as the data is already in (Delta^k)^n.
@@ -124,9 +127,9 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
         Eji_LinComb(n,k,[c for c,_ in c_dc_pairs_sorted_by_dc[:i+1]]) for i in range(len(c_dc_pairs_sorted_by_dc))
     ]
     print("\nDaughter simplex vertices before S(n)")
-    [print(ejilc) for ejilc in daughter_simplex_vertices]
+    [print(ejilc, ejilc.__hash__()) for ejilc in daughter_simplex_vertices]
     print("\nDaughter simplex vertices after S(n)")
-    [print(ejilc.get_canonical_form()) for ejilc in daughter_simplex_vertices]
+    [print(ejilc.get_canonical_form(), ejilc.get_canonical_form().__hash__()) for ejilc in daughter_simplex_vertices]
 
     #[print(vertex) for vertex in simplex.get_vertex_list()] # Only needed for debug.
     #print("simplex_eji_ordering (before mod S(n)) = ") # Only needed for debug.
@@ -326,22 +329,33 @@ class Maximal_Simplex_Vertex:
 
 @dataclass
 class Eji_LinComb:
-    _index : int
+    INT_TYPE = np.uint16 # uint16 should be enough as the eij_counts will not exceed n*k which can therefore reach 65535
+
+    _index : INT_TYPE
     _eji_counts : np.ndarray
 
-    def index(self):
+    def index(self) -> INT_TYPE:
         """How many things were added together to make this Linear Combination."""
         return self._index
 
+    def __hash__(self):
+        # Exmaple
+        # arr = np.array([1, 2, 3, 4, 5], dtype="uint64")
+        # m = hashlib.md5(arr.astype("uint8"))
+        # m.hexdigest()
+        # '7cfdd07889b3295d6a550914ab35e068'
+        m = hashlib.md5(self._eji_counts)
+        return int.from_bytes(m.digest(), 'big') # I suspect max is ~ (1 << 128) +- 1
+
     def __init__(self, n: int, k: int, list_of_Maximal_Simplex_Vertices: list[Maximal_Simplex_Vertex] | None = None):
-        self._index = 0
-        self._eji_counts = np.zeros((n, k), dtype=int)
+        self._index = Eji_LinComb.INT_TYPE(0)
+        self._eji_counts = np.zeros((n, k), dtype=Eji_LinComb.INT_TYPE, order='C')
         if list_of_Maximal_Simplex_Vertices:
             for msv in list_of_Maximal_Simplex_Vertices: self.add(msv)
 
     def _setup_debug(self, index: int, eji_counts: np.ndarray): # Really just for unit tests. Don't use in main alg code.
-        self._index = index
-        self._eji_counts = eji_counts
+        self._index = Eji_LinComb.INT_TYPE(index)
+        self._eji_counts = np.asarray(eji_counts, dtype=Eji_LinComb.INT_TYPE, order='C')
 
     def add(self, msv: Maximal_Simplex_Vertex):
         self._index += 1
