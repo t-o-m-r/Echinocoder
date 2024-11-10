@@ -117,9 +117,9 @@ class Test_Eji_Linear_Combinations(unittest.TestCase):
         print(f"z3 = {z3}")
         print(f"z4 = {z4}")
         # If Eji_LinComb.INT_TYPE changes from unit16 then the Equal/NotEqual choices below would change.
-        self.assertNotEqual(z1.__hash__(), z2.__hash__()) # since distinguishable at uint16
-        self.assertEqual   (z1.__hash__(), z3.__hash__()) # since indistinguishable at uint16
-        self.assertEqual   (z1.__hash__(), z4.__hash__()) # since indistinguishable at uint16
+        self.assertNotEqual(z1.hash_to_128_bit_md5_int(), z2.hash_to_128_bit_md5_int()) # since distinguishable at uint16
+        self.assertEqual   (z1.hash_to_128_bit_md5_int(), z3.hash_to_128_bit_md5_int()) # since indistinguishable at uint16
+        self.assertEqual   (z1.hash_to_128_bit_md5_int(), z4.hash_to_128_bit_md5_int()) # since indistinguishable at uint16
 
         import hashlib
         m = hashlib.md5(np.array((3, 4, 5)))

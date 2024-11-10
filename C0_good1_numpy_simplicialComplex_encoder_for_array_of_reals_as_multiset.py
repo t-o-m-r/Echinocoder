@@ -57,10 +57,9 @@
 #                  }.
 
 from sys import version_info
-
 import numpy
-
 import tools
+from typing import Self
 
 if not version_info >= (3, 7):
     assert False, "We need at least python 3.7 as we rely on dictionaries being ordered! See DIC_ORDER_USED"
@@ -137,39 +136,50 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
     print("\nDaughter simplex vertices after S(n)")
     [print(ejilc, dc) for ejilc, dc in daughter_simplex_vertices_with_dc_after_Sn]
 
-    #[print(vertex) for vertex in simplex.get_vertex_list()] # Only needed for debug.
-    #print("simplex_eji_ordering (before mod S(n)) = ") # Only needed for debug.
-    #[print(eji) for eji in simplex.get_Eji_ordering()] # Only needed for debug.
+    big_n_complex = 2 * n * k + 1
+    point_in_bigNComplex = sum([dc * pr(ejilc.hash_to_unit_complex_number(), big_n_complex) for ejilc, dc in daughter_simplex_vertices_with_dc_after_Sn]) + np.zeros(big_n_complex)  # Addition of zero
 
-    #print("simplex_eji_ordering (after mod S(n)) = ") # Only needed for debug.
-    #[print(eji) for eji in simplex.get_Eji_ordering().get_canonical_form()] # Only needed for debug.
+    real_array = point_in_bigNComplex.real
+    imag_array = point_in_bigNComplex.imag
+    assert imag_array[0] == 0 # Since pr\s first elet is 1 which has 0 imaginary part
+    big_n_real = 4 * n * k + 1 # Note: not 2*(2*n*k+1) because we don't record the always-0 above.
 
-    #print("simplex (after modding by S(n)) =") # Only needed for debug.
-    #print(simplex.get_canonical_form()) # Only needed for debug.
-    #[print(vertex) for vertex in simplex.get_canonical_form().get_vertex_list()] # Only needed for debug.
+    point_in_R_bigNReal = np.concatenate((real_array, imag_array[1:])) # Omitting the first elt of imag_array as it is always zero
+    return point_in_R_bigNReal
 
-    ####TEST_REMOVE#### # Now 'canonicalise' the vertices in c_dc_pairs using that perm:
-    ####TEST_REMOVE#### c_dc_pairs_after_mod_Sn = [ ({ (inverse_perm[j], i) for (j,i) in c }, dc)  for (c,dc) in c_dc_pairs   ]
-
-    # TEST DON'T APPLY PERM!!!!! It was a mistake!!!!!
-    c_dc_pairs_after_mod_Sn = c_dc_pairs
-
-    # print("c_dc_pairs (after modding by S(n)) =")
-    # [ print(c) for c in c_dc_pairs_after_mod_Sn ]
-
-    shrink = True
-    c_l_dc_triples = [(c, ell(c, k, shrink=shrink), dc) for (c, dc) in c_dc_pairs_after_mod_Sn]
-    # print("c_l_dc_triples (after modding by S(n)) =")
-    # [ print(c) for c in c_l_dc_triples ]
-    big_n = 2 * n * k + 1
-    # Please someone re-implement this dot product without so many comprehensions ... or at any rate BETTER:
-    # Want output here to be sum_i pr(r_i, big_n) x_i)
-    # where, in effect, r_i and x_i would be defined by
-    # [ blah for _, r_i, x_i in c_l_dc_triples ]
-
-    # print("pr(20)=",pr(20,big_n))
-    point_in_R_bigN = sum([d * pr(ell, big_n) for _, ell, d in c_l_dc_triples]) + np.zeros(big_n)  # Addition of zero
-    # term at end ensures that we still get a zero vec (not 0) in the event that c_l_dc_triples is empty!
+    # #[print(vertex) for vertex in simplex.get_vertex_list()] # Only needed for debug.
+    # #print("simplex_eji_ordering (before mod S(n)) = ") # Only needed for debug.
+    # #[print(eji) for eji in simplex.get_Eji_ordering()] # Only needed for debug.
+    #
+    # #print("simplex_eji_ordering (after mod S(n)) = ") # Only needed for debug.
+    # #[print(eji) for eji in simplex.get_Eji_ordering().get_canonical_form()] # Only needed for debug.
+    #
+    # #print("simplex (after modding by S(n)) =") # Only needed for debug.
+    # #print(simplex.get_canonical_form()) # Only needed for debug.
+    # #[print(vertex) for vertex in simplex.get_canonical_form().get_vertex_list()] # Only needed for debug.
+    #
+    # ####TEST_REMOVE#### # Now 'canonicalise' the vertices in c_dc_pairs using that perm:
+    # ####TEST_REMOVE#### c_dc_pairs_after_mod_Sn = [ ({ (inverse_perm[j], i) for (j,i) in c }, dc)  for (c,dc) in c_dc_pairs   ]
+    #
+    # # TEST DON'T APPLY PERM!!!!! It was a mistake!!!!!
+    # c_dc_pairs_after_mod_Sn = c_dc_pairs
+    #
+    # # print("c_dc_pairs (after modding by S(n)) =")
+    # # [ print(c) for c in c_dc_pairs_after_mod_Sn ]
+    #
+    # #shrink = True
+    # #c_l_dc_triples = [(c, ell(c, k, shrink=shrink), dc) for (c, dc) in c_dc_pairs_after_mod_Sn]
+    # # print("c_l_dc_triples (after modding by S(n)) =")
+    # # [ print(c) for c in c_l_dc_triples ]
+    #
+    # # Please someone re-implement this dot product without so many comprehensions ... or at any rate BETTER:
+    # # Want output here to be sum_i pr(r_i, big_n) x_i)
+    # # where, in effect, r_i and x_i would be defined by
+    # # [ blah for _, r_i, x_i in c_l_dc_triples ]
+    #
+    # # print("pr(20)=",pr(20,big_n))
+    # point_in_R_bigN = sum([d * pr(ell, big_n) for _, ell, d in c_l_dc_triples]) + np.zeros(big_n)  # Addition of zero
+    # # term at end ensures that we still get a zero vec (not 0) in the event that c_l_dc_triples is empty!
 
     return point_in_R_bigN
 
@@ -364,6 +374,11 @@ class Eji_LinComb:
         top_64_bits = x >> 64
         return np.float64(top_64_bits)/(1 << 64), np.float64(bot_64_bits)/(1 << 64)
 
+    def hash_to_unit_complex_number(self):
+        mu,_ = self.hash_to_64_bit_reals_in_unit_interval()
+        theta = mu*2*numpy.pi
+        return complex(numpy.cos(theta), numpy.sin(theta))
+
     def __init__(self, n: int, k: int, list_of_Maximal_Simplex_Vertices: list[Maximal_Simplex_Vertex] | None = None):
         self._index = Eji_LinComb.INT_TYPE(0)
         self._eji_counts = np.zeros((n, k), dtype=Eji_LinComb.INT_TYPE, order='C')
@@ -379,13 +394,13 @@ class Eji_LinComb:
         for j, i in msv: self._eji_counts[j, i] += 1
 
 
-    def __eq__(self, other):
+    def __eq__(self, other: Self):
         return self._index == other._index and np.array_equal(self._eji_counts, other._eji_counts)
 
-    def __ne__(self, other):
+    def __ne__(self, other: Self):
         return not self.__eq__(other)
 
-    def get_canonical_form(self) -> Union['Eji_LinComb']:
+    def get_canonical_form(self) -> Self:
         ans = Eji_LinComb.__new__(Eji_LinComb)
         ans._index = self._index
         ans._eji_counts = tools.sort_np_array_rows_lexicographically(self._eji_counts)
@@ -671,8 +686,7 @@ def make_c_dc_pairs(delta : Position_within_Simplex_Product):
     return c_dc_pairs
 
 def pr(r, big_n):
-    # Method below makes negative numbers from positive integer r if r is big enough!  Floating point wrap around! Must make r real
-    return np.power(np.float64(r), np.arange(big_n)) # Starting at zeroeth power so that r can be both zero and non-zero without constraint.
+    return np.power(r, np.arange(big_n)) # Starting at zeroeth power so that r can be both zero and non-zero without constraint.
 
 def vector_to_simplex_point(vec):
     k = len(vec)
