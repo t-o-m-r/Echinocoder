@@ -105,7 +105,7 @@ class Test_Encoders(unittest.TestCase):
             for encoder in encoders:
                 encoding = encoder.encode(shuffled_data)
                 #encoding_fails = expected_encoding is not None and not np.array_equal(np.asarray(encoding),np.asarray(expected_encoding))
-                # Check subsequent encodings are same as first encoding.
+                # Check subsequent encodings are same as first encoding. I.e. check for permutation invariance.
                 if i==0:
                     first_encoding[encoder]=encoding
                 else:
@@ -116,6 +116,7 @@ class Test_Encoders(unittest.TestCase):
                     else:
                         np.testing.assert_allclose(np.array(encoding, dtype=float), np.array(first_encoding[encoder], dtype=float), atol=absolute_tolerance, rtol=relative_tolerance, strict=True, equal_nan=False)
 
+                # Also checks encoding against expected, if given
                 if expected_encoding is not None:
                     print("MOOO1",encoding)
                     print("MOOO2",expected_encoding)
