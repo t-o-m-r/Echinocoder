@@ -25,6 +25,8 @@ Most encoders work only reals or real vectors and generate only real encodings, 
 
 ## Testing/examples
 
+[example.py](example.py) is a simple example showing how one of the encoders could be used.
+
 [test.py](test.py) excercises some of the encoders. If they all work the script should end with a message saying something like 
 
 "----------------------------------------------------------------------
