@@ -339,16 +339,20 @@ class Eji_LinComb:
         return self._index
 
     def hash_to_128_bit_md5_int(self):
-        # Exmaple
-        # arr = np.array([1, 2, 3, 4, 5], dtype="uint64")
-        # m = hashlib.md5(arr.astype("uint8"))
-        # m.hexdigest()
-        # '7cfdd07889b3295d6a550914ab35e068'
+        """
+        N.B. This hash is of self._eji_counts only -- i.e. it ignores self._index.
+        For the purposes to which this hash will be used, that is believed to be apporopriate.
+        """
         m = hashlib.md5(self._eji_counts)
         return int.from_bytes(m.digest(), 'big') # 128 bits worth.
 
     def hash_to_64_bit_reals_in_unit_interval(self):
-        # md5 sum is 64 bits long so get two such reals
+        """
+        An md5 sum is 64 bits long so we get two such reals.
+        N.B. This hash is of self._eji_counts only -- i.e. it ignores self._index.
+        For the purposes to which this hash will be used, that is believed to be apporopriate.
+        """
+
         x = self.hash_to_128_bit_md5_int()
         bot_64_bits = x & 0xffFFffFFffFFffFF
         top_64_bits = x >> 64
