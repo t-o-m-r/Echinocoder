@@ -27,7 +27,11 @@ Nonetheless, it encodes to
 too.
 
 
-If we change one of the vectors by a small amount, the encoding changes by only a small amount:
+If we change one of the vectors by a small amount, the encoding changes by only a small amount.  E.g.
+[[ 8.    -1.    -4.     3.   ]
+ [-8.    -5.     9.     7.   ]
+ [ 8.     2.     7.    -7.001]]
+encodes to:
 [   8.      -4.     -57.     -80.    -488.    -394.       8.      12.
   -63.     144.    -952.     636.       8.       2.999  -14.99   112.
  -455.968  851.085   -4.      12.      -6.     -21.       5.     309.
@@ -59,7 +63,7 @@ expected_encoding = [   8,   -4,  -57,  -80, -488, -394,    8,   12,  -63,  144,
 
 print(f"The set of vectors \n{set_of_vectors_to_encode}\n encoded to \n{encoding}.\nWe expected\n{expected_encoding}\n\n")
 print(f"Another set of vectors \n{another_set_of_vectors_to_encode}\ndiffers from the first by a permutation of the vectors.\nNonetheless, it encodes to \n{another_encoding}\ntoo.\n\n")
-print(f"If we change one of the vectors by a small amount, the encoding changes by only a small amount:")
+print(f"If we change one of the vectors by a small amount, the encoding changes by only a small amount. E.g.\n{tweaked_set_of_vectors_to_encode}\nencodes to:")
 print(encoder_Cinf_np_ar.encode(tweaked_set_of_vectors_to_encode))
 
 
