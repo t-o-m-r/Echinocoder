@@ -7,7 +7,7 @@
 
 ## General TODO:
 
-Don't make ell produce such big numbers.
+The Simplicial encoder uses a complex trick to avoid the r values in pr growing without limit .... however as a consequence we embed in an unnesssarily large space of size 4nm+1 instead of 2nm+1.  We should think about ways of avoiding that doubling!
 
 ## Item 1
 
