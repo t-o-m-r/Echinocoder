@@ -124,13 +124,18 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
 
     # Barycentric-subdivide the mother simplex "simplex" into smaller ones, of which the "daugter_simplex"
     # is the one containing our important point.
-    daughter_simplex_vertices = [
-        Eji_LinComb(n,k,[c for c,_ in c_dc_pairs_sorted_by_dc[:i+1]]) for i in range(len(c_dc_pairs_sorted_by_dc))
+    daughter_simplex_vertices_with_dc = [
+        (Eji_LinComb(n,k,[c for c,_ in c_dc_pairs_sorted_by_dc[:i+1]]), c_dc_pairs_sorted_by_dc[i][1]) for i in range(len(c_dc_pairs_sorted_by_dc))
     ]
     print("\nDaughter simplex vertices before S(n)")
-    [print(ejilc, ejilc.hash_to_64_bit_reals_in_unit_interval()) for ejilc in daughter_simplex_vertices]
+    [print(ejilc, dc) for ejilc,dc in daughter_simplex_vertices_with_dc]
+
+    daughter_simplex_vertices_with_dc_after_Sn = [
+        (ejilc.get_canonical_form(), dc) for ejilc,dc in daughter_simplex_vertices_with_dc
+    ]
+
     print("\nDaughter simplex vertices after S(n)")
-    [print(ejilc.get_canonical_form(), ejilc.get_canonical_form().hash_to_64_bit_reals_in_unit_interval()) for ejilc in daughter_simplex_vertices]
+    [print(ejilc, dc) for ejilc, dc in daughter_simplex_vertices_with_dc_after_Sn]
 
     #[print(vertex) for vertex in simplex.get_vertex_list()] # Only needed for debug.
     #print("simplex_eji_ordering (before mod S(n)) = ") # Only needed for debug.
@@ -385,8 +390,6 @@ class Eji_LinComb:
         ans._index = self._index
         ans._eji_counts = tools.sort_np_array_rows_lexicographically(self._eji_counts)
         return ans
-
-
 
 @dataclass
 class Maximal_Simplex:
