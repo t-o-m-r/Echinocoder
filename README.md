@@ -11,7 +11,7 @@ Most encoders work only reals or real vectors and generate only real encodings, 
 ## $SP^n(\mathbb R^m)$ -- i.e. multiset encoders:
 
 <!--- the Simplicial Complez encoder is probably broken, so commenting out!
-* The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) encoder works for any $n$ and $m$ and encodes into $2 n m+1$ reals. ([encoder source](C0_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset.py))
+*  The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) encoder works for any $n$ and $m$ and encodes into $2 n m+1$ reals. ([encoder source](C0_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset.py))
 --->
 * The sorting encoder is efficient (i.e. encodes into $nm$ reals) for any $n$ but only can work with $m=1$. ([encoder source](C0_sorting_encoder_for_list_of_reals_as_multiset.py))
 * The polynomial encoders are efficient (i.e. encode into $nm$ reals) for $m=1$ or $m=2$ but in general have order $O(n m^2)$. (encoder sources ([for multisets of vectors](Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset.py)) and ([for multisets of reals](Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset.py)))
