@@ -127,9 +127,9 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
         Eji_LinComb(n,k,[c for c,_ in c_dc_pairs_sorted_by_dc[:i+1]]) for i in range(len(c_dc_pairs_sorted_by_dc))
     ]
     print("\nDaughter simplex vertices before S(n)")
-    [print(ejilc, ejilc.__hash__()) for ejilc in daughter_simplex_vertices]
+    [print(ejilc, ejilc.hash_to_64_bit_reals_in_unit_interval()) for ejilc in daughter_simplex_vertices]
     print("\nDaughter simplex vertices after S(n)")
-    [print(ejilc.get_canonical_form(), ejilc.get_canonical_form().__hash__()) for ejilc in daughter_simplex_vertices]
+    [print(ejilc.get_canonical_form(), ejilc.get_canonical_form().hash_to_64_bit_reals_in_unit_interval()) for ejilc in daughter_simplex_vertices]
 
     #[print(vertex) for vertex in simplex.get_vertex_list()] # Only needed for debug.
     #print("simplex_eji_ordering (before mod S(n)) = ") # Only needed for debug.
@@ -338,14 +338,21 @@ class Eji_LinComb:
         """How many things were added together to make this Linear Combination."""
         return self._index
 
-    def __hash__(self):
+    def hash_to_128_bit_md5_int(self):
         # Exmaple
         # arr = np.array([1, 2, 3, 4, 5], dtype="uint64")
         # m = hashlib.md5(arr.astype("uint8"))
         # m.hexdigest()
         # '7cfdd07889b3295d6a550914ab35e068'
         m = hashlib.md5(self._eji_counts)
-        return int.from_bytes(m.digest(), 'big') # I suspect max is ~ (1 << 128) +- 1
+        return int.from_bytes(m.digest(), 'big') # 128 bits worth.
+
+    def hash_to_64_bit_reals_in_unit_interval(self):
+        # md5 sum is 64 bits long so get two such reals
+        x = self.hash_to_128_bit_md5_int()
+        bot_64_bits = x & 0xffFFffFFffFFffFF
+        top_64_bits = x >> 64
+        return np.float64(top_64_bits)/(1 << 64), np.float64(bot_64_bits)/(1 << 64)
 
     def __init__(self, n: int, k: int, list_of_Maximal_Simplex_Vertices: list[Maximal_Simplex_Vertex] | None = None):
         self._index = Eji_LinComb.INT_TYPE(0)
