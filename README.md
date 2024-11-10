@@ -26,6 +26,7 @@ Most encoders work only reals or real vectors and generate only real encodings, 
 ## Testing/examples
 
 [test.py](test.py) excercises some of the encoders. If they all work the script should end with a message saying something like 
+
 "----------------------------------------------------------------------
 Ran 1 test in 0.165s
 
