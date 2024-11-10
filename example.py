@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-This should give output resembling the following:
+Running this script should generate output resembling the following:
 
 The set of vectors
 [[ 8 -1 -4  3]
