@@ -105,30 +105,25 @@ class Test_Encoders(unittest.TestCase):
             for encoder in encoders:
                 encoding = encoder.encode(shuffled_data)
                 #encoding_fails = expected_encoding is not None and not np.array_equal(np.asarray(encoding),np.asarray(expected_encoding))
-                if expected_encoding is None:
-                    # Check subsequent encodings are same as first encoding.
-                    if i==0:
-                        first_encoding[encoder]=encoding
-                    else:
-                        print("MOOOCOWFIRST",encoder, first_encoding[encoder])
-                        print("MOOOCOW__NOW",encoder, encoding)
-                        if exact:
-                            np.testing.assert_equal(encoding, first_encoding[encoder], strict=True)
-                        else:
-                            np.testing.assert_allclose(np.array(encoding, dtype=float), np.array(first_encoding[encoder], dtype=float), atol=absolute_tolerance, rtol=relative_tolerance, strict=True, equal_nan=False)
+                # Check subsequent encodings are same as first encoding.
+                if i==0:
+                    first_encoding[encoder]=encoding
                 else:
-                    # check encoding matches expected encoding
-                    #encoding_fails = not np.allclose(np.asarray(encoding),np.asarray(expected_encoding),rtol=relative_tolerance,atol=absolute_tolerance)
+                    print("MOOOCOWFIRST",encoder, first_encoding[encoder])
+                    print("MOOOCOW__NOW",encoder, encoding)
+                    if exact:
+                        np.testing.assert_equal(encoding, first_encoding[encoder], strict=True)
+                    else:
+                        np.testing.assert_allclose(np.array(encoding, dtype=float), np.array(first_encoding[encoder], dtype=float), atol=absolute_tolerance, rtol=relative_tolerance, strict=True, equal_nan=False)
 
+                if expected_encoding is not None:
                     print("MOOO1",encoding)
                     print("MOOO2",expected_encoding)
-                    np.testing.assert_allclose(encoding, expected_encoding, atol=absolute_tolerance, rtol=relative_tolerance, strict=False, equal_nan = False)
+                    if exact:
+                        np.testing.assert_equal(encoding, expected_encoding, strict=True)
+                    else:
+                        np.testing.assert_allclose(np.array(encoding, dtype=float), np.array(expected_encoding, dtype=float), atol=absolute_tolerance, rtol=relative_tolerance, strict=True, equal_nan=False)
 
-                #if encoding_fails:
-                #    fail_count += 1
-                #    print("FAIL! Expected "+str(expected_encoding)+" ... ", end='')
-                #print("ENCH",encoder.__name__,"generates",encoding,"of length",len(encoding),"when encoding",shuffled_data,"with (m,n)=",shuffled_data.shape[::-1],". Expectation was "+str(expected_encoding))
-                
             np.random.shuffle(shuffled_data) 
         print()
 
@@ -201,7 +196,7 @@ class Test_Encoders(unittest.TestCase):
         self.tost_multiset_encoder(
            data=np.array(((8,-1,-4,3),(-8,-5,9,7),(8,2,7,-7))),
            encoders=[ encoder_Cinf_np_ar, ],
-           expected_encoding = [   8,   -4,  -57,  -80, -488, -394,    8,   12,  -63,  144, -952,  636, 8,    3,  -15,  112, -456,  851,   -4,   12,   -6,  -21,    5,  309, -4,    3,   42,   40, -186,   68,   12,    3,   48,   34, -406,  392], 
+           expected_encoding = [   8.0,   -4,  -57,  -80, -488, -394,    8,   12,  -63,  144, -952,  636, 8,    3,  -15,  112, -456,  851,   -4,   12,   -6,  -21,    5,  309, -4,    3,   42,   40, -186,   68,   12,    3,   48,   34, -406,  392], 
         )
    
         print(__file__, __line__)
@@ -260,11 +255,13 @@ class Test_Encoders(unittest.TestCase):
              encoder_C0_np_simplex_good1,
            ],
            number_of_shuffled_copies=100,
-           # expected_encoding = [4.16666667e-01, 2.44090909e+00, 2.51045455e+01, 3.12022727e+02,
-           #                      4.14921364e+03, 5.66481682e+04, 7.81914741e+05, 1.08471822e+07,
-           #                      1.50879552e+08, 2.10209486e+09, 2.93197746e+10, 4.09286008e+11,
-           #                      5.71697611e+12,],
-           relative_tolerance=1e-8,
+           expected_encoding = [ 0.15,       -0.11955253,  0.10909821, -0.11268937,  0.06240917, -0.04805856,
+                                 0.04898905, -0.00805272,  0.01558896, -0.0326586 ,  0.01130214, -0.03778581,
+                                 0.05751415, -0.03932523,  0.03969703, -0.07164526,  0.08986703, -0.06728037,
+                                 0.07778836, -0.07240038,  0.03665687, -0.04488085,  0.04080499, -0.01843858,
+                                 0.04638592],
+           relative_tolerance=1e-7,
+           absolute_tolerance=1e-7,
         )
 
 def test_everything():
