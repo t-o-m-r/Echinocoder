@@ -71,6 +71,7 @@ import unittest
 from dataclasses import dataclass, field
 from typing import Union
 import hashlib
+
 def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
            use_n2k2_optimisation=False, input_is_in_DeltakToN=False) -> np.ndarray:
     """
