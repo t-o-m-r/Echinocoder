@@ -32,21 +32,24 @@ def make_output_scalars(R):
     ]
 
 
+n = 2
+m = 2
+big_n_for_encoding = 4*n*m+1
+
 def evaluate_encoding(x, n, m):
     outs = []
     for sample in x:
         sample = sample.reshape(n, m)
-        outs.append(encode(sample))
+        encoding = encode(sample)
+        assert len(encoding) == big_n_for_encoding
+        outs.append(encoding)
     return np.asarray(outs)
 
-
-n = 3
-m = 3
 
 bokeh_vis = BokehFunctionVisualiser2D(
     lambda x: evaluate_encoding(x, n, m),
     make_input_scalars(n, m),
-    make_output_scalars(2*n*m + 1),
+    make_output_scalars(big_n_for_encoding),
     center_point=20 * (np.random.random(size=n * m) - 0.5),
     panel_1d_kwargs={'use_points': True},
     use_points_for_xsecs=True,

@@ -114,27 +114,31 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
         c_dc_pairs = make_c_dc_pairs(delta)
 
     c_dc_pairs_sorted_by_dc = sorted(c_dc_pairs, key=lambda x: x[1], reverse=True) # largest dc first.
-    print("c_dc_pairs .... in order of decreasing dc.") # Only needed for debug.
-    [print(_) for _ in c_dc_pairs_sorted_by_dc] # Only needed for debug.
+    #print("c_dc_pairs .... in order of decreasing dc.") # Only needed for debug.
+    #[print(_) for _ in c_dc_pairs_sorted_by_dc] # Only needed for debug.
 
-    simplex = Maximal_Simplex([c for c, _ in c_dc_pairs])  # Only needed for debug.
+    #simplex = Maximal_Simplex([c for c, _ in c_dc_pairs])  # Only needed for debug.
     # print("simplex (before modding by S(n)) =")  # Only needed for debug.
     # print(simplex) # Only needed for debug.
 
     # Barycentric-subdivide the mother simplex "simplex" into smaller ones, of which the "daugter_simplex"
     # is the one containing our important point.
+    len_c_dc_pairs_sorted_by_dc = len(c_dc_pairs_sorted_by_dc)
+
     daughter_simplex_vertices_with_dc = [
-        (Eji_LinComb(n,k,[c for c,_ in c_dc_pairs_sorted_by_dc[:i+1]]), c_dc_pairs_sorted_by_dc[i][1]) for i in range(len(c_dc_pairs_sorted_by_dc))
+        (Eji_LinComb(n,k,[c for c,_ in c_dc_pairs_sorted_by_dc[:i+1]]),
+         c_dc_pairs_sorted_by_dc[i][1] - (c_dc_pairs_sorted_by_dc[i+1][1] if i+1<len_c_dc_pairs_sorted_by_dc else 0) #the dc values for the daughter simplex are differences of dc values in the mother simplex
+         ) for i in range(len_c_dc_pairs_sorted_by_dc)
     ]
-    print("\nDaughter simplex vertices before S(n)")
-    [print(ejilc, dc) for ejilc,dc in daughter_simplex_vertices_with_dc]
+    #print("\nDaughter simplex vertices before S(n)")
+    #[print(ejilc, dc) for ejilc,dc in daughter_simplex_vertices_with_dc]
 
     daughter_simplex_vertices_with_dc_after_Sn = [
         (ejilc.get_canonical_form(), dc) for ejilc,dc in daughter_simplex_vertices_with_dc
     ]
 
-    print("\nDaughter simplex vertices after S(n)")
-    [print(ejilc, dc) for ejilc, dc in daughter_simplex_vertices_with_dc_after_Sn]
+    #print("\nDaughter simplex vertices after S(n)")
+    #[print(ejilc, dc) for ejilc, dc in daughter_simplex_vertices_with_dc_after_Sn]
 
     big_n_complex = 2 * n * k + 1
     point_in_bigNComplex = sum([dc * pr(ejilc.hash_to_unit_complex_number(), big_n_complex) for ejilc, dc in daughter_simplex_vertices_with_dc_after_Sn]) + np.zeros(big_n_complex)  # Addition of zero
@@ -180,8 +184,8 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
     # # print("pr(20)=",pr(20,big_n))
     # point_in_R_bigN = sum([d * pr(ell, big_n) for _, ell, d in c_l_dc_triples]) + np.zeros(big_n)  # Addition of zero
     # # term at end ensures that we still get a zero vec (not 0) in the event that c_l_dc_triples is empty!
-
-    return point_in_R_bigN
+    #
+    # return point_in_R_bigN
 
 @dataclass
 class Position_within_Simplex:
