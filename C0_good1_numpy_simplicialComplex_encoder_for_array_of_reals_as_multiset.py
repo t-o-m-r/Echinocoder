@@ -146,7 +146,7 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
 
     real_array = point_in_bigNComplex.real
     imag_array = point_in_bigNComplex.imag
-    assert imag_array[0] == 0 # Since pr\s first elet is 1 which has 0 imaginary part
+    assert imag_array[0] == 0 # Since pr's first elt is 1 which has 0 imaginary part
     big_n_real = 4 * n * k + 1 # Note: not 2*(2*n*k+1) because we don't record the always-0 above.
 
     point_in_R_bigNReal = np.concatenate((real_array, imag_array[1:])) # Omitting the first elt of imag_array as it is always zero
