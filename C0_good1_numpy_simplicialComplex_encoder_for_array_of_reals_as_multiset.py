@@ -127,7 +127,8 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
 
     daughter_simplex_vertices_with_dc = [
         (Eji_LinComb(n,k,[c for c,_ in c_dc_pairs_sorted_by_dc[:i+1]]),
-         c_dc_pairs_sorted_by_dc[i][1] - (c_dc_pairs_sorted_by_dc[i+1][1] if i+1<len_c_dc_pairs_sorted_by_dc else 0) #the dc values for the daughter simplex are differences of dc values in the mother simplex
+         (c_dc_pairs_sorted_by_dc[i][1] - (c_dc_pairs_sorted_by_dc[i+1][1] if i+1<len_c_dc_pairs_sorted_by_dc else 0)) # The dc values for the daughter simplex are DIFFERENCES of dc values in the mother simplex.
+     * (i+1)    # They are also weighted by their index (1,2,3,4,etc) to make them identically distributed.
          ) for i in range(len_c_dc_pairs_sorted_by_dc)
     ]
     #print("\nDaughter simplex vertices before S(n)")

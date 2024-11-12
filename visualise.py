@@ -14,7 +14,7 @@ def make_input_scalars(n, m):
     scalars = []
     for i in range(n):
         for j in range(m):
-            scalars.append(Scalar(f"Vector {i} feature {j}", bins=np.linspace(-10, 10, 100)))
+            scalars.append(Scalar(f"Vector {i} feature {j}", bins=np.linspace(-5, 5, 100)))
     return scalars
 
 
@@ -32,8 +32,9 @@ def make_output_scalars(R):
     ]
 
 
-n = 5
+n = 3
 m = 3
+
 big_n_for_encoding = 4*n*m+1
 
 def evaluate_encoding(x, n, m):
