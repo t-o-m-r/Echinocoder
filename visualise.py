@@ -32,8 +32,8 @@ def make_output_scalars(R):
     ]
 
 
-n = 3
-m = 3
+n = 2
+m = 2
 
 big_n_for_encoding = 4*n*m+1
 

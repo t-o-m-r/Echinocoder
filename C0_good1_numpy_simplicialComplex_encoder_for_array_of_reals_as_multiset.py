@@ -600,7 +600,6 @@ def make_c_dc_pairs_n2k2(delta: Position_within_Simplex_Product):
     d=delta[1,1]
 
     if c+d >=d >= a+b >= b: # C'
-        simplex = "left"
         c_dc_pairs = [
             (Maximal_Simplex_Vertex({(0,1), (1,1)}),       b),
             (Maximal_Simplex_Vertex({(0,0), (1,1)}),       a),
@@ -608,7 +607,6 @@ def make_c_dc_pairs_n2k2(delta: Position_within_Simplex_Product):
             (Maximal_Simplex_Vertex({       (1,0)}),       c),
             ]
     elif c+d >= a+b >= b >= d: # A'
-        simplex = "left"
         c_dc_pairs = [
             (Maximal_Simplex_Vertex({(0,1), (1,1)}),       d),
             (Maximal_Simplex_Vertex({(0,1), (1,0)}),     b-d),
@@ -616,7 +614,6 @@ def make_c_dc_pairs_n2k2(delta: Position_within_Simplex_Product):
             (Maximal_Simplex_Vertex({       (1,0)}), c+d-a-b),
             ]
     elif c+d >= a+b >= d >= b: # B'
-        simplex = "left"
         c_dc_pairs = [
             (Maximal_Simplex_Vertex({(0,1), (1,1)}),       b),
             (Maximal_Simplex_Vertex({(0,0), (1,1)}),     d-b),
@@ -624,7 +621,6 @@ def make_c_dc_pairs_n2k2(delta: Position_within_Simplex_Product):
             (Maximal_Simplex_Vertex({       (1,0)}), c+d-a-b),
             ]
     elif a+b >= c+d >= d >= b: # A
-        simplex = "left"
         c_dc_pairs = [
             (Maximal_Simplex_Vertex({(0,1), (1,1)}),       b),
             (Maximal_Simplex_Vertex({(0,0), (1,1)}),     d-b),
@@ -632,7 +628,6 @@ def make_c_dc_pairs_n2k2(delta: Position_within_Simplex_Product):
             (Maximal_Simplex_Vertex({(0,0)}),        a-c+b-d),
             ]
     elif a+b >= c+d >= b >= d: # B
-        simplex = "mid"
         c_dc_pairs = [
             (Maximal_Simplex_Vertex({(0,1), (1,1)}),       d),
             (Maximal_Simplex_Vertex({(0,1), (1,0)}),     b-d),
@@ -640,7 +635,6 @@ def make_c_dc_pairs_n2k2(delta: Position_within_Simplex_Product):
             (Maximal_Simplex_Vertex({(0,0)}),        a-c+b-d),
             ]
     elif a+b >= b >= c+d >= d: # C
-        simplex = "right"
         c_dc_pairs = [
             (Maximal_Simplex_Vertex({(0,1), (1,1)}),       d),
             (Maximal_Simplex_Vertex({(0,1), (1,0)}),       c),
@@ -648,7 +642,6 @@ def make_c_dc_pairs_n2k2(delta: Position_within_Simplex_Product):
             (Maximal_Simplex_Vertex({(0,0)}),              a),
             ]
     else:
-        simplex = None
         assert False
 
     return c_dc_pairs
