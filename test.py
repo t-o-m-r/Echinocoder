@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
-import      Cinf_python_polynomial_encoder_for_list_of_reals_as_multiset as encoder_Cinf_py_li
-import      Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset as encoder_Cinf_np_ar
-import          Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset as encoder_Cinf_sp_bur_ar
-import      Cinf_sympy_evenBursar_encoder_for_array_of_reals_as_multiset as encoder_Cinf_sp_evenBur_ar
-import       Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset as encoder_Cinf_np_li
-import                  C0_sorting_encoder_for_list_of_reals_as_multiset as encoder_C0_li
-import C0_bug1_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset as encoder_C0_np_simplex_bug1
-import C0_bug2_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset as encoder_C0_np_simplex_bug2
-import C0_good1_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset as encoder_C0_np_simplex_good1
+import  Cinf_python_polynomial_encoder_for_list_of_reals_as_multiset as encoder_Cinf_py_li
+import  Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset as encoder_Cinf_np_ar
+import      Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset as encoder_Cinf_sp_bur_ar
+import  Cinf_sympy_evenBursar_encoder_for_array_of_reals_as_multiset as encoder_Cinf_sp_evenBur_ar
+import   Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset as encoder_Cinf_np_li
+import              C0_sorting_encoder_for_list_of_reals_as_multiset as encoder_C0_li
+import C0_simplicialComplex_encoder_1_for_array_of_reals_as_multiset as encoder_C0_np_simplex_good1
 
 import data_sources
 import numpy as np
@@ -227,40 +225,14 @@ class Test_Encoders(unittest.TestCase):
         self.tost_multiset_encoder(
            data=np.array(((1,2),(1,0),(5,2))),
            encoders=[ 
-             encoder_C0_np_simplex_bug1, 
-             encoder_C0_np_simplex_bug2, 
-           ],
-           number_of_shuffled_copies=100,
-           expected_encoding = [1.74545455e+00, 1.13000000e+01, 8.73272727e+01, 7.28500000e+02,
-                                6.30183636e+03, 5.54913000e+04, 4.93020782e+05, 4.40096450e+06,
-                                3.93891451e+07, 3.53100751e+08, 3.16863401e+09, 2.84549414e+10,
-                                2.55663674e+11,],
-           relative_tolerance=1e-8,
-        )
-    
-        print(__file__, __line__)
-        self.tost_multiset_encoder(
-           data=np.array(((1,2),(1,0),(5,2))),
-           encoders=[ 
-             encoder_C0_np_simplex_bug1, 
-             encoder_C0_np_simplex_bug2, 
-           ],
-           number_of_shuffled_copies=100,
-           relative_tolerance=1e-8,
-        )
-    
-        print(__file__, __line__)
-        self.tost_multiset_encoder(
-           data=np.array(((1,2),(1,0),(5,2))),
-           encoders=[ 
              encoder_C0_np_simplex_good1,
            ],
            number_of_shuffled_copies=100,
-           expected_encoding = [ 0.15,       -0.11955253,  0.10909821, -0.11268937,  0.06240917, -0.04805856,
-                                 0.04898905, -0.00805272,  0.01558896, -0.0326586 ,  0.01130214, -0.03778581,
-                                 0.05751415, -0.03932523,  0.03969703, -0.07164526,  0.08986703, -0.06728037,
-                                 0.07778836, -0.07240038,  0.03665687, -0.04488085,  0.04080499, -0.01843858,
-                                 0.04638592],
+           expected_encoding = [ 0.41666667, -0.28108724,  0.26858269, -0.34436233,  0.16483989, -0.15923648,
+                                 0.21872145, -0.05275334,  0.10091283, -0.17636017,  0.04387883, -0.13616001,
+                                 0.19830351, -0.11750502,  0.04748888, -0.16028752,  0.22837654, -0.1166443,
+                                 0.19825184, -0.2125061 ,  0.07986435, -0.16658635,  0.17372507, -0.07108562,
+                                 0.20191163, ],
            relative_tolerance=1e-7,
            absolute_tolerance=1e-7,
         )
