@@ -1,3 +1,4 @@
+from functools import lru_cache
 from cProfile import label
 
 import numpy as np
@@ -37,14 +38,34 @@ m = 2
 big_n_for_encoding = 4*n*m+1
 
 def evaluate_encoding(x, n, m):
+
+    print("Cache test")
+    if evaluate_encoding.last_x is not None and len(x)==len(evaluate_encoding.last_x):
+        if (x==evaluate_encoding.last_x).all() and (n==evaluate_encoding.last_n) and (m==evaluate_encoding.last_m):
+            # We hit the cache!
+            print("Cache hit")
+            return evaluate_encoding.last_ret
+        else:
+            print("Cache fail")
+
     outs = []
     for sample in x:
         sample = sample.reshape(n, m)
         encoding = encode(sample)
         assert len(encoding) == big_n_for_encoding
         outs.append(encoding)
-    return np.asarray(outs)
 
+    evaluate_encoding.last_x = x.copy()
+    evaluate_encoding.last_n = n
+    evaluate_encoding.last_m = m
+    evaluate_encoding.last_ret = np.asarray(outs)
+
+    return evaluate_encoding.last_ret
+
+evaluate_encoding.last_x=None
+evaluate_encoding.last_n=None
+evaluate_encoding.last_m=None
+evaluate_encoding.last_outs=None
 
 bokeh_vis = BokehFunctionVisualiser2D(
     lambda x: evaluate_encoding(x, n, m),
