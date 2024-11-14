@@ -39,14 +39,15 @@ big_n_for_encoding = 4*n*m+1
 
 def evaluate_encoding(x, n, m):
 
-    print("Cache test")
+    #print("Cache test")
     if evaluate_encoding.last_x is not None and len(x)==len(evaluate_encoding.last_x):
         if (x==evaluate_encoding.last_x).all() and (n==evaluate_encoding.last_n) and (m==evaluate_encoding.last_m):
             # We hit the cache!
-            print("Cache hit")
+            #print("Cache hit")
             return evaluate_encoding.last_ret
         else:
-            print("Cache fail")
+            #print("Cache fail")
+            pass
 
     outs = []
     for sample in x:
