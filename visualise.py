@@ -38,7 +38,7 @@ m = 2
 
 #big_n_for_encoding = 4*n*m+1  # For PKH
 
-big_n_for_encoding = 2*n*m # For Lester Alg
+big_n_for_encoding = 2*n*m+1 # For Lester Alg
 
 def evaluate_encoding(x, n, m):
 

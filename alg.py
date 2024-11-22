@@ -9,7 +9,7 @@ from typing import Self
 
 Eji = namedtuple("Eji", ["j", "i"])
 
-def encode(data: np.ndarray, debug=True) -> np.ndarray:
+def encode(data: np.ndarray, debug=False) -> np.ndarray:
     if debug:
         print(f"data is {data}")
 
@@ -106,7 +106,12 @@ def encode(data: np.ndarray, debug=True) -> np.ndarray:
 
 
     # Create a vector to contain the encoding:
-    encoding = np.zeros(bigN + 2, dtype=np.float64) # +2 for max_element and min_element .... TODO don't always need max_element!
+    length_of_encoding = bigN + 2
+    assert bigN == 2 * (n*k - 1) + 1
+    assert length_of_encoding == 2 * (n*k - 1) + 1 + 2  # bigN + 2
+    assert length_of_encoding == 2 * n * k + 1 # bigN + 2 expanded out.
+
+    encoding = np.zeros(length_of_encoding, dtype=np.float64) # +2 for max_element and min_element .... TODO don't always need max_element!
 
     # Populate first half of the encoding:
     encoding[:bigN] = first_half_of_encoding
@@ -115,9 +120,9 @@ def encode(data: np.ndarray, debug=True) -> np.ndarray:
     # Populate the second last element of the encoding with the largest element of the initial data.
     encoding[-2] = max_element # TODO: Don't do this if nk<=1, as min_element is enough in that case.
 
-
     if debug:
         print(f"encoding is {encoding}")
+        print(f"encoding has length {length_of_encoding}")
 
     return encoding
 
@@ -259,7 +264,7 @@ if __name__ == "__main__":
     run_unit_tests()
 
     input = np.asarray([[4,2],[-3,5],[8,9],[2,7]])
-    output = encode(input)
+    output = encode(input, debug=True)
 
     print("Encoding:")
     print(f"{input}")
