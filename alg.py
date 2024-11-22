@@ -43,15 +43,26 @@ def encode(data: np.ndarray, debug=True) -> np.ndarray:
         [print(bit) for bit in sorted_difference_data_with_MSVs]
 
     # Barycentrically subdivide:
+    deltas_in_current_order = [delta for delta, _ in sorted_difference_data_with_MSVs]
     msvs_in_current_order = [msv for _,msv in sorted_difference_data_with_MSVs]
-    difference_data_in_subdivided_simplex = []
-    for i, (delta, msv) in enumerate(sorted_difference_data_with_MSVs):
 
-        difference_data_in_subdivided_simplex.append( (delta,  Eji_LinComb(n, k, msvs_in_current_order[:i+1] )   ) )
+    expected_number_of_vertices = n * k - 1
+    assert len(deltas_in_current_order) == expected_number_of_vertices
+    assert len(msvs_in_current_order) == expected_number_of_vertices
+
+
+    # The coordinates in the barycentric subdivided daughter simplex are differences of the current deltas,
+    # which are up-weighted by a linear factor to make them approximately identically distributed.
+    difference_data_in_subdivided_simplex = [ (  (i+1)*(deltas_in_current_order[i]-(deltas_in_current_order[i+1] if i+1<expected_number_of_vertices else 0)),  Eji_LinComb(n, k, msvs_in_current_order[:i+1])) for i in range(expected_number_of_vertices)]
 
     if debug:
         print(f"difference data in Barycentrically subdivided simplex:")
         [print(bit) for bit in difference_data_in_subdivided_simplex]
+
+    canonical_difference_data = [(delta, msv.get_canonical_form()) for (delta, msv) in difference_data_in_subdivided_simplex]
+    if debug:
+        print(f"canonical difference data is:")
+        [print(bit) for bit in canonical_difference_data]
 
     #j_order = first_occurrences_numpy(np.asarray([ eji.j for _,eji in sorted_data ]))
     #perm = invert_perm(j_order)
@@ -80,28 +91,30 @@ def encode(data: np.ndarray, debug=True) -> np.ndarray:
     #    print(f"cumulated canonical difference data (version 2) is:")
     #    [print(bit) for bit in cumulated_canonical_difference_data_2]
 
+    assert n*k - 1 == expected_number_of_vertices
+    bigN = 2 * (n*k - 1) + 1 # Size of the space into which the simplices are embedded.
+    # bigN does not count any min and max elements, which would be extra.
+    difference_point_pairs = [(delta, eji_lin_com.hash_to_point_in_unit_hypercube(bigN)) for (delta, eji_lin_com) in canonical_difference_data]
+    if debug:
+        print(f")difference point pairs are:")
+        [print(bit) for bit in difference_point_pairs]
 
-    bigN = 2 * (n * k - 1) + 1 # Size of the space into which the simplices are embedded -- the min and max elements are in addition to this.
-    #difference_point_pairs = [(delta, eji_set_array_to_point_in_unit_hypercube(eji_set_array, bigN) ) for (delta, eji_set_array) in cumulated_canonical_difference_data_2]
+    first_half_of_encoding = sum([delta * point for delta, point in difference_point_pairs]) + np.zeros(bigN)
+    if debug:
+        print(f"first bit of encoding is: {first_half_of_encoding}")
 
-    #if debug:
-    #    print(f")difference point pairs are:")
-    #    [print(bit) for bit in difference_point_pairs]
-
-    #first_half_of_encoding = sum([delta * point for delta, point in difference_point_pairs]) + np.zeros(bigN)
-    #if debug:
-    #    print(f"first bit of encoding is: {first_half_of_encoding}")
-
-    #encoding[:bigN] = first_half_of_encoding
 
 
     # Create a vector to contain the encoding:
     encoding = np.zeros(bigN + 2, dtype=np.float64) # +2 for max_element and min_element .... TODO don't always need max_element!
 
+    # Populate first half of the encoding:
+    encoding[:bigN] = first_half_of_encoding
     # Populate the last element of the encoding with the smallest element of the initial data.
     encoding[-1] = min_element # TODO: Don't do this if nk==0, as nothing to record in that case.
     # Populate the second last element of the encoding with the largest element of the initial data.
     encoding[-2] = max_element # TODO: Don't do this if nk<=1, as min_element is enough in that case.
+
 
     if debug:
         print(f"encoding is {encoding}")
@@ -186,10 +199,13 @@ class Eji_LinComb:
     def hash_to_point_in_unit_hypercube(self, dimension):
         m = hashlib.md5()
         m.update(self._eji_counts)
-        m.update(self._index.to_bytes(self._index.nbytes))
+        #print("self._index is")
+        #print(self._index)
+        # self._index.nbytes returns the number of bytes in self._index as self._index is of a numpy type which provides this
+        m.update(np.array([self._index])) # creating an array with a single element is a kludge to work around difficulties of using to_bytes on np_integers of unknown size
         ans = []
         for i in range(dimension):
-            m.update(i.to_bytes())
+            m.update(i.to_bytes(8))  # TODO: This 8 says 8 byte integers
             real_1, _ = hash_to_64_bit_reals_in_unit_interval(m)  # TODO: make use of real_2 as well to save CPU
             ans.append(real_1)
         return np.asarray(ans)
