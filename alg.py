@@ -2,72 +2,106 @@ import numpy
 import numpy as np
 from itertools import pairwise
 from collections import namedtuple
-from tools import invert_perm
+from tools import invert_perm, sort_np_array_rows_lexicographically
 import hashlib
+from dataclasses import dataclass, field
+from typing import Self
 
 Eji = namedtuple("Eji", ["j", "i"])
 
-
-
-def encode(data: np.ndarray, debug=False) -> np.ndarray:
+def encode(data: np.ndarray, debug=True) -> np.ndarray:
     if debug:
         print(f"data is {data}")
 
     n,k = data.shape
     flattened_data = [ ( data[j][i], Eji(j,i) ) for j in range(n) for i in range(k) ]
-
     sorted_data = sorted( flattened_data, key = lambda x : -x[0])
-    difference_data = [ (x[0]-y[0], x[1]) for x,y in pairwise(sorted_data) ]
 
     if debug:
         print(f"sorted flattened data is")
         [print(bit) for bit in sorted_data]
 
+    min_element = sorted_data[-1][0]
+    max_element = sorted_data[0][0]
+
+    difference_data = [ (x[0]-y[0], x[1]) for x,y in pairwise(sorted_data) ]
+
+    if debug:
         print(f"difference data is")
         [print(bit) for bit in difference_data]
 
-    # Create a vector to contain the encoding:
-    encoding = np.zeros(2*n*k, dtype=np.float64)
-
-    # Populate the last element of the encoding with the smallest element of the initial data
-    encoding[-1] = sorted_data[-1][0]
-
-    j_order = first_occurrences_numpy(np.asarray([ eji.j for _,eji in sorted_data ]))
-    perm = invert_perm(j_order)
+    difference_data_with_MSVs = [
+        (delta, Maximal_Simplex_Vertex(set([eji for (_, eji) in difference_data[0:i + 1]]))) for i, (delta, _) in enumerate(difference_data)]
 
     if debug:
-        print(f"the j's appear in this order {j_order}")
-        print(f"inverse perm of j_order is  {perm}")
+        print(f"difference data with MSVs:")
+        [print(bit) for bit in difference_data_with_MSVs]
 
-    canonical_difference_data = [ (delta, Eji(perm[j], i) ) for delta, (j,i) in difference_data ]
+    sorted_difference_data_with_MSVs = sorted(difference_data_with_MSVs, key=lambda x: -x[0] )
+    if debug:
+        print(f"sorted difference data with MSVs:")
+        [print(bit) for bit in sorted_difference_data_with_MSVs]
+
+    # Barycentrically subdivide:
+    msvs_in_current_order = [msv for _,msv in sorted_difference_data_with_MSVs]
+    difference_data_in_subdivided_simplex = []
+    for i, (delta, msv) in enumerate(sorted_difference_data_with_MSVs):
+
+        difference_data_in_subdivided_simplex.append( (delta,  Eji_LinComb(n, k, msvs_in_current_order[:i+1] )   ) )
 
     if debug:
-        print(f"canonical difference data is:")
-        [print(bit) for bit in canonical_difference_data]
+        print(f"difference data in Barycentrically subdivided simplex:")
+        [print(bit) for bit in difference_data_in_subdivided_simplex]
 
-    cumulated_canonical_difference_data_1 = [ (delta, set([  eji for (_, eji) in canonical_difference_data[0:i+1] ]))  for i, (delta, _) in enumerate(canonical_difference_data)]
-    if debug:
-        print(f"cumulated canonical difference data (version 1) is:")
-        [print(bit) for bit in cumulated_canonical_difference_data_1]
+    #j_order = first_occurrences_numpy(np.asarray([ eji.j for _,eji in sorted_data ]))
+    #perm = invert_perm(j_order)
+
+    #if debug:
+    #    print(f"the j's appear in this order {j_order}")
+    #    print(f"inverse perm of j_order is  {perm}")
+
+    #canonical_difference_data = [ (delta, Eji(perm[j], i) ) for delta, (j,i) in difference_data ]
+
+    #if debug:
+    #    print(f"canonical difference data is:")
+    #    [print(bit) for bit in canonical_difference_data]
+
+    #cumulated_canonical_difference_data_1 = [ (delta, Maximal_Simplex_Vertex(set([  eji for (_, eji) in canonical_difference_data[0:i+1] ])))  for i, (delta, _) in enumerate(canonical_difference_data)]
+    #if debug:
+    #    print(f"cumulated canonical difference data (version 1) is:")
+    #    [print(bit) for bit in cumulated_canonical_difference_data_1]
+
+    # HERE
+
 
     # Calculate same thing but in a different representation
-    cumulated_canonical_difference_data_2 = [ ( delta, eji_set_to_np_array(eji_set, n, k) ) for (delta, eji_set) in cumulated_canonical_difference_data_1 ]
-    if debug:
-        print(f"cumulated canonical difference data (version 2) is:")
-        [print(bit) for bit in cumulated_canonical_difference_data_2]
+    #cumulated_canonical_difference_data_2 = [ ( delta, eji_set_to_np_array(eji_set, n, k) ) for (delta, eji_set) in cumulated_canonical_difference_data_1 ]
+    #if debug:
+    #    print(f"cumulated canonical difference data (version 2) is:")
+    #    [print(bit) for bit in cumulated_canonical_difference_data_2]
 
-    bigN = 2 * (n * k - 1) + 1
-    difference_point_pairs = [(delta, eji_set_array_to_point_in_unit_hypercube(eji_set_array, bigN) ) for (delta, eji_set_array) in cumulated_canonical_difference_data_2]
 
-    if debug:
-        print(f")difference point pairs are:")
-        [print(bit) for bit in difference_point_pairs]
+    bigN = 2 * (n * k - 1) + 1 # Size of the space into which the simplices are embedded -- the min and max elements are in addition to this.
+    #difference_point_pairs = [(delta, eji_set_array_to_point_in_unit_hypercube(eji_set_array, bigN) ) for (delta, eji_set_array) in cumulated_canonical_difference_data_2]
 
-    first_half_of_encoding = sum([delta * point for delta, point in difference_point_pairs]) + np.zeros(bigN)
-    if debug:
-        print(f"first bit of encoding is: {first_half_of_encoding}")
+    #if debug:
+    #    print(f")difference point pairs are:")
+    #    [print(bit) for bit in difference_point_pairs]
 
-    encoding[:bigN] = first_half_of_encoding
+    #first_half_of_encoding = sum([delta * point for delta, point in difference_point_pairs]) + np.zeros(bigN)
+    #if debug:
+    #    print(f"first bit of encoding is: {first_half_of_encoding}")
+
+    #encoding[:bigN] = first_half_of_encoding
+
+
+    # Create a vector to contain the encoding:
+    encoding = np.zeros(bigN + 2, dtype=np.float64) # +2 for max_element and min_element .... TODO don't always need max_element!
+
+    # Populate the last element of the encoding with the smallest element of the initial data.
+    encoding[-1] = min_element # TODO: Don't do this if nk==0, as nothing to record in that case.
+    # Populate the second last element of the encoding with the largest element of the initial data.
+    encoding[-2] = max_element # TODO: Don't do this if nk<=1, as min_element is enough in that case.
 
     if debug:
         print(f"encoding is {encoding}")
@@ -112,6 +146,82 @@ def first_occurrences_numpy(x):
     _, indices = np.unique(x, return_index=True)  # Get the first occurrence indices
     sorted_indices = np.sort(indices)  # Sort these indices to maintain original order
     return x[sorted_indices]
+
+@dataclass
+class Maximal_Simplex_Vertex:
+    _vertex_set: set[Eji] = field(default_factory=set)
+
+    def __len__(self) -> int:
+        return len(self._vertex_set)
+
+    def __iter__(self):
+        return iter(self._vertex_set)
+
+    def get_canonical_form(self):
+        """Mod out by Sn for this single vertex, ignoring any others."""
+        # Method: sort the Eji by the i index, then populate the j's in order.
+        sorted_eji_list = sorted(list(self._vertex_set), key=lambda eji: eji.i)
+        renumbered_eji_list = [ Eji(j=j, i=eji.i) for j,eji in enumerate(sorted_eji_list)]
+        return Maximal_Simplex_Vertex(set(renumbered_eji_list))
+
+    def check_valid(self):
+        # every j index in the set must appear at most once
+        j_vals = { eji.j for eji in self._vertex_set }
+        assert len(j_vals) == len(self._vertex_set)
+
+    def get_permuted_by(self, perm):
+        return Maximal_Simplex_Vertex({Eji(perm[eji.j], eji.i) for eji in self._vertex_set})
+
+@dataclass
+class Eji_LinComb:
+    INT_TYPE = np.uint16 # uint16 should be enough as the eij_counts will not exceed n*k which can therefore reach 65535
+
+    _index : INT_TYPE
+    _eji_counts : np.ndarray
+
+    def index(self) -> INT_TYPE:
+        """How many things were added together to make this Linear Combination."""
+        return self._index
+
+    def hash_to_point_in_unit_hypercube(self, dimension):
+        m = hashlib.md5()
+        m.update(self._eji_counts)
+        m.update(self._index.to_bytes(self._index.nbytes))
+        ans = []
+        for i in range(dimension):
+            m.update(i.to_bytes())
+            real_1, _ = hash_to_64_bit_reals_in_unit_interval(m)  # TODO: make use of real_2 as well to save CPU
+            ans.append(real_1)
+        return np.asarray(ans)
+
+    def __init__(self, n: int, k: int, list_of_Maximal_Simplex_Vertices: list[Maximal_Simplex_Vertex] | None = None):
+        self._index = Eji_LinComb.INT_TYPE(0)
+        self._eji_counts = np.zeros((n, k), dtype=Eji_LinComb.INT_TYPE, order='C')
+        if list_of_Maximal_Simplex_Vertices:
+            for msv in list_of_Maximal_Simplex_Vertices: self.add(msv)
+
+    def _setup_debug(self, index: int, eji_counts: np.ndarray): # Really just for unit tests. Don't use in main alg code.
+        self._index = Eji_LinComb.INT_TYPE(index)
+        self._eji_counts = np.asarray(eji_counts, dtype=Eji_LinComb.INT_TYPE, order='C')
+
+    def add(self, msv: Maximal_Simplex_Vertex):
+        self._index += 1
+        for j, i in msv: self._eji_counts[j, i] += 1
+
+
+    def __eq__(self, other: Self):
+        return self._index == other._index and np.array_equal(self._eji_counts, other._eji_counts)
+
+    def __ne__(self, other: Self):
+        return not self.__eq__(other)
+
+    def get_canonical_form(self) -> Self:
+        ans = Eji_LinComb.__new__(Eji_LinComb)
+        ans._index = self._index
+        ans._eji_counts = sort_np_array_rows_lexicographically(self._eji_counts)
+        return ans
+
+
 
 def tost():
         import numpy as np
