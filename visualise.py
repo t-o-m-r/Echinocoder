@@ -34,7 +34,7 @@ def make_output_scalars(R):
 
 
 n = 3
-m = 3
+m = 1
 
 #big_n_for_encoding = 4*n*m+1  # For PKH
 
