@@ -10,12 +10,15 @@ Most encoders work only reals or real vectors and generate only real encodings, 
 
 ## $SP^n(\mathbb R^m)$ -- i.e. multiset encoders:
 
-* The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) encoder works for any $n$ and $m$ and encodes into $4 n m+1$ reals. ([encoder source](C0_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset.py))  In principle it could encode into just $2 n m + 1$ reals.  However, and implementation choice which is expected to make the outputs more stable leads to the number of outputs being $4 n m + 1$ instead.
+* The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) encoder works for any $n$ and $m$ and encodes into $2 n m+1$ reals. ([encoder source](C0HomDeg1_simplicialComplex_encoder_1_for_array_of_reals_as_multiset.py)) 
 * The sorting encoder is efficient (i.e. encodes into $nm$ reals) for any $n$ but only can work with $m=1$. ([encoder source](C0_sorting_encoder_for_list_of_reals_as_multiset.py))
 * The polynomial encoders are efficient (i.e. encode into $nm$ reals) for $m=1$ or $m=2$ but in general have order $O(n m^2)$. (encoder sources ([for multisets of vectors](Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset.py)) and ([for multisets of reals](Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset.py)))
 * The (vanilla) busar encoder has order $O(m n^2)$.  Indeed, the exact order is  $ORDER(m,n) = n + (m-1) n (n+1)/2$. ([encoder source](Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset.py))
 * The 'even' busar encoder has order $Binom(m+n,n)-1$. While this encoder is very inefficient, it does not treat any components in the $m$-space differently than any other.  ([encoder source](Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset.py))
 * If one were to use the busar encoder when $m\ge n$ and the polynomial encoder when $n\ge m$ then one would have, in effect, a single method of order $O((mn)^{\frac 3 2})$. [Check this statement! It is probably not true!]
+
+## Obsolete/Retired/Historical encoders:
+* This early (nonlinear) [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) encoder works for any $n$ and $m$ and encodes into $4 n m+1$ reals. ([encoder source](C0_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset.py))  In principle it could encode into just $2 n m + 1$ reals.  However, and implementation choice which is expected to make the outputs more stable leads to the number of outputs being $4 n m + 1$ instead.
 
 ## What this library is calling $RP(\mathbb R^m)$ ([real projective space](https://en.wikipedia.org/wiki/Real_projective_space)) encoders:
 
