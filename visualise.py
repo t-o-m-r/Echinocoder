@@ -8,7 +8,7 @@ from iwpc.scalars.scalar_function import ScalarFunction
 from iwpc.visualise.bokeh_function_visualiser_2D import BokehFunctionVisualiser2D
 
 #from C0_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import encode
-from C0HomDeg0_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import encode
+from C0HomDeg1_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import encode
 
 
 def make_input_scalars(n, m):
