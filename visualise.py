@@ -1,8 +1,8 @@
 # Unomment one of the next few lines to select the encoder to use:
 
-from Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset import Encoder
+#from Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset import Encoder
 # from Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset import encode
-# from Historical.C0_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import encode
+from Historical.C0_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import Encoder
 # from C0HomDeg1_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import Encoder
 
 

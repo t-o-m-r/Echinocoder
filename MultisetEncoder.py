@@ -18,7 +18,7 @@ class MultisetEncoder:
         encode(np.asarray([[4,5], [2,2], [1,2]]))
 
     and both should have the same output -- at least up to numerical precision. This leeway (permission to 
-    have small deviations ob avvount of floating point precision, rather than demanding bit-for-bit identical encodings) is granted to implementations in order to allow them to be faster (sometimes) than would be the case if they were all required to canonicalise their input sets.  Someone wanting bit-for-bit identical output under permutations of input vectors could easily sort their vectors (in any way) prior to using any encoder.
+    have small deviations on account of floating point precision, rather than demanding bit-for-bit identical encodings) is granted to implementations in order to allow them to be faster (sometimes) than would be the case if they were all required to canonicalise their input sets.  Someone wanting bit-for-bit identical output under permutations of input vectors could easily sort their vectors (in any way) prior to using any encoder.
 
     All encoders return one dimensional arrays of real floats.
 
@@ -36,7 +36,7 @@ class MultisetEncoder:
     """
 
     def encode(self, data: np.ndarray, debug=False) -> np.ndarray:
-        pass
+        raise NotImplementedError()
 
     def size_from_array(self, data: np.ndarray) -> int:
         """

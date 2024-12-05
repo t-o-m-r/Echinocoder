@@ -56,6 +56,7 @@
 #                    (1,0):0.05,              (1,2):0.90,
 #                  }.
 
+from MultisetEncoder import MultisetEncoder
 from sys import version_info
 import numpy
 import tools
@@ -71,136 +72,134 @@ from dataclasses import dataclass, field
 from typing import Union
 import hashlib
 
-def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
-           use_n2k2_optimisation=False, input_is_in_DeltakToN=False) -> np.ndarray:
-    """
-    By default, this function takes as input a length-n list of k-vectors (i.e. points in (R^k)^n)
-    to encode in a perutation invariant way in R^(2nk+1).
-
-    E.g. to encode the three two-vectors [1,2], [4,2] and [2,0] one might supply it with
-
-        data = np.array([[1,2], [4,2], [2,0]]).
-
-    However, if the flag "input_is_in_DkToN" is set to true, or if the input is
-    detected as being of type "Position_within_Simplex_Product", the input is assumed to be already mapped into
-    simplex coordinates for a space which is an n-fold product of k-simplices.  This feature is to allow
-    simple unit tests.
-
-    Args:
-        data in  (R^k)^n (or in  (Delta^k)^n in some cases)
-        use_n2k2_optimisation = a flag to request interpretation as (Delta^k)^n
-
-    Returns:
-        embedding in R^(nk+1)
-    """
-
-    n, k = data.shape # Valid whether input_is_in_DeltakToN is True or False
-
-    if n*k > np.iinfo(Eji_LinComb.INT_TYPE).max:
-        raise ValueError("Part of alg stores vertices in Eji_LinComb.INT_TYPE for has so can't work for nk above a threshold.")
-
-    if type(data) == Position_within_Simplex_Product:
-        delta = data # Don't reformat the data as the data is already in (Delta^k)^n.
-    elif input_is_in_DeltakToN:
-        # Reformat the data as supposedly the coefficients are correct but the type is not:
-        delta = Position_within_Simplex_Product(data)
-    else:
-        # Embed each vector in a simplex:
-        delta = vectors_to_delta(data) # convert (R^k)^n to (Delta^k)^n.
-
-    if use_n2k2_optimisation and n == 2 and k == 2:
-        c_dc_pairs = make_c_dc_pairs_n2k2(delta)
-    else:
-        c_dc_pairs = make_c_dc_pairs(delta)
-
-    c_dc_pairs_sorted_by_dc = sorted(c_dc_pairs, key=lambda x: x[1], reverse=True) # largest dc first.
-    #print("c_dc_pairs .... in order of decreasing dc.") # Only needed for debug.
-    #[print(_) for _ in c_dc_pairs_sorted_by_dc] # Only needed for debug.
-
-    #simplex = Maximal_Simplex([c for c, _ in c_dc_pairs])  # Only needed for debug.
-    # print("simplex (before modding by S(n)) =")  # Only needed for debug.
-    # print(simplex) # Only needed for debug.
-
-    # Barycentric-subdivide the mother simplex "simplex" into smaller ones, of which the "daugter_simplex"
-    # is the one containing our important point.
-    len_c_dc_pairs_sorted_by_dc = len(c_dc_pairs_sorted_by_dc)
-
-    daughter_simplex_vertices_with_dc = [
-        (Eji_LinComb(n,k,[c for c,_ in c_dc_pairs_sorted_by_dc[:i+1]]),
-         (c_dc_pairs_sorted_by_dc[i][1] - (c_dc_pairs_sorted_by_dc[i+1][1] if i+1<len_c_dc_pairs_sorted_by_dc else 0)) # The dc values for the daughter simplex are DIFFERENCES of dc values in the mother simplex.
-     * (i+1)    # They are also weighted by their index (1,2,3,4,etc) to make them identically distributed.
-         ) for i in range(len_c_dc_pairs_sorted_by_dc)
-    ]
-    #print("\nDaughter simplex vertices before S(n)")
-    #[print(ejilc, dc) for ejilc,dc in daughter_simplex_vertices_with_dc]
-
-    daughter_simplex_vertices_with_dc_after_Sn = [
-        (ejilc.get_canonical_form(), dc) for ejilc,dc in daughter_simplex_vertices_with_dc
-    ]
-
-    #print("\nDaughter simplex vertices after S(n)")
-    #[print(ejilc, dc) for ejilc, dc in daughter_simplex_vertices_with_dc_after_Sn]
-
-    big_n_complex = 2 * n * k + 1
-    point_in_bigNComplex = sum([dc * pr(ejilc.hash_to_unit_complex_number(), big_n_complex) for ejilc, dc in daughter_simplex_vertices_with_dc_after_Sn]) + np.zeros(big_n_complex)  # Addition of zero
-
-    real_array = point_in_bigNComplex.real
-    imag_array = point_in_bigNComplex.imag
-    assert imag_array[0] == 0 # Since pr's first elt is 1 which has 0 imaginary part
-    big_n_real = 4 * n * k + 1 # Note: not 2*(2*n*k+1) because we don't record the always-0 above.
-
-    point_in_R_bigNReal = np.concatenate((real_array, imag_array[1:])) # Omitting the first elt of imag_array as it is always zero
-
-    assert len(point_in_R_bigNReal) == encoding_size_from_n_k(n,k)
-    assert big_n_real == encoding_size_from_n_k(n,k)
-
-    return point_in_R_bigNReal
-
-    # #[print(vertex) for vertex in simplex.get_vertex_list()] # Only needed for debug.
-    # #print("simplex_eji_ordering (before mod S(n)) = ") # Only needed for debug.
-    # #[print(eji) for eji in simplex.get_Eji_ordering()] # Only needed for debug.
-    #
-    # #print("simplex_eji_ordering (after mod S(n)) = ") # Only needed for debug.
-    # #[print(eji) for eji in simplex.get_Eji_ordering().get_canonical_form()] # Only needed for debug.
-    #
-    # #print("simplex (after modding by S(n)) =") # Only needed for debug.
-    # #print(simplex.get_canonical_form()) # Only needed for debug.
-    # #[print(vertex) for vertex in simplex.get_canonical_form().get_vertex_list()] # Only needed for debug.
-    #
-    # ####TEST_REMOVE#### # Now 'canonicalise' the vertices in c_dc_pairs using that perm:
-    # ####TEST_REMOVE#### c_dc_pairs_after_mod_Sn = [ ({ (inverse_perm[j], i) for (j,i) in c }, dc)  for (c,dc) in c_dc_pairs   ]
-    #
-    # # TEST DON'T APPLY PERM!!!!! It was a mistake!!!!!
-    # c_dc_pairs_after_mod_Sn = c_dc_pairs
-    #
-    # # print("c_dc_pairs (after modding by S(n)) =")
-    # # [ print(c) for c in c_dc_pairs_after_mod_Sn ]
-    #
-    # #shrink = True
-    # #c_l_dc_triples = [(c, ell(c, k, shrink=shrink), dc) for (c, dc) in c_dc_pairs_after_mod_Sn]
-    # # print("c_l_dc_triples (after modding by S(n)) =")
-    # # [ print(c) for c in c_l_dc_triples ]
-    #
-    # # Please someone re-implement this dot product without so many comprehensions ... or at any rate BETTER:
-    # # Want output here to be sum_i pr(r_i, big_n) x_i)
-    # # where, in effect, r_i and x_i would be defined by
-    # # [ blah for _, r_i, x_i in c_l_dc_triples ]
-    #
-    # # print("pr(20)=",pr(20,big_n))
-    # point_in_R_bigN = sum([d * pr(ell, big_n) for _, ell, d in c_l_dc_triples]) + np.zeros(big_n)  # Addition of zero
-    # # term at end ensures that we still get a zero vec (not 0) in the event that c_l_dc_triples is empty!
-    #
-    # return point_in_R_bigN
-
-def encoding_size_from_array(data: np.ndarray) -> int:
-    n,k = data.shape
-    return encoding_size_from_n_k(n,k)
-
-def encoding_size_from_n_k(n: int, k: int) -> int:
-    return 4*n*k + 1
-
-encode.size_from_array = encoding_size_from_array
-encode.size_from_n_k = encoding_size_from_n_k
+class Encoder(MultisetEncoder):
+    def encode(self, data: np.ndarray, debug=False) -> np.ndarray:
+        return self.encode_internal(data)
+ 
+    def encode_internal(self, data: Union[np.ndarray, 'Position_within_Simplex_Product'],
+               use_n2k2_optimisation=False, input_is_in_DeltakToN=False) -> np.ndarray:
+        """
+        By default, this function takes as input a length-n list of k-vectors (i.e. points in (R^k)^n)
+        to encode in a perutation invariant way in R^(2nk+1).
+    
+        E.g. to encode the three two-vectors [1,2], [4,2] and [2,0] one might supply it with
+    
+            data = np.array([[1,2], [4,2], [2,0]]).
+    
+        However, if the flag "input_is_in_DkToN" is set to true, or if the input is
+        detected as being of type "Position_within_Simplex_Product", the input is assumed to be already mapped into
+        simplex coordinates for a space which is an n-fold product of k-simplices.  This feature is to allow
+        simple unit tests.
+    
+        Args:
+            data in  (R^k)^n (or in  (Delta^k)^n in some cases)
+            use_n2k2_optimisation = a flag to request interpretation as (Delta^k)^n
+    
+        Returns:
+            embedding in R^(nk+1)
+        """
+    
+        n, k = data.shape # Valid whether input_is_in_DeltakToN is True or False
+    
+        if n*k > np.iinfo(Eji_LinComb.INT_TYPE).max:
+            raise ValueError("Part of alg stores vertices in Eji_LinComb.INT_TYPE for has so can't work for nk above a threshold.")
+    
+        if type(data) == Position_within_Simplex_Product:
+            delta = data # Don't reformat the data as the data is already in (Delta^k)^n.
+        elif input_is_in_DeltakToN:
+            # Reformat the data as supposedly the coefficients are correct but the type is not:
+            delta = Position_within_Simplex_Product(data)
+        else:
+            # Embed each vector in a simplex:
+            delta = vectors_to_delta(data) # convert (R^k)^n to (Delta^k)^n.
+    
+        if use_n2k2_optimisation and n == 2 and k == 2:
+            c_dc_pairs = make_c_dc_pairs_n2k2(delta)
+        else:
+            c_dc_pairs = make_c_dc_pairs(delta)
+    
+        c_dc_pairs_sorted_by_dc = sorted(c_dc_pairs, key=lambda x: x[1], reverse=True) # largest dc first.
+        #print("c_dc_pairs .... in order of decreasing dc.") # Only needed for debug.
+        #[print(_) for _ in c_dc_pairs_sorted_by_dc] # Only needed for debug.
+    
+        #simplex = Maximal_Simplex([c for c, _ in c_dc_pairs])  # Only needed for debug.
+        # print("simplex (before modding by S(n)) =")  # Only needed for debug.
+        # print(simplex) # Only needed for debug.
+    
+        # Barycentric-subdivide the mother simplex "simplex" into smaller ones, of which the "daugter_simplex"
+        # is the one containing our important point.
+        len_c_dc_pairs_sorted_by_dc = len(c_dc_pairs_sorted_by_dc)
+    
+        daughter_simplex_vertices_with_dc = [
+            (Eji_LinComb(n,k,[c for c,_ in c_dc_pairs_sorted_by_dc[:i+1]]),
+             (c_dc_pairs_sorted_by_dc[i][1] - (c_dc_pairs_sorted_by_dc[i+1][1] if i+1<len_c_dc_pairs_sorted_by_dc else 0)) # The dc values for the daughter simplex are DIFFERENCES of dc values in the mother simplex.
+         * (i+1)    # They are also weighted by their index (1,2,3,4,etc) to make them identically distributed.
+             ) for i in range(len_c_dc_pairs_sorted_by_dc)
+        ]
+        #print("\nDaughter simplex vertices before S(n)")
+        #[print(ejilc, dc) for ejilc,dc in daughter_simplex_vertices_with_dc]
+    
+        daughter_simplex_vertices_with_dc_after_Sn = [
+            (ejilc.get_canonical_form(), dc) for ejilc,dc in daughter_simplex_vertices_with_dc
+        ]
+    
+        #print("\nDaughter simplex vertices after S(n)")
+        #[print(ejilc, dc) for ejilc, dc in daughter_simplex_vertices_with_dc_after_Sn]
+    
+        big_n_complex = 2 * n * k + 1
+        point_in_bigNComplex = sum([dc * pr(ejilc.hash_to_unit_complex_number(), big_n_complex) for ejilc, dc in daughter_simplex_vertices_with_dc_after_Sn]) + np.zeros(big_n_complex)  # Addition of zero
+    
+        real_array = point_in_bigNComplex.real
+        imag_array = point_in_bigNComplex.imag
+        assert imag_array[0] == 0 # Since pr's first elt is 1 which has 0 imaginary part
+        big_n_real = 4 * n * k + 1 # Note: not 2*(2*n*k+1) because we don't record the always-0 above.
+    
+        point_in_R_bigNReal = np.concatenate((real_array, imag_array[1:])) # Omitting the first elt of imag_array as it is always zero
+    
+        assert len(point_in_R_bigNReal) == self.size_from_n_k(n,k)
+        assert big_n_real == self.size_from_n_k(n,k)
+    
+        return point_in_R_bigNReal
+    
+        # #[print(vertex) for vertex in simplex.get_vertex_list()] # Only needed for debug.
+        # #print("simplex_eji_ordering (before mod S(n)) = ") # Only needed for debug.
+        # #[print(eji) for eji in simplex.get_Eji_ordering()] # Only needed for debug.
+        #
+        # #print("simplex_eji_ordering (after mod S(n)) = ") # Only needed for debug.
+        # #[print(eji) for eji in simplex.get_Eji_ordering().get_canonical_form()] # Only needed for debug.
+        #
+        # #print("simplex (after modding by S(n)) =") # Only needed for debug.
+        # #print(simplex.get_canonical_form()) # Only needed for debug.
+        # #[print(vertex) for vertex in simplex.get_canonical_form().get_vertex_list()] # Only needed for debug.
+        #
+        # ####TEST_REMOVE#### # Now 'canonicalise' the vertices in c_dc_pairs using that perm:
+        # ####TEST_REMOVE#### c_dc_pairs_after_mod_Sn = [ ({ (inverse_perm[j], i) for (j,i) in c }, dc)  for (c,dc) in c_dc_pairs   ]
+        #
+        # # TEST DON'T APPLY PERM!!!!! It was a mistake!!!!!
+        # c_dc_pairs_after_mod_Sn = c_dc_pairs
+        #
+        # # print("c_dc_pairs (after modding by S(n)) =")
+        # # [ print(c) for c in c_dc_pairs_after_mod_Sn ]
+        #
+        # #shrink = True
+        # #c_l_dc_triples = [(c, ell(c, k, shrink=shrink), dc) for (c, dc) in c_dc_pairs_after_mod_Sn]
+        # # print("c_l_dc_triples (after modding by S(n)) =")
+        # # [ print(c) for c in c_l_dc_triples ]
+        #
+        # # Please someone re-implement this dot product without so many comprehensions ... or at any rate BETTER:
+        # # Want output here to be sum_i pr(r_i, big_n) x_i)
+        # # where, in effect, r_i and x_i would be defined by
+        # # [ blah for _, r_i, x_i in c_l_dc_triples ]
+        #
+        # # print("pr(20)=",pr(20,big_n))
+        # point_in_R_bigN = sum([d * pr(ell, big_n) for _, ell, d in c_l_dc_triples]) + np.zeros(big_n)  # Addition of zero
+        # # term at end ensures that we still get a zero vec (not 0) in the event that c_l_dc_triples is empty!
+        #
+        # return point_in_R_bigN
+    
+    def size_from_n_k(self, n: int, k: int) -> int:
+        return 4*n*k + 1
+    
 
 @dataclass
 class Position_within_Simplex:
