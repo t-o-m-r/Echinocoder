@@ -1,4 +1,3 @@
-import numpy
 import numpy as np
 from itertools import pairwise
 from collections import namedtuple
@@ -6,6 +5,7 @@ from tools import invert_perm, sort_np_array_rows_lexicographically
 import hashlib
 from dataclasses import dataclass, field
 from typing import Self
+import MultisetEncoder
 
 Eji = namedtuple("Eji", ["j", "i"])
 
@@ -256,14 +256,12 @@ class Eji_LinComb:
 
 
 def tost(): # Renamed from test -> tost to avoid pycharm mis-detecting / mis-running unit tests!
-        import numpy as np
-
         calculated = first_occurrences_numpy(np.array([2, 3, 3, 4, 2, 1, 4, 0, 3, 2, 3, 4]))
-        expected = numpy.array([2, 3, 4, 1, 0])
+        expected = np.array([2, 3, 4, 1, 0])
         np.testing.assert_array_equal(calculated, expected)
 
         calculated = first_occurrences_numpy(np.array([2,2,0,2,1,3,0,2,1,0,2,3,0,2,1,3,0,2,]))
-        expected = numpy.array([2, 0, 1, 3])
+        expected = np.array([2, 0, 1, 3])
         np.testing.assert_array_equal(calculated, expected)
 
 

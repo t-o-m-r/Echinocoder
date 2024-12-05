@@ -1,10 +1,11 @@
 import numpy as np
 
-class SetEncoder:
+class MultisetEncoder:
     """
     This is a base class for objects which encode length-n sets of k-vectors.
     Strictly speaking these are "multisets" not "sets" since the sets can hold repeated objects
-    and retain knowledge of the number of repeats.  However, we often abbreviate "multiset" to just "set".
+    and retain knowledge of the number of repeats.  However, we are sometimes guity of 
+    abbreviating "multiset" to just "set".
 
     The set to be encoded should be inputs as a 2D numpy array with shape (n,k).
     The order of the vectors within the numpy array can be arbitrary
@@ -37,14 +38,14 @@ class SetEncoder:
     def encode(self, data: np.ndarray, debug=False) -> np.ndarray:
         pass
 
-    def size_from_array(self, data: np.ndarray): -> int
+    def size_from_array(self, data: np.ndarray) -> int:
         """
         This function returns the number of reals that the encoding would contain if the set represented by "data" were to be encoded. -1 is returned if data of the supplied type is not encodable by this encoder.
         """
         n,k = data.shape
         return self.encoding_size_from_n_k(n,k)
 
-    def size_from_n_k(self, n: int, k int)
+    def size_from_n_k(self, n: int, k: int) -> int:
         """
         This function returns the number of reals that the encoding would contain if a set containing n "k-vectors" were to be encoded. Derived classes implmenting this method should return -1 if they are not able to encode sets for that n and k.
         """
