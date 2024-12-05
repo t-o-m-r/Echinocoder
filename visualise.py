@@ -8,8 +8,9 @@ from iwpc.scalars.scalar_function import ScalarFunction
 from iwpc.visualise.bokeh_function_visualiser_2D import BokehFunctionVisualiser2D
 
 #from Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset import encode
+from Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset import encode
 #from Historical.C0_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import encode
-from C0HomDeg1_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import encode
+#from C0HomDeg1_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import encode
 
 
 def make_input_scalars(n, k):
@@ -37,8 +38,6 @@ def make_output_scalars(R):
 n = 3
 k = 2
 
-#big_n_for_encoding = 4*n*k+1  # For PKH
-#big_n_for_encoding = 2*n*k+1 # For Lester Alg
 big_n_for_encoding = encode.size_from_n_k(n,k)
 
 def evaluate_encoding(x, n, k):

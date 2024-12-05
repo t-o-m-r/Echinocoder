@@ -11,9 +11,9 @@
 # it might be able to encode complex arrays, albeit to complex outputs.
 # This could be used by a complexly compressed method (see below).
 # 
-# The number of outputs shoud be 
+# If k==0 the number of outputs is also zero. If k>=1 then the number of outputs should be 
 #
-#          ORDER(m,n) == n + (m-1)*n*(n+1)/2 
+#          ORDER(m,n) == n + (m-1)*n*(n+1)/2  
 #
 # where n is the number of vectors in the set, and m is the dimension of each of those vectors. 
 # This order has leading term 
@@ -112,6 +112,16 @@ def __encode_without_flattening(data):
     #
     # return ans
 
+#def encoding_size_from_array(data: np.ndarray) -> int:
+#    n,k = data.shape
+#    return encoding_size_from_n_k(n,k)
+
+def encoding_size_from_n_k(n: int, k: int) -> int:
+    if k==0: return 0
+    ans = n + (k-1)*n*(n+1)//2  # We only want ordinary division "/" but we use "//" to avoid promoting to float and result is same.
+    #print("SIZE == ",ans)
+    return ans
+
 def encode(data):
 
     n = len(data)
@@ -124,8 +134,9 @@ def encode(data):
 
     flattened_coeffs = [ a for b in __encode_without_flattening(data) for a in b ]
 
-    EXPECTED_ORDER = n + (m-1)*n*(n+1)/2 
+    EXPECTED_ORDER = encoding_size_from_n_k(n,m)
     ACTUAL_ORDER = len(flattened_coeffs)
+    assert EXPECTED_ORDER == ACTUAL_ORDER
     if EXPECTED_ORDER != ACTUAL_ORDER:
         print("Expected Order",EXPECTED_ORDER)     
         print("Actual Order",ACTUAL_ORDER)     
@@ -133,4 +144,6 @@ def encode(data):
 
     return flattened_coeffs
 
+#encode.size_from_array = encoding_size_from_array
+encode.size_from_n_k = encoding_size_from_n_k
 
