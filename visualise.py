@@ -11,10 +11,10 @@ from iwpc.visualise.bokeh_function_visualiser_2D import BokehFunctionVisualiser2
 from C0HomDeg1_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import encode
 
 
-def make_input_scalars(n, m):
+def make_input_scalars(n, k):
     scalars = []
     for i in range(n):
-        for j in range(m):
+        for j in range(k):
             scalars.append(Scalar(f"Vector {i} feature {j}", bins=np.linspace(-5, 5, 100)))
     return scalars
 
@@ -34,17 +34,17 @@ def make_output_scalars(R):
 
 
 n = 3
-m = 2
+k = 2
 
-#big_n_for_encoding = 4*n*m+1  # For PKH
+#big_n_for_encoding = 4*n*k+1  # For PKH
+#big_n_for_encoding = 2*n*k+1 # For Lester Alg
+big_n_for_encoding = encode.size_from_n_k(n,k)
 
-big_n_for_encoding = 2*n*m+1 # For Lester Alg
-
-def evaluate_encoding(x, n, m):
+def evaluate_encoding(x, n, k):
 
     #print("Cache test")
     if evaluate_encoding.last_x is not None and len(x)==len(evaluate_encoding.last_x):
-        if (x==evaluate_encoding.last_x).all() and (n==evaluate_encoding.last_n) and (m==evaluate_encoding.last_m):
+        if (x==evaluate_encoding.last_x).all() and (n==evaluate_encoding.last_n) and (k==evaluate_encoding.last_k):
             # We hit the cache!
             #print("Cache hit")
             return evaluate_encoding.last_ret
@@ -54,28 +54,28 @@ def evaluate_encoding(x, n, m):
 
     outs = []
     for sample in x:
-        sample = sample.reshape(n, m)
+        sample = sample.reshape(n, k)
         encoding = encode(sample)
         assert len(encoding) == big_n_for_encoding
         outs.append(encoding)
 
     evaluate_encoding.last_x = x.copy()
     evaluate_encoding.last_n = n
-    evaluate_encoding.last_m = m
+    evaluate_encoding.last_k = k
     evaluate_encoding.last_ret = np.asarray(outs)
 
     return evaluate_encoding.last_ret
 
 evaluate_encoding.last_x=None
 evaluate_encoding.last_n=None
-evaluate_encoding.last_m=None
+evaluate_encoding.last_k=None
 evaluate_encoding.last_outs=None
 
 bokeh_vis = BokehFunctionVisualiser2D(
-    lambda x: evaluate_encoding(x, n, m),
-    make_input_scalars(n, m),
+    lambda x: evaluate_encoding(x, n, k),
+    make_input_scalars(n, k),
     make_output_scalars(big_n_for_encoding),
-    center_point=10 * (np.random.random(size=n * m) - 0.5),
+    center_point=10 * (np.random.random(size=n * k) - 0.5),
     panel_1d_kwargs={'use_points': True},
     use_points_for_xsecs=True,
 )
