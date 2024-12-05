@@ -5,139 +5,133 @@ from tools import invert_perm, sort_np_array_rows_lexicographically
 import hashlib
 from dataclasses import dataclass, field
 from typing import Self
-import MultisetEncoder
+from MultisetEncoder import MultisetEncoder
 
 Eji = namedtuple("Eji", ["j", "i"])
 
-def encode(data: np.ndarray, debug=False) -> np.ndarray:
-    if debug:
-        print(f"data is {data}")
-
-    n,k = data.shape
-    flattened_data = [ ( data[j][i], Eji(j,i) ) for j in range(n) for i in range(k) ]
-    sorted_data = sorted( flattened_data, key = lambda x : -x[0])
-
-    if debug:
-        print(f"sorted flattened data is")
-        [print(bit) for bit in sorted_data]
-
-    min_element = sorted_data[-1][0]
-    max_element = sorted_data[0][0]
-
-    difference_data = [ (x[0]-y[0], x[1]) for x,y in pairwise(sorted_data) ]
-
-    if debug:
-        print(f"difference data is")
-        [print(bit) for bit in difference_data]
-
-    difference_data_with_MSVs = [
-        (delta, Maximal_Simplex_Vertex(set([eji for (_, eji) in difference_data[0:i + 1]]))) for i, (delta, _) in enumerate(difference_data)]
-
-    if debug:
-        print(f"difference data with MSVs:")
-        [print(bit) for bit in difference_data_with_MSVs]
-
-    sorted_difference_data_with_MSVs = sorted(difference_data_with_MSVs, key=lambda x: -x[0] )
-    if debug:
-        print(f"sorted difference data with MSVs:")
-        [print(bit) for bit in sorted_difference_data_with_MSVs]
-
-    # Barycentrically subdivide:
-    deltas_in_current_order = [delta for delta, _ in sorted_difference_data_with_MSVs]
-    msvs_in_current_order = [msv for _,msv in sorted_difference_data_with_MSVs]
-
-    expected_number_of_vertices = n * k - 1
-    assert len(deltas_in_current_order) == expected_number_of_vertices
-    assert len(msvs_in_current_order) == expected_number_of_vertices
-
-
-    # The coordinates in the barycentric subdivided daughter simplex are differences of the current deltas,
-    # which are up-weighted by a linear factor to make them approximately identically distributed.
-    difference_data_in_subdivided_simplex = [ (  (i+1)*(deltas_in_current_order[i]-(deltas_in_current_order[i+1] if i+1<expected_number_of_vertices else 0)),  Eji_LinComb(n, k, msvs_in_current_order[:i+1])) for i in range(expected_number_of_vertices)]
-
-    if debug:
-        print(f"difference data in Barycentrically subdivided simplex:")
-        [print(bit) for bit in difference_data_in_subdivided_simplex]
-
-    canonical_difference_data = [(delta, msv.get_canonical_form()) for (delta, msv) in difference_data_in_subdivided_simplex]
-    if debug:
-        print(f"canonical difference data is:")
-        [print(bit) for bit in canonical_difference_data]
-
-    #j_order = first_occurrences_numpy(np.asarray([ eji.j for _,eji in sorted_data ]))
-    #perm = invert_perm(j_order)
-
-    #if debug:
-    #    print(f"the j's appear in this order {j_order}")
-    #    print(f"inverse perm of j_order is  {perm}")
-
-    #canonical_difference_data = [ (delta, Eji(perm[j], i) ) for delta, (j,i) in difference_data ]
-
-    #if debug:
-    #    print(f"canonical difference data is:")
-    #    [print(bit) for bit in canonical_difference_data]
-
-    #cumulated_canonical_difference_data_1 = [ (delta, Maximal_Simplex_Vertex(set([  eji for (_, eji) in canonical_difference_data[0:i+1] ])))  for i, (delta, _) in enumerate(canonical_difference_data)]
-    #if debug:
-    #    print(f"cumulated canonical difference data (version 1) is:")
-    #    [print(bit) for bit in cumulated_canonical_difference_data_1]
-
-    # HERE
-
-
-    # Calculate same thing but in a different representation
-    #cumulated_canonical_difference_data_2 = [ ( delta, eji_set_to_np_array(eji_set, n, k) ) for (delta, eji_set) in cumulated_canonical_difference_data_1 ]
-    #if debug:
-    #    print(f"cumulated canonical difference data (version 2) is:")
-    #    [print(bit) for bit in cumulated_canonical_difference_data_2]
-
-    assert n*k - 1 == expected_number_of_vertices
-    bigN = 2 * (n*k - 1) + 1 # Size of the space into which the simplices are embedded.
-    # bigN does not count any min and max elements, which would be extra.
-    difference_point_pairs = [(delta, eji_lin_com.hash_to_point_in_unit_hypercube(bigN)) for (delta, eji_lin_com) in canonical_difference_data]
-    if debug:
-        print(f")difference point pairs are:")
-        [print(bit) for bit in difference_point_pairs]
-
-    first_half_of_encoding = sum([delta * point for delta, point in difference_point_pairs]) + np.zeros(bigN)
-    if debug:
-        print(f"first bit of encoding is: {first_half_of_encoding}")
-
-
-
-    # Create a vector to contain the encoding:
-    length_of_encoding = encoding_size_from_n_k(n,k)
-
-    assert length_of_encoding == bigN + 2
-    assert bigN == 2 * (n*k - 1) + 1
-    assert length_of_encoding == 2 * (n*k - 1) + 1 + 2  # bigN + 2
-    assert length_of_encoding == 2 * n * k + 1 # bigN + 2 expanded out.
-
-    encoding = np.zeros(length_of_encoding, dtype=np.float64) # +2 for max_element and min_element .... TODO don't always need max_element!
-
-    # Populate first half of the encoding:
-    encoding[:bigN] = first_half_of_encoding
-    # Populate the last element of the encoding with the smallest element of the initial data.
-    encoding[-1] = min_element # TODO: Don't do this if nk==0, as nothing to record in that case.
-    # Populate the second last element of the encoding with the largest element of the initial data.
-    encoding[-2] = max_element # TODO: Don't do this if nk<=1, as min_element is enough in that case.
-
-    if debug:
-        print(f"encoding is {encoding}")
-        print(f"encoding has length {length_of_encoding}")
-
-    return encoding
-
-def encoding_size_from_array(data: np.ndarray) -> int:
-    n,k = data.shape
-    return encoding_size_from_n_k(n,k)
-
-def encoding_size_from_n_k(n: int, k: int) -> int:
-    return 2*n*k + 1
-
-encode.size_from_array = encoding_size_from_array
-encode.size_from_n_k = encoding_size_from_n_k
-
+class Implementation(MultisetEncoder):
+    def encode(self, data: np.ndarray, debug=False) -> np.ndarray:
+        if debug:
+            print(f"data is {data}")
+    
+        n,k = data.shape
+        flattened_data = [ ( data[j][i], Eji(j,i) ) for j in range(n) for i in range(k) ]
+        sorted_data = sorted( flattened_data, key = lambda x : -x[0])
+    
+        if debug:
+            print(f"sorted flattened data is")
+            [print(bit) for bit in sorted_data]
+    
+        min_element = sorted_data[-1][0]
+        max_element = sorted_data[0][0]
+    
+        difference_data = [ (x[0]-y[0], x[1]) for x,y in pairwise(sorted_data) ]
+    
+        if debug:
+            print(f"difference data is")
+            [print(bit) for bit in difference_data]
+    
+        difference_data_with_MSVs = [
+            (delta, Maximal_Simplex_Vertex(set([eji for (_, eji) in difference_data[0:i + 1]]))) for i, (delta, _) in enumerate(difference_data)]
+    
+        if debug:
+            print(f"difference data with MSVs:")
+            [print(bit) for bit in difference_data_with_MSVs]
+    
+        sorted_difference_data_with_MSVs = sorted(difference_data_with_MSVs, key=lambda x: -x[0] )
+        if debug:
+            print(f"sorted difference data with MSVs:")
+            [print(bit) for bit in sorted_difference_data_with_MSVs]
+    
+        # Barycentrically subdivide:
+        deltas_in_current_order = [delta for delta, _ in sorted_difference_data_with_MSVs]
+        msvs_in_current_order = [msv for _,msv in sorted_difference_data_with_MSVs]
+    
+        expected_number_of_vertices = n * k - 1
+        assert len(deltas_in_current_order) == expected_number_of_vertices
+        assert len(msvs_in_current_order) == expected_number_of_vertices
+    
+    
+        # The coordinates in the barycentric subdivided daughter simplex are differences of the current deltas,
+        # which are up-weighted by a linear factor to make them approximately identically distributed.
+        difference_data_in_subdivided_simplex = [ (  (i+1)*(deltas_in_current_order[i]-(deltas_in_current_order[i+1] if i+1<expected_number_of_vertices else 0)),  Eji_LinComb(n, k, msvs_in_current_order[:i+1])) for i in range(expected_number_of_vertices)]
+    
+        if debug:
+            print(f"difference data in Barycentrically subdivided simplex:")
+            [print(bit) for bit in difference_data_in_subdivided_simplex]
+    
+        canonical_difference_data = [(delta, msv.get_canonical_form()) for (delta, msv) in difference_data_in_subdivided_simplex]
+        if debug:
+            print(f"canonical difference data is:")
+            [print(bit) for bit in canonical_difference_data]
+    
+        #j_order = first_occurrences_numpy(np.asarray([ eji.j for _,eji in sorted_data ]))
+        #perm = invert_perm(j_order)
+    
+        #if debug:
+        #    print(f"the j's appear in this order {j_order}")
+        #    print(f"inverse perm of j_order is  {perm}")
+    
+        #canonical_difference_data = [ (delta, Eji(perm[j], i) ) for delta, (j,i) in difference_data ]
+    
+        #if debug:
+        #    print(f"canonical difference data is:")
+        #    [print(bit) for bit in canonical_difference_data]
+    
+        #cumulated_canonical_difference_data_1 = [ (delta, Maximal_Simplex_Vertex(set([  eji for (_, eji) in canonical_difference_data[0:i+1] ])))  for i, (delta, _) in enumerate(canonical_difference_data)]
+        #if debug:
+        #    print(f"cumulated canonical difference data (version 1) is:")
+        #    [print(bit) for bit in cumulated_canonical_difference_data_1]
+    
+        # HERE
+    
+    
+        # Calculate same thing but in a different representation
+        #cumulated_canonical_difference_data_2 = [ ( delta, eji_set_to_np_array(eji_set, n, k) ) for (delta, eji_set) in cumulated_canonical_difference_data_1 ]
+        #if debug:
+        #    print(f"cumulated canonical difference data (version 2) is:")
+        #    [print(bit) for bit in cumulated_canonical_difference_data_2]
+    
+        assert n*k - 1 == expected_number_of_vertices
+        bigN = 2 * (n*k - 1) + 1 # Size of the space into which the simplices are embedded.
+        # bigN does not count any min and max elements, which would be extra.
+        difference_point_pairs = [(delta, eji_lin_com.hash_to_point_in_unit_hypercube(bigN)) for (delta, eji_lin_com) in canonical_difference_data]
+        if debug:
+            print(f")difference point pairs are:")
+            [print(bit) for bit in difference_point_pairs]
+    
+        first_half_of_encoding = sum([delta * point for delta, point in difference_point_pairs]) + np.zeros(bigN)
+        if debug:
+            print(f"first bit of encoding is: {first_half_of_encoding}")
+    
+    
+    
+        # Create a vector to contain the encoding:
+        length_of_encoding = self.size_from_n_k(n,k)
+    
+        assert length_of_encoding == bigN + 2
+        assert bigN == 2 * (n*k - 1) + 1
+        assert length_of_encoding == 2 * (n*k - 1) + 1 + 2  # bigN + 2
+        assert length_of_encoding == 2 * n * k + 1 # bigN + 2 expanded out.
+    
+        encoding = np.zeros(length_of_encoding, dtype=np.float64) # +2 for max_element and min_element .... TODO don't always need max_element!
+    
+        # Populate first half of the encoding:
+        encoding[:bigN] = first_half_of_encoding
+        # Populate the last element of the encoding with the smallest element of the initial data.
+        encoding[-1] = min_element # TODO: Don't do this if nk==0, as nothing to record in that case.
+        # Populate the second last element of the encoding with the largest element of the initial data.
+        encoding[-2] = max_element # TODO: Don't do this if nk<=1, as min_element is enough in that case.
+    
+        if debug:
+            print(f"encoding is {encoding}")
+            print(f"encoding has length {length_of_encoding}")
+    
+        return encoding
+    
+    def size_from_n_k(self, n: int, k: int) -> int:
+        return 2*n*k + 1
+    
 def eji_set_to_np_array(eji_set, n, k):
     ans = np.zeros(shape=(n, k))
     for (j, i) in eji_set:
