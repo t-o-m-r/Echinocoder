@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 import  Cinf_python_polynomial_encoder_for_list_of_reals_as_multiset as encoder_Cinf_py_li
-import  Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset as encoder_Cinf_np_ar
+import  Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset as Cinf_np_ar
+encoder_Cinf_np_ar = Cinf_np_ar.Encoder()
 import      Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset as encoder_Cinf_sp_bur_ar
 import  Cinf_sympy_evenBursar_encoder_for_array_of_reals_as_multiset as encoder_Cinf_sp_evenBur_ar
 import   Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset as encoder_Cinf_np_li

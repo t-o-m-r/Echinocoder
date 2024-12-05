@@ -1,9 +1,9 @@
 # Unomment one of the next few lines to select the encoder to use:
 
-# from Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset import encode
+from Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset import Encoder
 # from Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset import encode
 # from Historical.C0_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import encode
-from C0HomDeg1_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import Implementation
+# from C0HomDeg1_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import Encoder
 
 
 
@@ -46,7 +46,7 @@ def make_output_scalars(R):
 n = 3
 k = 2
 
-encoder = Implementation()
+encoder = Encoder()
 
 big_n_for_encoding = encoder.size_from_n_k(n,k)
 

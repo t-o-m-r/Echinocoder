@@ -9,7 +9,7 @@ from MultisetEncoder import MultisetEncoder
 
 Eji = namedtuple("Eji", ["j", "i"])
 
-class Implementation(MultisetEncoder):
+class Encoder(MultisetEncoder):
     def encode(self, data: np.ndarray, debug=False) -> np.ndarray:
         if debug:
             print(f"data is {data}")
