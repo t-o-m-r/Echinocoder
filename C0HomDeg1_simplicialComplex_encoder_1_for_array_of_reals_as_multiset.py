@@ -255,7 +255,7 @@ class Eji_LinComb:
 
 
 
-def tost():
+def tost(): # Renamed from test -> tost to avoid pycharm mis-detecting / mis-running unit tests!
         import numpy as np
 
         calculated = first_occurrences_numpy(np.array([2, 3, 3, 4, 2, 1, 4, 0, 3, 2, 3, 4]))
@@ -269,7 +269,7 @@ def tost():
 
 
 def run_unit_tests():
-    tost()
+    tost() # Renamed from test -> tost to avoid pycharm mis-detecting / mis-running unit tests!
 
 if __name__ == "__main__":
     run_unit_tests()
