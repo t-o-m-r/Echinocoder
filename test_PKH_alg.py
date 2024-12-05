@@ -4,7 +4,7 @@ import unittest
 
 import numpy as np
 
-from C0_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import *
+from Historical.C0_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import *
 
 class Test_Ell(unittest.TestCase):
     def test_sn_perm_collision(self):

@@ -55,7 +55,7 @@ def evaluate_encoding(x, n, k):
     outs = []
     for sample in x:
         sample = sample.reshape(n, k)
-        encoding = encode(sample)
+        encoding = np.asarray(encode(sample), dtype=float)
         assert len(encoding) == big_n_for_encoding
         outs.append(encoding)
 
