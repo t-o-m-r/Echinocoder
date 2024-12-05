@@ -16,6 +16,14 @@ import Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset
 import itertools
 import tools
 
+def encoding_size_from_array(data: np.ndarray) -> int:
+    n,k = data.shape
+    return encoding_size_from_n_k(n,k)
+
+def encoding_size_from_n_k(n: int, k: int) -> int:
+    if n==0 or k==0: return 0
+    return n*k*(k-1) if k>1 else n
+
 def encode(data):
 
     n,m = data.shape
@@ -25,13 +33,16 @@ def encode(data):
 
     if m==1:
         # The "vectors" are 1-long, so reduce the thing to a list.
-        return Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset.encode(data[:,0])
+        real_encoding = Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset.encode(data[:,0])
+        assert len(real_encoding) == encoding_size_from_n_k(n,m)
+        return real_encoding
 
     if m==2:
         # The "vectors" are 2-long, so turn them into complex numbers, encode, and expand:
         complex_list = data[:,0]+complex(0,1)*data[:,1]
         complex_encoding = Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset.encode(complex_list) # Yes, this is explopiting a secret private feature ...
         real_encoding = tools.expand_complex_to_real_pairs(complex_encoding)
+        assert len(real_encoding) == encoding_size_from_n_k(n,m)
         return real_encoding
 
     # The "vectors" are 3-or-more-long, so need to take all m-choose-2 pairings of elements in them, and send them out.
@@ -53,5 +64,11 @@ def encode(data):
             real_encoding = np.empty(total_encoding_size, dtype = encoding_for_pair.dtype)
         real_encoding[current_encoding_index:current_encoding_index+pair_encoding_size] = encoding_for_pair
         current_encoding_index += pair_encoding_size
+
+    assert len(real_encoding) == n*m*(m-1)
+    assert len(real_encoding) == encoding_size_from_n_k(n,m)
     return real_encoding
+
+encode.size_from_array = encoding_size_from_array
+encode.size_from_n_k = encoding_size_from_n_k
 

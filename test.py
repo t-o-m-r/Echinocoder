@@ -107,8 +107,8 @@ class Test_Encoders(unittest.TestCase):
                 if i==0:
                     first_encoding[encoder]=encoding
                 else:
-                    print("MOOOCOWFIRST",encoder, first_encoding[encoder])
-                    print("MOOOCOW__NOW",encoder, encoding)
+                    #print("MOOOCOWFIRST",encoder, first_encoding[encoder])
+                    #print("MOOOCOW__NOW",encoder, encoding)
                     if exact:
                         np.testing.assert_equal(encoding, first_encoding[encoder], strict=True)
                     else:
@@ -116,8 +116,8 @@ class Test_Encoders(unittest.TestCase):
 
                 # Also checks encoding against expected, if given
                 if expected_encoding is not None:
-                    print("MOOO1",encoding)
-                    print("MOOO2",expected_encoding)
+                    #print("MOOO1",encoding)
+                    #print("MOOO2",expected_encoding)
                     if exact:
                         np.testing.assert_equal(encoding, expected_encoding, strict=True)
                     else:

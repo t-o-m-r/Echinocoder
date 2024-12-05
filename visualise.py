@@ -7,6 +7,7 @@ from iwpc.scalars.scalar import Scalar
 from iwpc.scalars.scalar_function import ScalarFunction
 from iwpc.visualise.bokeh_function_visualiser_2D import BokehFunctionVisualiser2D
 
+#from Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset import encode
 #from Historical.C0_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import encode
 from C0HomDeg1_simplicialComplex_encoder_1_for_array_of_reals_as_multiset import encode
 
