@@ -150,6 +150,10 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
     big_n_real = 4 * n * k + 1 # Note: not 2*(2*n*k+1) because we don't record the always-0 above.
 
     point_in_R_bigNReal = np.concatenate((real_array, imag_array[1:])) # Omitting the first elt of imag_array as it is always zero
+
+    assert len(point_in_R_bigNReal) == encoding_size_from_n_k(n,k)
+    assert big_n_real == encoding_size_from_n_k(n,k)
+
     return point_in_R_bigNReal
 
     # #[print(vertex) for vertex in simplex.get_vertex_list()] # Only needed for debug.
@@ -187,6 +191,16 @@ def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
     # # term at end ensures that we still get a zero vec (not 0) in the event that c_l_dc_triples is empty!
     #
     # return point_in_R_bigN
+
+def encoding_size_from_array(data: np.ndarray) -> int:
+    n,k = data.shape
+    return encoding_size_from_n_k(n,k)
+
+def encoding_size_from_n_k(n: int, k: int) -> int:
+    return 4*n*k + 1
+
+encode.size_from_array = encoding_size_from_array
+encode.size_from_n_k = encoding_size_from_n_k
 
 @dataclass
 class Position_within_Simplex:
