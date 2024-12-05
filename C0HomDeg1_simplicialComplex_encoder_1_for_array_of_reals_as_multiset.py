@@ -9,13 +9,6 @@ from typing import Self
 
 Eji = namedtuple("Eji", ["j", "i"])
 
-def encoding_size_from_array(data: np.ndarray) -> int:
-    n,k = data.shape
-    return encoding_size_from_n_k(n,k)
-
-def encoding_size_from_n_k(n: int, k: int) -> int:
-    return 2*n*k + 1
-
 def encode(data: np.ndarray, debug=False) -> np.ndarray:
     if debug:
         print(f"data is {data}")
@@ -134,6 +127,13 @@ def encode(data: np.ndarray, debug=False) -> np.ndarray:
         print(f"encoding has length {length_of_encoding}")
 
     return encoding
+
+def encoding_size_from_array(data: np.ndarray) -> int:
+    n,k = data.shape
+    return encoding_size_from_n_k(n,k)
+
+def encoding_size_from_n_k(n: int, k: int) -> int:
+    return 2*n*k + 1
 
 encode.size_from_array = encoding_size_from_array
 encode.size_from_n_k = encoding_size_from_n_k
