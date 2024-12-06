@@ -25,9 +25,12 @@ has order $O(n^2 k)$.  Its exact order is $n + (k-1) n (n+1)/2$.
 has order $Binom(n+k,n)-1$. Although this embedder is very inefficient, its one possible benefit is that it does not treat any components in the $k$-space differently than any other. It is `even handed' (hence the name) w.r.t. the axes of the vectors. 
 * If one were to use the Busarial embedder when $k\ge n$ and the polynomial embedder when $n\ge k$ then the resulting algorithm is a method of order $O((nk)^{\frac 3 2})$.
 
-| Method | Order (leading) | Order (exact) | Piecewise Linear | Differentiable | Source |
-|--------|-----------------|---------------|------------------|----------------|--------|
-| Simplex| $nk$            |   $2nk+1$     | Yes              |   No           | [link](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py) |
+### Embedder summaries:
+
+| Method  | Order (leading) | Order (exact) | Piecewise Linear | Differentiable | Notes | Source |
+|---------|-----------------|---------------|------------------|----------------|-------|--------|
+| Simplex | $O(nk)$         |   $2nk+1$     | Yes              |   No           |       | [link](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py) |
+| Dotting | $O(nk)$         |   $2nk+1$     | Yes              |   No           | Not provenly an embedding | [link](C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset.py) |
 
 
 ## Embedders which work on $SP^m(\mathbb R)$ only.
