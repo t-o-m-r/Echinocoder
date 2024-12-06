@@ -1,5 +1,5 @@
-# Encode list of real numbers treated as multiset.
-# E.g. this method can encode things like:
+# Embed list of real numbers treated as multiset.
+# E.g. this method can embed things like:
 #
 #        [[3,2],[4,1],[-2,1]]
 #
@@ -8,7 +8,7 @@
 #        {{ [3,2],[4,1],[-2,1] }}
 #
 # Although this implementation claims to only operate on arrays of reals, 
-# it might also be able to encode complex arrays, albeit to complex 
+# it might also be able to embed complex arrays, albeit to complex 
 # outputs. This could be used by a complexly compressed method later?
 # 
 # The number of outputs shoud be 
@@ -21,7 +21,7 @@
 # R^m vectors specially.
 #
 # Here is an $m=3$, $n=2$ example:
-# Encoding  $\{(3,1,4),(2,2,5)\}$ should generate
+# Embedding  $\{(3,1,4),(2,2,5)\}$ should generate
 # 
 #       [9, 20, 3, 13, 2, 5, 23, 8, 6]
 #
@@ -33,7 +33,7 @@
 #
 #       $y^2 + 9 x0 y + 20 x2^2 + 3 x2 y + 13 x1 x2 + 2 x1^2 + 5 x1 y + 23 x0 x2 + 8 x0 x1 + 6 x0^2 $
 #
-# . Note that the coeff of y^n is skipped (not encoded) as it is always 1.
+# . Note that the coeff of y^n is skipped (not embedd) as it is always 1.
 
 from math import prod
 #from itertools import combinations
@@ -55,7 +55,7 @@ def get_tuples(length, total):
             yield (i,) + t
 
 
-def encode(data):
+def embed(data):
     
     #print("Data is")
     #print(data)
@@ -109,7 +109,7 @@ def encode(data):
     EXPECTED_ORDER = sympy.binomial(m+n,n)-1
     ACTUAL_ORDER = len(coeffs)
     if ACTUAL_ORDER != EXPECTED_ORDER:
-        print("Expecfted ",EXPECTED_ORDER," for length of encoding but got ",ACTUAL_ORDER)
+        print("Expecfted ",EXPECTED_ORDER," for length of embedding but got ",ACTUAL_ORDER)
         raise Exception("Bug in implementation of evenBursar's method!")
     
     return coeffs
@@ -129,7 +129,7 @@ def encode(data):
     # 
     # ans = np.array([ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(len(data)) ])
     #
-    # All encoders have to output lists of real numbers (at least for now) so:
+    # All embedders have to output lists of real numbers (at least for now) so:
     #if np.iscomplexobj(ans):
     #  ans=tools.expand_complex_to_real_pairs(ans)
     #

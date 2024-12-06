@@ -1,5 +1,5 @@
-# Encode list of real numbers treated as multiset.
-# E.g. this method can encode things like:
+# Embed list of real numbers treated as multiset.
+# E.g. this method can embed things like:
 #
 #        [[3,2],[4,1],[-2,1]]
 #
@@ -8,7 +8,7 @@
 #        {{ [3,2],[4,1],[-2,1] }}
 #
 # Although this implementation claims to only operate on arrays of reals, 
-# it might be able to encode complex arrays, albeit to complex outputs.
+# it might be able to embed complex arrays, albeit to complex outputs.
 # This could be used by a complexly compressed method (see below).
 # 
 # If k==0 the number of outputs is also zero. If k>=1 then the number of outputs should be 
@@ -21,7 +21,7 @@
 #                m*n*n/2.
 #
 # Here is an $m=3$, $n=2$ example:
-# Encoding  $\{(3,1,4),(2,2,5)\}$ should generate
+# Embedding  $\{(3,1,4),(2,2,5)\}$ should generate
 # 
 #       [9, 3, 5,     20, 13, 25, 8, 6]
 #
@@ -54,7 +54,7 @@ from math import prod
 #import tools
 from sympy import Poly, abc
 
-def __encode_without_flattening(data):
+def __embed_without_flattening(data):
     
     #print("Data is")
     #print(data)
@@ -106,23 +106,23 @@ def __encode_without_flattening(data):
     # 
     # ans = np.array([ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(len(data)) ])
     #
-    # All encoders have to output lists of real numbers (at least for now) so:
+    # All embedders have to output lists of real numbers (at least for now) so:
     #if np.iscomplexobj(ans):
     #  ans=tools.expand_complex_to_real_pairs(ans)
     #
     # return ans
 
-#def encoding_size_from_array(data: np.ndarray) -> int:
+#def embedding_size_from_array(data: np.ndarray) -> int:
 #    n,k = data.shape
-#    return encoding_size_from_n_k(n,k)
+#    return embedding_size_from_n_k(n,k)
 
-def encoding_size_from_n_k(n: int, k: int) -> int:
+def embedding_size_from_n_k(n: int, k: int) -> int:
     if k==0: return 0
     ans = n + (k-1)*n*(n+1)//2  # We only want ordinary division "/" but we use "//" to avoid promoting to float and result is same.
     #print("SIZE == ",ans)
     return ans
 
-def encode(data):
+def embed(data):
 
     n = len(data)
     if n==0:
@@ -132,9 +132,9 @@ def encode(data):
     if m==0:
         return []
 
-    flattened_coeffs = [ a for b in __encode_without_flattening(data) for a in b ]
+    flattened_coeffs = [ a for b in __embed_without_flattening(data) for a in b ]
 
-    EXPECTED_ORDER = encoding_size_from_n_k(n,m)
+    EXPECTED_ORDER = embedding_size_from_n_k(n,m)
     ACTUAL_ORDER = len(flattened_coeffs)
     assert EXPECTED_ORDER == ACTUAL_ORDER
     if EXPECTED_ORDER != ACTUAL_ORDER:
@@ -144,6 +144,6 @@ def encode(data):
 
     return flattened_coeffs
 
-#encode.size_from_array = encoding_size_from_array
-encode.size_from_n_k = encoding_size_from_n_k
+#embed.size_from_array = embedding_size_from_array
+embed.size_from_n_k = embedding_size_from_n_k
 

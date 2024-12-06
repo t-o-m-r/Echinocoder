@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # USE WITH CAUTION!  No known bugs, but not tested to destruction.
-# This is a re-implementation of C0_bug2_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset.py but aiming to fix the bug in the part of the code which mods out S(n).
+# This is a re-implementation of C0_bug2_numpy_simplicialComplex_embedder_for_array_of_reals_as_multiset.py but aiming to fix the bug in the part of the code which mods out S(n).
 #
 # Patrick Kennedy-Hunt
 # Christopher Lester
@@ -56,7 +56,7 @@
 #                    (1,0):0.05,              (1,2):0.90,
 #                  }.
 
-from MultisetEncoder import MultisetEncoder
+from MultisetEmbedder import MultisetEmbedder
 from sys import version_info
 import numpy
 import tools
@@ -72,17 +72,17 @@ from dataclasses import dataclass, field
 from typing import Union
 import hashlib
 
-class Encoder(MultisetEncoder):
-    def encode(self, data: np.ndarray, debug=False) -> np.ndarray:
-        return self.encode_internal(data)
+class Embedder(MultisetEmbedder):
+    def embed(self, data: np.ndarray, debug=False) -> np.ndarray:
+        return self.embed_internal(data)
  
-    def encode_internal(self, data: Union[np.ndarray, 'Position_within_Simplex_Product'],
+    def embed_internal(self, data: Union[np.ndarray, 'Position_within_Simplex_Product'],
                use_n2k2_optimisation=False, input_is_in_DeltakToN=False) -> np.ndarray:
         """
         By default, this function takes as input a length-n list of k-vectors (i.e. points in (R^k)^n)
-        to encode in a perutation invariant way in R^(2nk+1).
+        to embed in a perutation invariant way in R^(2nk+1).
     
-        E.g. to encode the three two-vectors [1,2], [4,2] and [2,0] one might supply it with
+        E.g. to embed the three two-vectors [1,2], [4,2] and [2,0] one might supply it with
     
             data = np.array([[1,2], [4,2], [2,0]]).
     
@@ -579,7 +579,7 @@ def make_flat_sums(delta, sort=False, prepend_zero=False):
     (a list of tuples)
     in which for each key the first index is j in [0,n-1], the second index is
     a tuple containing the i values in the basis sum,
-    I.e. key (j,r) below encodes key sum([ (j,i) for i in r]) above. The example below uses k=3 again
+    I.e. key (j,r) below embeds key sum([ (j,i) for i in r]) above. The example below uses k=3 again
     
     flat_sums = [
       (0, (0,1,2,), delta[0,0]+delta[0,1]+delta[0,2]),
@@ -730,7 +730,7 @@ def test_simplex_embedding():
     unittest.TextTestRunner(verbosity=2).run(suite)
 
     """
-    short = encode
+    short = embed
 
     ans1 = short( delta = {  (0,1) : 0.5, (1,2) : 0.25 }, input_is_in_DeltakToN)
 
@@ -780,7 +780,7 @@ def test_simplex_embedding():
                   ] )
                 )
 
-    enc1 = encode(np.array([[1,2],[1,0],[5,2]]))
+    enc1 = embed(np.array([[1,2],[1,0],[5,2]]))
     """
 
     # n=4
@@ -804,7 +804,7 @@ def test_simplex_embedding():
                                              [0.10, 0.00, 0.50],
                                              [0.01, 0.03, 0.20]])
 
-    ans8 = encode(delta)
+    ans8 = embed(delta)
 
     """
     print("Ans1 was ",ans1)

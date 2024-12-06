@@ -1,5 +1,5 @@
-# Encode list of n real (or complex) numbers treated as an element of a realprojectiveplane.  Encoding is length 2n-1 list of real (or complex) numbers.
-# E.g. this method can encode ordered lists like this
+# Embed list of n real (or complex) numbers treated as an element of a realprojectiveplane.  Embedding is length 2n-1 list of real (or complex) numbers.
+# E.g. this method can embed ordered lists like this
 #
 #        x = [3,4,-2,5]
 #
@@ -7,11 +7,11 @@
 #
 #        -x = [-3,-4,2,-5].
 #
-# Each of the above examples should encode to
+# Each of the above examples should embed to
 #
 #        [9, 24, 4, 14, 44, -20, 25]
 #
-# as in general [x1,x2,x3,..,xn] encodes to
+# as in general [x1,x2,x3,..,xn] embeds to
 #
 #       [
 #        x1*x1,
@@ -25,8 +25,8 @@
 #        xn*xn,
 #       ]
 #
-# which is of length 2n-1.  The reason that this is a valid encoding may be seen by considering the 
-# (vanilla) bursar multiset encoding for {{ x, -x }}. That particular encoding pulls out the
+# which is of length 2n-1.  The reason that this is a valid embedding may be seen by considering the 
+# (vanilla) bursar multiset embedding for {{ x, -x }}. That particular embedding pulls out the
 # non-trivial coefficients of powers of y and z from the polynomial:
 #
 #    ( y - (x1 z^0 + x2 z^1 + x3 z^2 + ... + xn z^(n-1)) )*
@@ -35,7 +35,7 @@
 
 import numpy as np
 
-def encode(data):
+def embed(data):
     # data=np.asarray(data)
     return np.asarray([ np.trace(np.flipud(np.outer(data,data)),diag) for diag in range(1-len(data),len(data)) ])
 

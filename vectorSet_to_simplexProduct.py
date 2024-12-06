@@ -11,13 +11,13 @@ from dataclasses import dataclass, field
 from typing import Union
 import hashlib
 
-def encode(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
+def embed(data: Union[np.ndarray, 'Position_within_Simplex_Product'],
            use_n2k2_optimisation=False, input_is_in_DeltakToN=False) -> np.ndarray:
     """
     By default, this function takes as input a length-n list of k-vectors (i.e. points in (R^k)^n)
-    to encode in a perutation invariant way in R^(2nk+1).
+    to embed in a perutation invariant way in R^(2nk+1).
 
-    E.g. to encode the three two-vectors [1,2], [4,2] and [2,0] one might supply it with
+    E.g. to embed the three two-vectors [1,2], [4,2] and [2,0] one might supply it with
 
         data = np.array([[1,2], [4,2], [2,0]]).
 

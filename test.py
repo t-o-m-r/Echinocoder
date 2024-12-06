@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
-import  Cinf_python_polynomial_encoder_for_list_of_reals_as_multiset as encoder_Cinf_py_li
-import  Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset as Cinf_np_ar
-encoder_Cinf_np_ar = Cinf_np_ar.Encoder()
-import      Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset as encoder_Cinf_sp_bur_ar
-import  Cinf_sympy_evenBursar_encoder_for_array_of_reals_as_multiset as encoder_Cinf_sp_evenBur_ar
-import   Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset as encoder_Cinf_np_li
-import              C0_sorting_encoder_for_list_of_reals_as_multiset as encoder_C0_li
-import Historical.C0_simplicialComplex_encoder_1_for_array_of_reals_as_multiset as C0_np_simplex_good1
-encoder_C0_np_simplex_good1 = C0_np_simplex_good1.Encoder()
+import  Cinf_python_polynomial_embedder_for_list_of_reals_as_multiset as embedder_Cinf_py_li
+import  Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset as Cinf_np_ar
+embedder_Cinf_np_ar = Cinf_np_ar.Embedder()
+import      Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset as embedder_Cinf_sp_bur_ar
+import  Cinf_sympy_evenBursar_embedder_for_array_of_reals_as_multiset as embedder_Cinf_sp_evenBur_ar
+import   Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset as embedder_Cinf_np_li
+import              C0_sorting_embedder_for_list_of_reals_as_multiset as embedder_C0_li
+import Historical.C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset as C0_np_simplex_good1
+embedder_C0_np_simplex_good1 = C0_np_simplex_good1.Embedder()
 
 import data_sources
 import numpy as np
@@ -17,25 +17,25 @@ from tools import __line__
 
 fail_count = 0
 
-def self_test_realprojectivespace_encoder(encoder):
-    for inp, out in encoder.unit_test_input_output_pairs:
-       test_realprojectivespace_encoder(inp, encoder=encoder, expected_encoding=out)
+def self_test_realprojectivespace_embedder(embedder):
+    for inp, out in embedder.unit_test_input_output_pairs:
+       test_realprojectivespace_embedder(inp, embedder=embedder, expected_embedding=out)
 
-def test_realprojectivespace_encoder(data, encoder=None, encoders=None, expected_encoding=None):
+def test_realprojectivespace_embedder(data, embedder=None, embedders=None, expected_embedding=None):
     global fail_count
     print("ORIGINAL DATA is",data)
     data_copy = data.copy()
-    if encoders is None:
-        encoders = [ encoder ]
+    if embedders is None:
+        embedders = [ embedder ]
     for sign in [+1,-1]:
         data_copy *= sign
-        for encoder in encoders:
-            encoding = encoder.encode(data_copy)
-            encoding_fails = expected_encoding is not None and not np.array_equal(np.asarray(encoding),np.asarray(expected_encoding))
-            if encoding_fails:
+        for embedder in embedders:
+            embedding = embedder.embed(data_copy)
+            embedding_fails = expected_embedding is not None and not np.array_equal(np.asarray(embedding),np.asarray(expected_embedding))
+            if embedding_fails:
                 fail_count += 1
-                print("FAIL! Expected "+str(expected_encoding)+" ... ", end='')
-            print("ENCH",encoder.__name__,"generates",encoding,"of length",len(encoding),"when encoding",data_copy,"having n=",len(data_copy),". Expectation was "+str(expected_encoding))
+                print("FAIL! Expected "+str(expected_embedding)+" ... ", end='')
+            print("ENCH",embedder.__name__,"generates",embedding,"of length",len(embedding),"when embedding",data_copy,"having n=",len(data_copy),". Expectation was "+str(expected_embedding))
     print()
 
 def make_randoms_reproducable():
@@ -104,43 +104,43 @@ def test_tools():
 
         
 
-class Test_Encoders(unittest.TestCase):
-    def tost_multiset_encoder(self, data, encoder=None, encoders=None, number_of_shuffled_copies=3, expected_encoding=None, relative_tolerance=0, absolute_tolerance=0):
+class Test_Embedders(unittest.TestCase):
+    def tost_multiset_embedder(self, data, embedder=None, embedders=None, number_of_shuffled_copies=3, expected_embedding=None, relative_tolerance=0, absolute_tolerance=0):
         global fail_count
         exact = relative_tolerance == 0 and absolute_tolerance == 0
         print("ORIGINAL DATA is",data)
         shuffled_data = data.copy()
-        if encoders is None:
-            encoders = [ encoder ]
-        first_encoding = dict()
+        if embedders is None:
+            embedders = [ embedder ]
+        first_embedding = dict()
         for i in range(number_of_shuffled_copies):
-            for encoder in encoders:
-                encoding = encoder.encode(shuffled_data)
-                #encoding_fails = expected_encoding is not None and not np.array_equal(np.asarray(encoding),np.asarray(expected_encoding))
-                # Check subsequent encodings are same as first encoding. I.e. check for permutation invariance.
+            for embedder in embedders:
+                embedding = embedder.embed(shuffled_data)
+                #embedding_fails = expected_embedding is not None and not np.array_equal(np.asarray(embedding),np.asarray(expected_embedding))
+                # Check subsequent embeddings are same as first embedding. I.e. check for permutation invariance.
                 if i==0:
-                    first_encoding[encoder]=encoding
+                    first_embedding[embedder]=embedding
                 else:
-                    #print("MOOOCOWFIRST",encoder, first_encoding[encoder])
-                    #print("MOOOCOW__NOW",encoder, encoding)
+                    #print("MOOOCOWFIRST",embedder, first_embedding[embedder])
+                    #print("MOOOCOW__NOW",embedder, embedding)
                     if exact:
-                        np.testing.assert_equal(encoding, first_encoding[encoder], strict=True)
+                        np.testing.assert_equal(embedding, first_embedding[embedder], strict=True)
                     else:
-                        np.testing.assert_allclose(np.array(encoding, dtype=float), np.array(first_encoding[encoder], dtype=float), atol=absolute_tolerance, rtol=relative_tolerance, strict=True, equal_nan=False)
+                        np.testing.assert_allclose(np.array(embedding, dtype=float), np.array(first_embedding[embedder], dtype=float), atol=absolute_tolerance, rtol=relative_tolerance, strict=True, equal_nan=False)
 
-                # Also checks encoding against expected, if given
-                if expected_encoding is not None:
-                    #print("MOOO1",encoding)
-                    #print("MOOO2",expected_encoding)
+                # Also checks embedding against expected, if given
+                if expected_embedding is not None:
+                    #print("MOOO1",embedding)
+                    #print("MOOO2",expected_embedding)
                     if exact:
-                        np.testing.assert_equal(encoding, expected_encoding, strict=True)
+                        np.testing.assert_equal(embedding, expected_embedding, strict=True)
                     else:
-                        np.testing.assert_allclose(np.array(encoding, dtype=float), np.array(expected_encoding, dtype=float), atol=absolute_tolerance, rtol=relative_tolerance, strict=True, equal_nan=False)
+                        np.testing.assert_allclose(np.array(embedding, dtype=float), np.array(expected_embedding, dtype=float), atol=absolute_tolerance, rtol=relative_tolerance, strict=True, equal_nan=False)
 
             np.random.shuffle(shuffled_data) 
         print()
 
-    def test_various_encoders(self):
+    def test_various_embedders(self):
 
         #with lists as inputs:
         #self.assertEqual(ell( [(1,5),(2,42),(3,100)], 101),
@@ -150,99 +150,99 @@ class Test_Encoders(unittest.TestCase):
         make_randoms_reproducable()
     
         print(__file__, __line__)
-        self.tost_multiset_encoder(
+        self.tost_multiset_embedder(
            data=np.asarray([9,-4,21,-8,5]),
-           encoder=encoder_C0_li,
-           expected_encoding = [-8,-4,5,9,21],
+           embedder=embedder_C0_li,
+           expected_embedding = [-8,-4,5,9,21],
         )
     
         print(__file__, __line__)
-        self.tost_multiset_encoder(
+        self.tost_multiset_embedder(
            data=data_sources.random_real_linear_data(n=4),
-           encoder=encoder_C0_li,
+           embedder=embedder_C0_li,
         )
     
         print(__file__, __line__)
-        self.tost_multiset_encoder(
+        self.tost_multiset_embedder(
            data=data_sources.random_complex_linear_data(n=4),
-           encoders=[ encoder_Cinf_np_li, encoder_Cinf_py_li, ],
+           embedders=[ embedder_Cinf_np_li, embedder_Cinf_py_li, ],
         )
     
         print(__file__, __line__)
-        self.tost_multiset_encoder(
+        self.tost_multiset_embedder(
            data=data_sources.random_real_linear_data(n=4),
-           encoders=[ encoder_Cinf_np_li, encoder_Cinf_py_li, ],
+           embedders=[ embedder_Cinf_np_li, embedder_Cinf_py_li, ],
         )
     
         print(__file__, __line__)
-        self.tost_multiset_encoder(
+        self.tost_multiset_embedder(
            data=data_sources.random_real_array_data(mn=(1,4)),
-           encoders=[ encoder_Cinf_np_ar, ],
+           embedders=[ embedder_Cinf_np_ar, ],
         )
     
         print(__file__, __line__)
-        self.tost_multiset_encoder(
+        self.tost_multiset_embedder(
            data=data_sources.random_real_array_data(mn=(2,3)),
-           encoders=[ encoder_Cinf_np_ar, ],
+           embedders=[ embedder_Cinf_np_ar, ],
         )
     
         print(__file__, __line__)
-        self.tost_multiset_encoder(
+        self.tost_multiset_embedder(
            data=data_sources.random_real_array_data(mn=(3,3)),
-           encoders=[ encoder_Cinf_np_ar, ],
+           embedders=[ embedder_Cinf_np_ar, ],
         )
     
         print(__file__, __line__)
-        self.tost_multiset_encoder(
+        self.tost_multiset_embedder(
            data=data_sources.random_real_array_data(mn=(4,3)),
-           encoders=[ encoder_Cinf_np_ar, encoder_Cinf_sp_bur_ar, ],
+           embedders=[ embedder_Cinf_np_ar, embedder_Cinf_sp_bur_ar, ],
         )
     
         print(__file__, __line__)
-        self.tost_multiset_encoder(
+        self.tost_multiset_embedder(
            data=np.array(((-7,-8,-1,-9),(9,-7,-6,5),(-9,4,9,-7))),
-           encoders=[ encoder_Cinf_sp_bur_ar, ],
-           expected_encoding = [-11, 2, -11, -7, -17, 62, 55, -202, 110, 120, -81, 315, -748, 58, 1289, -1497, 457, 1139, -1460, -45, 567],
+           embedders=[ embedder_Cinf_sp_bur_ar, ],
+           expected_embedding = [-11, 2, -11, -7, -17, 62, 55, -202, 110, 120, -81, 315, -748, 58, 1289, -1497, 457, 1139, -1460, -45, 567],
         )
     
         print(__file__, __line__)
-        self.tost_multiset_encoder(
+        self.tost_multiset_embedder(
            data=np.array(((8,-1,-4,3),(-8,-5,9,7),(8,2,7,-7))),
-           encoders=[ encoder_Cinf_np_ar, ],
-           expected_encoding = [   8.0,   -4,  -57,  -80, -488, -394,    8,   12,  -63,  144, -952,  636, 8,    3,  -15,  112, -456,  851,   -4,   12,   -6,  -21,    5,  309, -4,    3,   42,   40, -186,   68,   12,    3,   48,   34, -406,  392], 
+           embedders=[ embedder_Cinf_np_ar, ],
+           expected_embedding = [   8.0,   -4,  -57,  -80, -488, -394,    8,   12,  -63,  144, -952,  636, 8,    3,  -15,  112, -456,  851,   -4,   12,   -6,  -21,    5,  309, -4,    3,   42,   40, -186,   68,   12,    3,   48,   34, -406,  392], 
         )
    
         print(__file__, __line__)
-        self.tost_multiset_encoder(
+        self.tost_multiset_embedder(
            data=np.array(((3,1,4),(2,2,5))),
-           encoders=[ encoder_Cinf_sp_bur_ar, ],
-           expected_encoding =  [9, 3, 5, 20, 13, 25, 8, 6],
+           embedders=[ embedder_Cinf_sp_bur_ar, ],
+           expected_embedding =  [9, 3, 5, 20, 13, 25, 8, 6],
         )
     
         print(__file__, __line__)
-        self.tost_multiset_encoder(
+        self.tost_multiset_embedder(
            data=np.array(((3,1,4),(2,2,5))),
-           encoders=[ encoder_Cinf_sp_evenBur_ar, ],
+           embedders=[ embedder_Cinf_sp_evenBur_ar, ],
            number_of_shuffled_copies=10,
-           expected_encoding = [9, 20, 3, 13, 2, 5, 23, 8, 6],
+           expected_embedding = [9, 20, 3, 13, 2, 5, 23, 8, 6],
         )
     
         print(__file__, __line__)
-        import Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace
-        self_test_realprojectivespace_encoder(Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace)
+        import Cinf_numpy_regular_embedder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace
+        self_test_realprojectivespace_embedder(Cinf_numpy_regular_embedder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace)
 
         print(__file__, __line__)
-        import Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace
-        self_test_realprojectivespace_encoder(Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace)
+        import Cinf_numpy_complexPacked_embedder_for_list_of_reals_as_realprojectivespace
+        self_test_realprojectivespace_embedder(Cinf_numpy_complexPacked_embedder_for_list_of_reals_as_realprojectivespace)
     
         print(__file__, __line__)
-        self.tost_multiset_encoder(
+        self.tost_multiset_embedder(
            data=np.array(((1,2),(1,0),(5,2))),
-           encoders=[ 
-             encoder_C0_np_simplex_good1,
+           embedders=[ 
+             embedder_C0_np_simplex_good1,
            ],
            number_of_shuffled_copies=100,
-           expected_encoding = [ 0.41666667, -0.28108724,  0.26858269, -0.34436233,  0.16483989, -0.15923648,
+           expected_embedding = [ 0.41666667, -0.28108724,  0.26858269, -0.34436233,  0.16483989, -0.15923648,
                                  0.21872145, -0.05275334,  0.10091283, -0.17636017,  0.04387883, -0.13616001,
                                  0.19830351, -0.11750502,  0.04748888, -0.16028752,  0.22837654, -0.1166443,
                                  0.19825184, -0.2125061 ,  0.07986435, -0.16658635,  0.17372507, -0.07108562,

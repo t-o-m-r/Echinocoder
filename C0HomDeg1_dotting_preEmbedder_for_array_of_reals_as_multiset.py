@@ -1,12 +1,12 @@
 import numpy as np
 from tools import sort_each_np_array_row
 #import hashlib
-from MultisetEncoder import MultisetEncoder
+from MultisetEmbedder import MultisetEmbedder
 
 
-class Encoder(MultisetEncoder):
+class Embedder(MultisetEmbedder):
     """
-    This encoder encodes via sorted length-n lists of dot products.
+    This embedder embeds via sorted length-n lists of dot products.
     The first k-such lists are with standard coordinate axes.
     After that come "extra_dots" extra dot products. extra_dots is set in the constructor.
     """
@@ -24,7 +24,7 @@ class Encoder(MultisetEncoder):
 
         self.matrix = np.concatenate((np.identity(k), rng.standard_normal((self.extra_dots, self.k))), axis=0) # Technically this matrix should then be checked -- to see that none of its kxk minors have zero determinant. But for now we "assume" that that is true.
 
-    def encode(self, data: np.ndarray, debug=False) -> np.ndarray:
+    def embed(self, data: np.ndarray, debug=False) -> np.ndarray:
         if debug:
             print(f"data is {data}")
     
@@ -32,25 +32,25 @@ class Encoder(MultisetEncoder):
 
         # Catch a few special cases:
         if n==0 or k==0:
-            encoding = np.array([], dtype=np.float64)
-            assert len(encoding) == self.size_from_n_k(n, k)
-            return encoding
+            embedding = np.array([], dtype=np.float64)
+            assert len(embedding) == self.size_from_n_k(n, k)
+            return embedding
 
         if k!=self.k:
             assert self.size_from_n_k(n,k) == -1
-            raise ValueError(f"This encoder is setup for k={self.k} so does not like data having k={k}")
+            raise ValueError(f"This embedder is setup for k={self.k} so does not like data having k={k}")
 
         if debug:
             print(f"About to muliply {self.matrix} by {data.T}")
 
         ##### HERE IS THE ACTUAL ENCODING:     ###########
-        encoding = sort_each_np_array_row(self.matrix @ data.T).flatten()
+        embedding = sort_each_np_array_row(self.matrix @ data.T).flatten()
         ##### THE ACTUAL ENCODING IS COMPLETE! ###########
 
         if debug or True:
-            print(f"Encoding is {encoding} with lenght {len(encoding)} rather than {self.size_from_n_k(n,k)}")
-        assert len(encoding) == self.size_from_n_k(n, k)
-        return encoding
+            print(f"Embedding is {embedding} with lenght {len(embedding)} rather than {self.size_from_n_k(n,k)}")
+        assert len(embedding) == self.size_from_n_k(n, k)
+        return embedding
     
     def size_from_n_k(self, n: int, k: int) -> int:
         if k==0 or n==0:
@@ -80,9 +80,9 @@ class Encoder(MultisetEncoder):
 
 def tost(): # Renamed from test -> tost to avoid pycharm mis-detecting / mis-running unit tests!
 
-        encoder = Encoder(k=2,extra_dots=6)
-        print("Encoder matrix is\n",encoder.matrix)
-        assert encoder.size_from_n_k(5,2) == 5*(2+6)
+        embedder = Embedder(k=2,extra_dots=6)
+        print("Embedder matrix is\n",embedder.matrix)
+        assert embedder.size_from_n_k(5,2) == 5*(2+6)
 
         calculated = np.array([2, 3, 4, 1, 0])
         expected = np.array([2, 3, 4, 1, 0])
@@ -96,11 +96,11 @@ if __name__ == "__main__":
     run_unit_tests()
 
 
-    encoder = Encoder(k=2, extra_dots=10)
+    embedder = Embedder(k=2, extra_dots=10)
     input = np.asarray([[4,2],[-3,5],[8,9],[2,7]])
-    output = encoder.encode(input, debug=True)
+    output = embedder.embed(input, debug=True)
 
-    print("Encoding:")
+    print("Embedding:")
     print(f"{input}")
     print("leads to:")
     print(f"{output}")

@@ -5,12 +5,12 @@ from tools import invert_perm, sort_np_array_rows_lexicographically
 import hashlib
 from dataclasses import dataclass, field
 from typing import Self
-from MultisetEncoder import MultisetEncoder
+from MultisetEmbedder import MultisetEmbedder
 
 Eji = namedtuple("Eji", ["j", "i"])
 
-class Encoder(MultisetEncoder):
-    def encode(self, data: np.ndarray, debug=False) -> np.ndarray:
+class Embedder(MultisetEmbedder):
+    def embed(self, data: np.ndarray, debug=False) -> np.ndarray:
         if debug:
             print(f"data is {data}")
     
@@ -100,34 +100,34 @@ class Encoder(MultisetEncoder):
             print(f")difference point pairs are:")
             [print(bit) for bit in difference_point_pairs]
     
-        first_half_of_encoding = sum([delta * point for delta, point in difference_point_pairs]) + np.zeros(bigN)
+        first_half_of_embedding = sum([delta * point for delta, point in difference_point_pairs]) + np.zeros(bigN)
         if debug:
-            print(f"first bit of encoding is: {first_half_of_encoding}")
+            print(f"first bit of embedding is: {first_half_of_embedding}")
     
     
     
-        # Create a vector to contain the encoding:
-        length_of_encoding = self.size_from_n_k(n,k)
+        # Create a vector to contain the embedding:
+        length_of_embedding = self.size_from_n_k(n,k)
     
-        assert length_of_encoding == bigN + 2
+        assert length_of_embedding == bigN + 2
         assert bigN == 2 * (n*k - 1) + 1
-        assert length_of_encoding == 2 * (n*k - 1) + 1 + 2  # bigN + 2
-        assert length_of_encoding == 2 * n * k + 1 # bigN + 2 expanded out.
+        assert length_of_embedding == 2 * (n*k - 1) + 1 + 2  # bigN + 2
+        assert length_of_embedding == 2 * n * k + 1 # bigN + 2 expanded out.
     
-        encoding = np.zeros(length_of_encoding, dtype=np.float64) # +2 for max_element and min_element .... TODO don't always need max_element!
+        embedding = np.zeros(length_of_embedding, dtype=np.float64) # +2 for max_element and min_element .... TODO don't always need max_element!
     
-        # Populate first half of the encoding:
-        encoding[:bigN] = first_half_of_encoding
-        # Populate the last element of the encoding with the smallest element of the initial data.
-        encoding[-1] = min_element # TODO: Don't do this if nk==0, as nothing to record in that case.
-        # Populate the second last element of the encoding with the largest element of the initial data.
-        encoding[-2] = max_element # TODO: Don't do this if nk<=1, as min_element is enough in that case.
+        # Populate first half of the embedding:
+        embedding[:bigN] = first_half_of_embedding
+        # Populate the last element of the embedding with the smallest element of the initial data.
+        embedding[-1] = min_element # TODO: Don't do this if nk==0, as nothing to record in that case.
+        # Populate the second last element of the embedding with the largest element of the initial data.
+        embedding[-2] = max_element # TODO: Don't do this if nk<=1, as min_element is enough in that case.
     
         if debug:
-            print(f"encoding is {encoding}")
-            print(f"encoding has length {length_of_encoding}")
+            print(f"embedding is {embedding}")
+            print(f"embedding has length {length_of_embedding}")
     
-        return encoding
+        return embedding
     
     def size_from_n_k(self, n: int, k: int) -> int:
         return 2*n*k + 1
@@ -267,9 +267,9 @@ if __name__ == "__main__":
     run_unit_tests()
 
     input = np.asarray([[4,2],[-3,5],[8,9],[2,7]])
-    output = encode(input, debug=True)
+    output = embed(input, debug=True)
 
-    print("Encoding:")
+    print("Embedding:")
     print(f"{input}")
     print("leads to:")
     print(f"{output}")

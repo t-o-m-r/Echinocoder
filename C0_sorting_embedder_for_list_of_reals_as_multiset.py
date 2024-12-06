@@ -1,5 +1,5 @@
-# Encode list of real  numbers treated as multiset.
-# E.g. this method can encode things like:
+# Embed list of real  numbers treated as multiset.
+# E.g. this method can embed things like:
 #
 #        [3,4,-2,]
 #
@@ -11,5 +11,5 @@
 #
 #        [-2, 3, 4].
 
-def encode(data):
+def embed(data):
     return sorted(data)
