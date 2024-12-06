@@ -48,7 +48,7 @@ class Embedder(MultisetEmbedder):
         ##### THE ACTUAL ENCODING IS COMPLETE! ###########
 
         if debug or True:
-            print(f"Embedding is {embedding} with lenght {len(embedding)} rather than {self.size_from_n_k(n,k)}")
+            print(f"Embedding is {embedding} with length {len(embedding)} rather than {self.size_from_n_k(n,k)}")
         assert len(embedding) == self.size_from_n_k(n, k)
         return embedding
     
