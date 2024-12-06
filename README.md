@@ -24,17 +24,19 @@ has order $O(n^2 k)$.  Its exact order is  $ORDER(n,k) = n + (k-1) n (n+1)/2$.
 has order $Binom(n+k,n)-1$. While this embedder is very inefficient, it does not treat any components in the $k$-space differently than any other.  
 * If one were to use the Busarial embedder when $k\ge n$ and the polynomial embedder when $n\ge k$ then one would have, in effect, a single method of order $O((nk)^{\frac 3 2})$. [Check this statement! It is probably not true!]
 
+## Embedders which work on $SP^m(\mathbb R)$ only.
+
+These are similar to the other encoders, but they have $k=1$ hard coded into them. They expect inputs to be one-dimensional lists not two-dimensional arrays.
+
+* The [pure sorting embedder](C0_sorting_embedder_for_list_of_reals_as_multiset.py)
+is optimal (i.e. it embeds into $n$ reals for any $n$). It is also just a trivial sort! It is piecewise linear.
+* There is a [polynomial embedder for lists (not arrays!) of reals](Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset.py)). It is also optimal.  It's encoding is infinitely differentiable.
+
 ## Obsolete/Retired/Historical embedders:
 * An early (nonlinear) [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder 
 ([embedder source](Historical/C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py))
 worked for any $n$ and $k$ and embedded into $4 n k+1$ reals. 
 In principle the method could be re-written to embed into just $2 n k + 1$ reals but the current (less efficient) implementation choice was selected as it was expected to make outputs more stable.
-
-## Embedders which work on $SP^m(\mathbb R)$ only (i.e. $k=1$ is hard coded and inputs are 1-d lists  not 2-d arrays)
-
-* The [pure sorting embedder](C0_sorting_embedder_for_list_of_reals_as_multiset.py)
-is optimal (i.e. it embeds into $n$ reals for any $n$). It is also just a trivial sort! It is piecewise linear.
-* There is a [polynomial embedder for lists (not arrays!) of reals](Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset.py)). It is also optimal.  It's encoding is infinitely differentiable.
 
 ## What this library is calling $RP(\mathbb R^m)$ ([real projective space](https://en.wikipedia.org/wiki/Real_projective_space)) embedders:
 
