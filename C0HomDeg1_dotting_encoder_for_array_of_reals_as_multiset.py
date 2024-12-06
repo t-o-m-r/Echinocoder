@@ -47,7 +47,7 @@ class Encoder(MultisetEncoder):
         encoding = sort_each_np_array_row(self.matrix @ data.T).flatten()
         ##### THE ACTUAL ENCODING IS COMPLETE! ###########
 
-        if debug or True:
+        if debug:
             print(f"Encoding is {encoding} with length {len(encoding)} rather than {self.size_from_n_k(n,k)}")
         assert len(encoding) == self.size_from_n_k(n, k)
         return encoding
@@ -84,9 +84,9 @@ def tost(): # Renamed from test -> tost to avoid pycharm mis-detecting / mis-run
         print("Encoder matrix is\n",encoder.matrix)
         assert encoder.size_from_n_k(5,2) == 5*(2+6)
 
-        calculated = np.array([2, 3, 4, 1, 0])
-        expected = np.array([2, 3, 4, 1, 0])
-        np.testing.assert_array_equal(calculated, expected)
+        #calculated = np.array([2, 3, 4, 1, 0])
+        #expected = np.array([2, 3, 4, 1, 0])
+        #np.testing.assert_array_equal(calculated, expected)
 
 
 def run_unit_tests():
@@ -97,10 +97,10 @@ if __name__ == "__main__":
 
 
     encoder = Encoder(k=2, extra_dots=10)
-    input = np.asarray([[4,2],[-3,5],[8,9],[2,7]])
-    output = encoder.encode(input, debug=True)
+    good_input = np.asarray([[4,2],[-3,5],[8,9],[2,7]])
+    output = encoder.encode(good_input, debug=True)
 
     print("Encoding:")
-    print(f"{input}")
+    print(f"{good_input}")
     print("leads to:")
     print(f"{output}")

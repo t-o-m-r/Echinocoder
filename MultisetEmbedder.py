@@ -47,7 +47,7 @@ class MultisetEmbedder:
         This function returns the number of reals that the embedding would contain if the set represented by "data" were to be embedded. -1 is returned if data of the supplied type is not encodable by this embedder.
         """
         n,k = data.shape
-        return self.embedding_size_from_n_k(n,k)
+        return self.size_from_n_k(n,k)
 
     def size_from_n_k(self, n: int, k: int) -> int:
         """

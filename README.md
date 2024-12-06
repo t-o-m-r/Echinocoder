@@ -11,7 +11,7 @@ Most embedders work only reals or real vectors and generate only real embeddings
 ## $SP^n(\mathbb R^m)$ -- i.e. multiset embedders:
 
 * The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $m$ and embeds into $2 n m+1$ reals. ([embedder source](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py)) 
-* The sorting embedder is efficient (i.e. embeds into $nm$ reals) for any $n$ but only can work with $m=1$. ([embedder source](C0_sorting_embedder_for_list_of_reals_as_multiset.py))
+* [This algorithm](C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset.py) based on the [dotting encoder](C0HomDeg1_dotting_encoder_for_array_of_reals_as_multiset.py) is CONJECTURED (but not proved) to be an embedder. It has $ORDER(n,k) = O(n k \log n)$. ([embedder source](C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset.py)). 
 * The polynomial embedders are efficient (i.e. embed into $nm$ reals) for $m=1$ or $m=2$ but in general have order $O(n m^2)$. (embedder sources ([for multisets of vectors](Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset.py)) and ([for multisets of reals](Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset.py)))
 * The (vanilla) busar embedder has order $O(m n^2)$.  Indeed, the exact order is  $ORDER(m,n) = n + (m-1) n (n+1)/2$. ([embedder source](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py))
 * The 'even' busar embedder has order $Binom(m+n,n)-1$. While this embedder is very inefficient, it does not treat any components in the $m$-space differently than any other.  ([embedder source](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py))
@@ -19,6 +19,10 @@ Most embedders work only reals or real vectors and generate only real embeddings
 
 ## Obsolete/Retired/Historical embedders:
 * This early (nonlinear) [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $m$ and embeds into $4 n m+1$ reals. ([embedder source](Historical/C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py))  In principle it could embed into just $2 n m + 1$ reals.  However, and implementation choice which is expected to make the outputs more stable leads to the number of outputs being $4 n m + 1$ instead.
+
+## Embedders which work on $SP^m(\mathbb R)$ only (i.e. $m=1$ is hard coded and inputs are 1-d lists  not 2-d arrays)
+
+* The sorting embedder is efficient (i.e. embeds into $n$ reals for any $n$. ([embedder source](C0_sorting_embedder_for_list_of_reals_as_multiset.py))
 
 ## What this library is calling $RP(\mathbb R^m)$ ([real projective space](https://en.wikipedia.org/wiki/Real_projective_space)) embedders:
 
