@@ -16,7 +16,7 @@ All these are (or should be) instances of [MultisetEmbedder](MultisetEmbedder.py
 
 ### Embedder summaries:
 
-| Method  | Order (leading) | Order (exact) | Piecewise Linear | Everywhere Differentiable | Notes | Source |
+| Method  | Order (leading) | Order (exact) | Piecewise Linear | Infinitely Differentiable | Notes | Source |
 |---------|-----------------|---------------|------------------|---------------------------|-------|--------|
 | Simplex | $O(nk)$         | $2nk+1$       | Yes              |  No   |       | [link](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py) |
 | Dotting Conjecture | $O(nk\log n)$   | $n((k-1)(\lfloor{ \log_2 n }\rfloor+1)+1)$  | Yes   |   No   | Not (yet) provenly an embedding. | [link](C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset.py) |
