@@ -13,14 +13,14 @@
 # 
 # If k==0 the number of outputs is also zero. If k>=1 then the number of outputs should be 
 #
-#          ORDER(m,n) == n + (m-1)*n*(n+1)/2  
+#          ORDER(n, k) == n + (k-1)*n*(n+1)/2  
 #
 # where n is the number of vectors in the set, and m is the dimension of each of those vectors. 
 # This order has leading term 
 #
-#                m*n*n/2.
+#                k*n*n/2.
 #
-# Here is an $m=3$, $n=2$ example:
+# Here is an $(n,k)=(2,3)$ example:
 # Embedding  $\{(3,1,4),(2,2,5)\}$ should generate
 # 
 #       [9, 3, 5,     20, 13, 25, 8, 6]
@@ -34,27 +34,28 @@
 #       $y^2 + y^1 (9 x^2 + 3 x + 5) + y^0 (20 x^4 + 13 x^3 + 25 x^2 + 8 x + 6)$
 #
 # .
-# Note that if $m$ were even we could set up the vectors as being complex but of 
-# dimension $m/2$.  This would lead to the COMPRESSED_ORDER being 
+# Note that if $k$ were even we could set up the vectors as being complex but of 
+# dimension $k/2$.  This would lead to the COMPRESSED_ORDER being 
 #
-#       COMPRESSED_ORDER = 2*ORDER(m/2, n)
-#                        = 2*( n + (m/2-1)*n*(n+1)/2 )
-#                        = 2*n + (m-2)*n*(n+1)/2
-#                        = 2*n + (m-1)*n*(n+1)/2 - n*(n+1)/2
-#                        = ORDER(m,n) + n - n*(n+1)/2
-#                        = ORDER(m,n) - ( n*(n+1)/2 - n )
-#                        = ORDER(m,n) - n*( (n+1)/2 - 1 )
-#                        = ORDER(m,n) - n*(n-1)/2
+#       COMPRESSED_ORDER = 2*ORDER(n,k/2)
+#                        = 2*( n + (k/2-1)*n*(n+1)/2 )
+#                        = 2*n + (k-2)*n*(n+1)/2
+#                        = 2*n + (k-1)*n*(n+1)/2 - n*(n+1)/2
+#                        = ORDER(n,k) + n - n*(n+1)/2
+#                        = ORDER(n,k) - ( n*(n+1)/2 - n )
+#                        = ORDER(n,k) - n*( (n+1)/2 - 1 )
+#                        = ORDER(n,k) - n*(n-1)/2
 #
-# which is less than ORDER(m,n) by n*(n-1)/2 ... but still has leading term m*n*n/2.
+# which is less than ORDER(n,k) by n*(n-1)/2 ... but still has leading term k*n*n/2.
 
 from math import prod
 #from itertools import combinations
-#import numpy as np
+import numpy as np
 #import tools
 from sympy import Poly, abc
+from MultisetEmbedder import MultisetEmbedder
 
-def __embed_without_flattening(data):
+def embed_without_flattening(data):
     
     #print("Data is")
     #print(data)
@@ -116,34 +117,31 @@ def __embed_without_flattening(data):
 #    n,k = data.shape
 #    return embedding_size_from_n_k(n,k)
 
-def embedding_size_from_n_k(n: int, k: int) -> int:
-    if k==0: return 0
-    ans = n + (k-1)*n*(n+1)//2  # We only want ordinary division "/" but we use "//" to avoid promoting to float and result is same.
-    #print("SIZE == ",ans)
-    return ans
-
-def embed(data):
-
-    n = len(data)
-    if n==0:
-        return []
-
-    m = len(data[0])
-    if m==0:
-        return []
-
-    flattened_coeffs = [ a for b in __embed_without_flattening(data) for a in b ]
-
-    EXPECTED_ORDER = embedding_size_from_n_k(n,m)
-    ACTUAL_ORDER = len(flattened_coeffs)
-    assert EXPECTED_ORDER == ACTUAL_ORDER
-    if EXPECTED_ORDER != ACTUAL_ORDER:
-        print("Expected Order",EXPECTED_ORDER)     
-        print("Actual Order",ACTUAL_ORDER)     
-        raise Exception("Bug in implementation of Bursar's method!")
-
-    return flattened_coeffs
-
-#embed.size_from_array = embedding_size_from_array
-embed.size_from_n_k = embedding_size_from_n_k
-
+class Embedder(MultisetEmbedder):
+    def size_from_n_k(self, n: int, k: int) -> int:
+        if k==0: return 0
+        ans = n + (k-1)*n*(n+1)//2  # We only want ordinary division "/" but we use "//" to avoid promoting to float and result is same.
+        #print("SIZE == ",ans)
+        return ans
+    
+    def embed(self, data: np.ndarray, debug=False) -> np.ndarray:
+    
+        n = len(data)
+        if n==0:
+            return []
+    
+        m = len(data[0])
+        if m==0:
+            return []
+    
+        flattened_coeffs = [ a for b in embed_without_flattening(data) for a in b ]
+    
+        EXPECTED_ORDER = self.size_from_n_k(n,m)
+        ACTUAL_ORDER = len(flattened_coeffs)
+        assert EXPECTED_ORDER == ACTUAL_ORDER
+        if EXPECTED_ORDER != ACTUAL_ORDER:
+            print("Expected Order",EXPECTED_ORDER)     
+            print("Actual Order",ACTUAL_ORDER)     
+            raise Exception("Bug in implementation of Bursar's method!")
+    
+        return flattened_coeffs

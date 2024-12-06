@@ -3,12 +3,15 @@
 import  Cinf_python_polynomial_embedder_for_list_of_reals_as_multiset as embedder_Cinf_py_li
 import  Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset as Cinf_np_ar
 embedder_Cinf_np_ar = Cinf_np_ar.Embedder()
-import      Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset as embedder_Cinf_sp_bur_ar
+import      Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset as Cinf_sp_bur_ar
+embedder_Cinf_sp_bur_ar = Cinf_sp_bur_ar.Embedder()
 import  Cinf_sympy_evenBursar_embedder_for_array_of_reals_as_multiset as embedder_Cinf_sp_evenBur_ar
 import   Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset as embedder_Cinf_np_li
 import              C0_sorting_embedder_for_list_of_reals_as_multiset as embedder_C0_li
-import Historical.C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset as C0_np_simplex_good1
-embedder_C0_np_simplex_good1 = C0_np_simplex_good1.Embedder()
+import Historical.C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset as C0_np_simplex_historical
+embedder_C0_np_simplex_historical = C0_np_simplex_historical.Embedder()
+import C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset as C0HomDeg1_simplex1
+embedder_C0HomDeg1_simplex1 = C0HomDeg1_simplex1.Embedder()
 
 import data_sources
 import numpy as np
@@ -189,13 +192,13 @@ class Test_Embedders(unittest.TestCase):
         print(__file__, __line__)
         self.tost_multiset_embedder(
            data=data_sources.random_real_array_data(mn=(3,3)),
-           embedders=[ embedder_Cinf_np_ar, ],
+           embedders=[ embedder_Cinf_np_ar, embedder_Cinf_sp_bur_ar, embedder_C0HomDeg1_simplex1, embedder_C0_np_simplex_historical ],
         )
     
         print(__file__, __line__)
         self.tost_multiset_embedder(
            data=data_sources.random_real_array_data(mn=(4,3)),
-           embedders=[ embedder_Cinf_np_ar, embedder_Cinf_sp_bur_ar, ],
+           embedders=[ embedder_Cinf_np_ar, embedder_Cinf_sp_bur_ar, embedder_C0HomDeg1_simplex1, embedder_C0_np_simplex_historical ],
         )
     
         print(__file__, __line__)
@@ -239,7 +242,7 @@ class Test_Embedders(unittest.TestCase):
         self.tost_multiset_embedder(
            data=np.array(((1,2),(1,0),(5,2))),
            embedders=[ 
-             embedder_C0_np_simplex_good1,
+             embedder_C0_np_simplex_historical,
            ],
            number_of_shuffled_copies=100,
            expected_embedding = [ 0.41666667, -0.28108724,  0.26858269, -0.34436233,  0.16483989, -0.15923648,
