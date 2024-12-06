@@ -90,6 +90,18 @@ def test_tools():
     if not np.array_equal(inverse_perm_calculated, inverse_perm_expected):
         fail_count += 1
         print("FAIL in tools.invert_perm")
+
+    inp = np.array([[1, 0, 2],
+                    [0, 5, 2],
+                    [3, 0, 8]])
+
+    expected = np.array([[0, 1, 2],
+                         [0, 2, 5],
+                         [0, 3, 8]])
+    got = tools.sort_each_np_array_row(inp)
+
+    assert (got == expected).all()
+
         
 
 class Test_Encoders(unittest.TestCase):

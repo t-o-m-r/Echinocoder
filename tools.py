@@ -41,6 +41,20 @@ def invert_perm(perm):
     """given [3, 0, 1, 2] should generate [1, 2, 3, 0]"""
     return sorted(range(len(perm)), key=perm.__getitem__)
 
+def sort_each_np_array_row(array: np.ndarray) -> np.ndarray:
+    """
+    Sort the elements of each row into numerical order.
+    For example:
+                  np.array([[1, 0, 2],
+                            [0, 5, 2],
+                            [3, 0, 8]])
+    sorts to:     
+                  np.array([[0, 1, 2],
+                            [0, 2, 5],
+                            [0, 3, 8]])
+    """
+    return np.sort(array)
+
 def sort_np_array_rows_lexicographically(array: np.ndarray) -> np.ndarray:
     """
     Permutes rows of a numpy array (individual rows are preserved) so that the rows end up in lexicographical order.
