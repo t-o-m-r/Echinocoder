@@ -32,8 +32,9 @@ In principle the method could be re-written to embed into just $2 n k + 1$ reals
 
 ## Embedders which work on $SP^m(\mathbb R)$ only (i.e. $k=1$ is hard coded and inputs are 1-d lists  not 2-d arrays)
 
-* The sorting embedder is efficient (i.e. embeds into $n$ reals for any $n$. ([embedder source](C0_sorting_embedder_for_list_of_reals_as_multiset.py))
-. (embedder sources ([for multisets of vectors](Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset.py)) and ([for multisets of reals](Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset.py)))
+* The [pure sorting embedder](C0_sorting_embedder_for_list_of_reals_as_multiset.py)
+is optimal (i.e. it embeds into $n$ reals for any $n$). It is also just a trivial sort! It is piecewise linear.
+* There is a [polynomial embedder for lists (not arrays!) of reals](Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset.py)). It is also optimal.  It's encoding is infinitely differentiable.
 
 ## What this library is calling $RP(\mathbb R^m)$ ([real projective space](https://en.wikipedia.org/wiki/Real_projective_space)) embedders:
 
