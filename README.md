@@ -20,7 +20,7 @@ All these are (or should be) instances of [MultisetEmbedder](MultisetEmbedder.py
 |---------|-----------------|---------------|------------------|---------------------------|-------|--------|
 | Simplex | $O(nk)$         | $2nk+1$       | Yes              |  No   |       | [link](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py) |
 | Dotting Conjecture | $O(nk\cdot \log n)$   | $n((k-1)(\lfloor{ \log_2 n }\rfloor+1)+1)$  | Yes   |   No   | Conjuectured (but not yet proved!) to be an embedding. | [link](C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset.py) |
-| Dotting Overkill | $O(nk\cdot nk)$ |          | Yes              |  No   | Is provably an embedding | | 
+| Dotting Overkill | $O(nk\cdot nk)$ |          | Yes              |  No   | Is provably an embedding, but is probably wasteful of resources. | | 
 | Polynomial | $O(nk\cdot k)$    | $nk(k-1)$     | No               |  Yes  |       | [link](Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset.py) |
 | Bursarial  | $O(nk\cdot n)$    | $n + (k-1) n (n+1)/2$  | No      |  Yes  |       | [link](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py) |
 | Hybrid | $O(nk\cdot \sqrt{nk})$ | Minimum of Polynomial and Bursarial orders | No      |  Yes  | This method uses whichever of Polynomial or Bursarial has smallest order. | [link](Cinf_hybrid_embedder_for_array_of_reals_as_multiset.py) |
