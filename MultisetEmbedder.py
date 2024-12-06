@@ -3,11 +3,15 @@ import numpy as np
 class MultisetEmbedder:
     """
     This is a base class for objects which embed length-n sets of k-vectors.
+
+    Encoders are not necessarily embedders since encoders do not need to be injective. 
+    All embedders are encoders, however.
+
     Strictly speaking these are "multisets" not "sets" since the sets can hold repeated objects
     and retain knowledge of the number of repeats.  However, we are sometimes guity of 
     abbreviating "multiset" to just "set".
 
-    The set to be embedd should be inputs as a 2D numpy array with shape (n,k).
+    The set to be embed should be inputs as a 2D numpy array with shape (n,k).
     The order of the vectors within the numpy array can be arbitrary
     E.g. to embed a multiset containing the 2-vectors (2,2), (4,5) and (1,2) one could call
     
@@ -40,13 +44,13 @@ class MultisetEmbedder:
 
     def size_from_array(self, data: np.ndarray) -> int:
         """
-        This function returns the number of reals that the embedding would contain if the set represented by "data" were to be embedd. -1 is returned if data of the supplied type is not encodable by this embedder.
+        This function returns the number of reals that the embedding would contain if the set represented by "data" were to be embedded. -1 is returned if data of the supplied type is not encodable by this embedder.
         """
         n,k = data.shape
         return self.embedding_size_from_n_k(n,k)
 
     def size_from_n_k(self, n: int, k: int) -> int:
         """
-        This function returns the number of reals that the embedding would contain if a set containing n "k-vectors" were to be embedd. Derived classes implmenting this method should return -1 if they are not able to embed sets for that n and k.
+        This function returns the number of reals that the embedding would contain if a set containing n "k-vectors" were to be embedded. Derived classes implmenting this method should return -1 if they are not able to embed sets for that n and k.
         """
         raise NotImplementedError()
