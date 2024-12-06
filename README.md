@@ -6,7 +6,7 @@ This is a library contains functions which are able to perform:
 
   * Embeddings of $\mathbb R^m$ in which $\vec x\in\mathbb R^n$ is identified with $-\vec x$.  I am not sure what these are really supposed to be called. This libarary currently calls them [real projective spaces](https://en.wikipedia.org/wiki/Real_projective_space) but that might be an abuse of terminology.
 
-Most embedders work only reals or real vectors and generate only real embeddings, as that's the whole purpose of the libarary. However, some embedders will accept complex numbers as inputs and can generate complex numbers as outputs.  Where this is the case it is not always documented. Some of the embedders which can process complex inputs and outputs are nonetheless used (in Complex mode) as steps in the implementation of other embedders.  The capacity for some embedders to process complex numbers such routines should be considered private (unexposed) even if technically visible. This is to allow interface standardisation.
+Most embedders work only reals or real vectors and generate only real embeddings as that's the whole purpose of the libarary. However, some embedders will accept complex numbers as inputs and can generate complex numbers as outputs.  Where this is the case it is not always documented. Some of the embedders which can process complex inputs and outputs are nonetheless used (in Complex mode) as steps in the implementation of other embedders.  The capacity for some embedders to process complex numbers such routines should be considered private (unexposed) even if technically visible. This is to allow interface standardisation.
 
 ## $SP^n(\mathbb R^m)$ -- i.e. multiset embedders:
 
@@ -18,7 +18,7 @@ Most embedders work only reals or real vectors and generate only real embeddings
 * If one were to use the busar embedder when $m\ge n$ and the polynomial embedder when $n\ge m$ then one would have, in effect, a single method of order $O((mn)^{\frac 3 2})$. [Check this statement! It is probably not true!]
 
 ## Obsolete/Retired/Historical embedders:
-* This early (nonlinear) [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $m$ and embeds into $4 n m+1$ reals. ([embedder source](C0_numpy_simplicialComplex_embedder_for_array_of_reals_as_multiset.py))  In principle it could embed into just $2 n m + 1$ reals.  However, and implementation choice which is expected to make the outputs more stable leads to the number of outputs being $4 n m + 1$ instead.
+* This early (nonlinear) [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $m$ and embeds into $4 n m+1$ reals. ([embedder source](Historical/C0_numpy_simplicialComplex_embedder_for_array_of_reals_as_multiset.py))  In principle it could embed into just $2 n m + 1$ reals.  However, and implementation choice which is expected to make the outputs more stable leads to the number of outputs being $4 n m + 1$ instead.
 
 ## What this library is calling $RP(\mathbb R^m)$ ([real projective space](https://en.wikipedia.org/wiki/Real_projective_space)) embedders:
 
