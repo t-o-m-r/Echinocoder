@@ -22,7 +22,7 @@ All these are (or should be) instances of [MultisetEmbedder](MultisetEmbedder.py
 | Dotting Conjecture | $O(nk\log n)$   | $n((k-1)(\lfloor{ \log_2 n }\rfloor+1)+1)$  | Yes   |   No   | Not (yet) provenly an embedding. | [link](C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset.py) |
 | Polynomial | $O(nk^2)$    | $nk(k-1)$     | No               |  Yes  |       | [link](Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset.py) |
 | Bursarial  | $O(n^2k)$    | $n + (k-1) n (n+1)/2$  | No      |  Yes  |       | [link](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py) |
-| Hybrid | $O(nk\cdot \sqrt{nk})$ |   | No      |  Yes  | This method uses whichever of Polynomial or Bursarial has smallest order. | |
+| Hybrid | $O(nk\cdot \sqrt{nk})$ |   | No      |  Yes  | This method uses whichever of Polynomial or Bursarial has smallest order. | [link](Cinf_hybrid_embedder_for_array_of_reals_as_multiset.py) |
 
 ### Further details:
 
@@ -34,7 +34,7 @@ has order $O(n k^2)$ in general, but happens to be optimal (i.e. embeds into $nk
 has order $O(n^2 k)$.  Its exact order is $n + (k-1) n (n+1)/2$. 
 * The ['even' Busarial embedder](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py)
 has order $Binom(n+k,n)-1$. Although this embedder is very inefficient, its one possible benefit is that it does not treat any components in the $k$-space differently than any other. It is `even handed' (hence the name) w.r.t. the axes of the vectors. 
-* The hybrid method which uses whichever of the Busarial or Polynomial embedders has the smaller order is itself of order $O((nk)^{\frac 3 2})$.
+* The [Hybrid embedder](Cinf_hybrid_embedder_for_array_of_reals_as_multiset.py)  uses whichever of the Busarial or Polynomial embedders has the smaller order. The Hybrid consequently has order $O((nk)^{\frac 3 2})$.
 
 ## Embedders which work on $SP^m(\mathbb R)$ only.
 
