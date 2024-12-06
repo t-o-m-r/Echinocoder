@@ -10,7 +10,7 @@ Most embedders work only reals inputs and generate only real embeddings as that'
 
 ## $SP^n(\mathbb R^k)$ -- i.e. multiset embedders:
 
-All these are (or should be) instances of (MultisetEmbedder)[MultisetEmbedder.py].
+All these are (or should be) instances of [MultisetEmbedder](MultisetEmbedder.py).
 
 
 * The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $m$ and embeds into $2 n m+1$ reals. ([embedder source](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py)) 
