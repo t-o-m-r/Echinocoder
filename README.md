@@ -26,7 +26,7 @@ have order $O(n m^2)$ in general, but happen to be efficient (i.e. embed into $n
 * An early (nonlinear) [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder 
 ([embedder source](Historical/C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py))
 worked for any $n$ and $k$ and embedded into $4 n k+1$ reals. 
-In principle the method could embed into just $2 n k + 1$ reals.  However, an implementation choice which was expected to make the outputs more stable leads to the number of outputs being $4 n k + 1$ instead.
+In principle the method could be re-written to embed into just $2 n k + 1$ reals but the current (less efficient) implementation choice was selected as it was expected to make outputs more stable.
 
 ## Embedders which work on $SP^m(\mathbb R)$ only (i.e. $k=1$ is hard coded and inputs are 1-d lists  not 2-d arrays)
 
