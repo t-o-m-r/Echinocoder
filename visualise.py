@@ -47,8 +47,8 @@ k = 2
 # import Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset import Embedder
 # embedder = Embedder()
 
-from Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset import Embedder
-embedder = Embedder()
+# from Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset import Embedder
+# embedder = Embedder()
 
 # from Historical.C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset import Embedder
 # embedder = Embedder()
@@ -56,8 +56,8 @@ embedder = Embedder()
 # from C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset import Embedder
 # embedder = Embedder()
 
-# from C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset import Embedder
-# embedder = Embedder(n=n, k=k)
+from C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset import Embedder
+embedder = Embedder(n=n, k=k)
 
 big_n_for_embedding = embedder.size_from_n_k(n,k)
 
