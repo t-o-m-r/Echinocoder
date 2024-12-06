@@ -13,14 +13,14 @@ Most embedders work only reals inputs and generate only real embeddings as that'
 All these are (or should be) instances of [MultisetEmbedder](MultisetEmbedder.py).
 
 
-* The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $m$ and embeds into $2 n m+1$ reals. ([embedder source](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py)) 
+* The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $k$ and embeds into $2 n k+1$ reals. ([embedder source](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py)) 
 * [This algorithm](C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset.py) based on the [dotting encoder](C0HomDeg1_dotting_encoder_for_array_of_reals_as_multiset.py) is CONJECTURED (but not proved) to be an embedder. It has $ORDER(n,k) = O(n k \log n)$. ([embedder source](C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset.py)). 
 * The polynomial embedders 
 have order $O(n m^2)$ in general, but happen to be efficient (i.e. embed into $nk$ reals) for $k=1$ or $k=2$ but 
 . (embedder sources ([for multisets of vectors](Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset.py)) and ([for multisets of reals](Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset.py)))
-* The (vanilla) busar embedder has order $O(m n^2)$.  Indeed, the exact order is  $ORDER(m,n) = n + (m-1) n (n+1)/2$. ([embedder source](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py))
-* The 'even' busar embedder has order $Binom(m+n,n)-1$. While this embedder is very inefficient, it does not treat any components in the $m$-space differently than any other.  ([embedder source](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py))
-* If one were to use the busar embedder when $m\ge n$ and the polynomial embedder when $n\ge m$ then one would have, in effect, a single method of order $O((mn)^{\frac 3 2})$. [Check this statement! It is probably not true!]
+* The (vanilla) busar embedder has order $O(n^2 k)$.  Indeed, the exact order is  $ORDER(n,k) = n + (k-1) n (n+1)/2$. ([embedder source](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py))
+* The 'even' busar embedder has order $Binom(n+k,n)-1$. While this embedder is very inefficient, it does not treat any components in the $k$-space differently than any other.  ([embedder source](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py))
+* If one were to use the busar embedder when $k\ge n$ and the polynomial embedder when $n\ge k$ then one would have, in effect, a single method of order $O((nkk^{\frac 3 2})$. [Check this statement! It is probably not true!]
 
 ## Obsolete/Retired/Historical embedders:
 * This early (nonlinear) [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $k$ and embeds into $4 n k+1$ reals. ([embedder source](Historical/C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py)).  In principle it could embed into just $2 n k + 1$ reals.  However, and implementation choice which is expected to make the outputs more stable leads to the number of outputs being $4 n k + 1$ instead.
