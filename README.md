@@ -14,13 +14,14 @@ All these are (or should be) instances of [MultisetEmbedder](MultisetEmbedder.py
 
 
 * The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $k$ and embeds into $2 n k+1$ reals. ([embedder source](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py)) 
-* [This algorithm](C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset.py) based on the [dotting encoder](C0HomDeg1_dotting_encoder_for_array_of_reals_as_multiset.py) is CONJECTURED (but not proved) to be an embedder. It has $ORDER(n,k) = O(n k \log n)$. ([embedder source](C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset.py)). 
+* The [$nk\log n$ dotting embedder](C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset.py) based on the [dotting encoder](C0HomDeg1_dotting_encoder_for_array_of_reals_as_multiset.py) is CONJECTURED (but not proved) to be an embedder. It has $ORDER(n,k) = O(n k \log n)$. ([embedder source](C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset.py)). 
+
 * The polynomial embedders 
 have order $O(n m^2)$ in general, but happen to be efficient (i.e. embed into $nk$ reals) for $k=1$ or $k=2$ but 
 . (embedder sources ([for multisets of vectors](Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset.py)) and ([for multisets of reals](Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset.py)))
 * The (vanilla) busar embedder has order $O(n^2 k)$.  Indeed, the exact order is  $ORDER(n,k) = n + (k-1) n (n+1)/2$. ([embedder source](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py))
 * The 'even' busar embedder has order $Binom(n+k,n)-1$. While this embedder is very inefficient, it does not treat any components in the $k$-space differently than any other.  ([embedder source](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py))
-* If one were to use the busar embedder when $k\ge n$ and the polynomial embedder when $n\ge k$ then one would have, in effect, a single method of order $O((nkk^{\frac 3 2})$. [Check this statement! It is probably not true!]
+* If one were to use the busar embedder when $k\ge n$ and the polynomial embedder when $n\ge k$ then one would have, in effect, a single method of order $O((nk^{\frac 3 2})$. [Check this statement! It is probably not true!]
 
 ## Obsolete/Retired/Historical embedders:
 * An early (nonlinear) [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder 
