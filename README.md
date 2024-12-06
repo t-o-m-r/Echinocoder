@@ -18,7 +18,7 @@ Most embedders work only reals or real vectors and generate only real embeddings
 * If one were to use the busar embedder when $m\ge n$ and the polynomial embedder when $n\ge m$ then one would have, in effect, a single method of order $O((mn)^{\frac 3 2})$. [Check this statement! It is probably not true!]
 
 ## Obsolete/Retired/Historical embedders:
-* This early (nonlinear) [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $m$ and embeds into $4 n m+1$ reals. ([embedder source](Historical/C0_numpy_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py))  In principle it could embed into just $2 n m + 1$ reals.  However, and implementation choice which is expected to make the outputs more stable leads to the number of outputs being $4 n m + 1$ instead.
+* This early (nonlinear) [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $m$ and embeds into $4 n m+1$ reals. ([embedder source](Historical/C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py))  In principle it could embed into just $2 n m + 1$ reals.  However, and implementation choice which is expected to make the outputs more stable leads to the number of outputs being $4 n m + 1$ instead.
 
 ## What this library is calling $RP(\mathbb R^m)$ ([real projective space](https://en.wikipedia.org/wiki/Real_projective_space)) embedders:
 
