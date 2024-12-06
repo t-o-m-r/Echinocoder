@@ -6,31 +6,31 @@ This is a library contains functions which are able to perform:
 
   * Embeddings of $\mathbb R^m$ in which $\vec x\in\mathbb R^n$ is identified with $-\vec x$.  I am not sure what these are really supposed to be called. This libarary currently calls them [real projective spaces](https://en.wikipedia.org/wiki/Real_projective_space) but that might be an abuse of terminology.
 
-Most encoders work only reals or real vectors and generate only real encodings, as that's the whole purpose of the libarary. However, some encoders will accept complex numbers as inputs and can generate complex numbers as outputs.  Where this is the case it is not always documented. Some of the encoders which can process complex inputs and outputs are nonetheless used (in Complex mode) as steps in the implementation of other encoders.  The capacity for some encoders to process complex numbers such routines should be considered private (unexposed) even if technically visible. This is to allow interface standardisation.
+Most embedders work only reals or real vectors and generate only real embeddings, as that's the whole purpose of the libarary. However, some embedders will accept complex numbers as inputs and can generate complex numbers as outputs.  Where this is the case it is not always documented. Some of the embedders which can process complex inputs and outputs are nonetheless used (in Complex mode) as steps in the implementation of other embedders.  The capacity for some embedders to process complex numbers such routines should be considered private (unexposed) even if technically visible. This is to allow interface standardisation.
 
-## $SP^n(\mathbb R^m)$ -- i.e. multiset encoders:
+## $SP^n(\mathbb R^m)$ -- i.e. multiset embedders:
 
-* The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) encoder works for any $n$ and $m$ and encodes into $2 n m+1$ reals. ([encoder source](C0HomDeg1_simplicialComplex_encoder_1_for_array_of_reals_as_multiset.py)) 
-* The sorting encoder is efficient (i.e. encodes into $nm$ reals) for any $n$ but only can work with $m=1$. ([encoder source](C0_sorting_encoder_for_list_of_reals_as_multiset.py))
-* The polynomial encoders are efficient (i.e. encode into $nm$ reals) for $m=1$ or $m=2$ but in general have order $O(n m^2)$. (encoder sources ([for multisets of vectors](Cinf_numpy_polynomial_encoder_for_array_of_reals_as_multiset.py)) and ([for multisets of reals](Cinf_numpy_polynomial_encoder_for_list_of_reals_as_multiset.py)))
-* The (vanilla) busar encoder has order $O(m n^2)$.  Indeed, the exact order is  $ORDER(m,n) = n + (m-1) n (n+1)/2$. ([encoder source](Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset.py))
-* The 'even' busar encoder has order $Binom(m+n,n)-1$. While this encoder is very inefficient, it does not treat any components in the $m$-space differently than any other.  ([encoder source](Cinf_sympy_bursar_encoder_for_array_of_reals_as_multiset.py))
-* If one were to use the busar encoder when $m\ge n$ and the polynomial encoder when $n\ge m$ then one would have, in effect, a single method of order $O((mn)^{\frac 3 2})$. [Check this statement! It is probably not true!]
+* The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $m$ and embeds into $2 n m+1$ reals. ([embedder source](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py)) 
+* The sorting embedder is efficient (i.e. embeds into $nm$ reals) for any $n$ but only can work with $m=1$. ([embedder source](C0_sorting_embedder_for_list_of_reals_as_multiset.py))
+* The polynomial embedders are efficient (i.e. embed into $nm$ reals) for $m=1$ or $m=2$ but in general have order $O(n m^2)$. (embedder sources ([for multisets of vectors](Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset.py)) and ([for multisets of reals](Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset.py)))
+* The (vanilla) busar embedder has order $O(m n^2)$.  Indeed, the exact order is  $ORDER(m,n) = n + (m-1) n (n+1)/2$. ([embedder source](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py))
+* The 'even' busar embedder has order $Binom(m+n,n)-1$. While this embedder is very inefficient, it does not treat any components in the $m$-space differently than any other.  ([embedder source](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py))
+* If one were to use the busar embedder when $m\ge n$ and the polynomial embedder when $n\ge m$ then one would have, in effect, a single method of order $O((mn)^{\frac 3 2})$. [Check this statement! It is probably not true!]
 
-## Obsolete/Retired/Historical encoders:
-* This early (nonlinear) [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) encoder works for any $n$ and $m$ and encodes into $4 n m+1$ reals. ([encoder source](C0_numpy_simplicialComplex_encoder_for_array_of_reals_as_multiset.py))  In principle it could encode into just $2 n m + 1$ reals.  However, and implementation choice which is expected to make the outputs more stable leads to the number of outputs being $4 n m + 1$ instead.
+## Obsolete/Retired/Historical embedders:
+* This early (nonlinear) [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $m$ and embeds into $4 n m+1$ reals. ([embedder source](C0_numpy_simplicialComplex_embedder_for_array_of_reals_as_multiset.py))  In principle it could embed into just $2 n m + 1$ reals.  However, and implementation choice which is expected to make the outputs more stable leads to the number of outputs being $4 n m + 1$ instead.
 
-## What this library is calling $RP(\mathbb R^m)$ ([real projective space](https://en.wikipedia.org/wiki/Real_projective_space)) encoders:
+## What this library is calling $RP(\mathbb R^m)$ ([real projective space](https://en.wikipedia.org/wiki/Real_projective_space)) embedders:
 
-* By setting $n=2$ and encoding the multiset $\left\\{\vec x,-\vec x\right\\}$ with $\vec x$ in $R^m$ one can use the bursar encoder to encode something this library calls $RP^m$ (which is possibly an abuse of the notation for real projective space of order $m$).  This $RP^m$ embedding would (for the (vanilla) bursar encoder) naively therefore be of size $2+(m-1)2(2+1)/2 = 2+3(m-1)$.  However, since all $m$ terms of order 1 in the auxiliary variable $y$ always disappear for multisets of this sort, the coefficients of those terms do not need to be recorded. This leaves only $2m-1$ reals needing to be recorded in the encoding for $RP^m$.  A method named [Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace](Cinf_numpy_regular_encoder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace.py) implements this method. It is order $2n-1$ when $n>0$.
-* A small optimisation of the above method (implemented as [Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace](Cinf_numpy_complexPacked_encoder_for_list_of_reals_as_realprojectivespace.py))  reduces the by one when $n>0$ and $n$ is even.
+* By setting $n=2$ and embedding the multiset $\left\\{\vec x,-\vec x\right\\}$ with $\vec x$ in $R^m$ one can use the bursar embedder to embed something this library calls $RP^m$ (which is possibly an abuse of the notation for real projective space of order $m$).  This $RP^m$ embedding would (for the (vanilla) bursar embedder) naively therefore be of size $2+(m-1)2(2+1)/2 = 2+3(m-1)$.  However, since all $m$ terms of order 1 in the auxiliary variable $y$ always disappear for multisets of this sort, the coefficients of those terms do not need to be recorded. This leaves only $2m-1$ reals needing to be recorded in the embedding for $RP^m$.  A method named [Cinf_numpy_regular_embedder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace](Cinf_numpy_regular_embedder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace.py) implements this method. It is order $2n-1$ when $n>0$.
+* A small optimisation of the above method (implemented as [Cinf_numpy_complexPacked_embedder_for_list_of_reals_as_realprojectivespace](Cinf_numpy_complexPacked_embedder_for_list_of_reals_as_realprojectivespace.py))  reduces the by one when $n>0$ and $n$ is even.
 
 
 ## Testing/examples
 
-[example.py](example.py) is a simple example showing how one of the encoders could be used.
+[example.py](example.py) is a simple example showing how one of the embedders could be used.
 
-[test.py](test.py) excercises some of the encoders. If they all work the script should end with a message saying something like 
+[test.py](test.py) excercises some of the embedders. If they all work the script should end with a message saying something like 
 
 "----------------------------------------------------------------------
 Ran 1 test in 0.165s
@@ -38,7 +38,7 @@ Ran 1 test in 0.165s
 OK
 "
 
-[test_PKH_alg.py](test_PKH_alg.py) contains another set of unit tests, mainly intended to exercise the Simplicial Complex encoder.
+[test_PKH_alg.py](test_PKH_alg.py) contains another set of unit tests, mainly intended to exercise the Simplicial Complex embedder.
 
 ## References:
 
