@@ -15,15 +15,15 @@ Most embedders work only reals inputs and generate only real embeddings as that'
 All these are (or should be) instances of [MultisetEmbedder](MultisetEmbedder.py).
 
 
-* The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $k$ and embeds into $2 n k+1$ reals. ([Simplical complex embedder sources](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py)) 
+* The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $k$ and embeds into $2 n k+1$ reals.  The [simplical complex embedder sources](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py) may be browsed.
 * The [$nk\log n$ dotting embedder](C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset.py) based on the [dotting encoder](C0HomDeg1_dotting_encoder_for_array_of_reals_as_multiset.py) is CONJECTURED (but not proved) to be an embedder. It has order $O(n k \log n)$. 
 * The [polynomial embedder](Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset.py)
 has order $O(n k^2)$ in general, but happens to be optimal (i.e. embeds into $nk$ reals) for $k=1$ or $k=2$.
 * The [(vanilla) Busarial embedder](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py)
-has order $O(n^2 k)$.  Its exact order is  $ORDER(n,k) = n + (k-1) n (n+1)/2$. 
+has order $O(n^2 k)$.  Its exact order is $n + (k-1) n (n+1)/2$. 
 * The ['even' Busarial embedder](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py)
 has order $Binom(n+k,n)-1$. Although this embedder is very inefficient, its one possible benefit is that it does not treat any components in the $k$-space differently than any other. It is `even handed' (hence the name) w.r.t. the axes of the vectors. 
-* If one were to use the Busarial embedder when $k\ge n$ and the polynomial embedder when $n\ge k$ then one would have, in effect, a single method of order $O((nk)^{\frac 3 2})$. [Check this statement! It is probably not true!]
+* If one were to use the Busarial embedder when $k\ge n$ and the polynomial embedder when $n\ge k$ then the resulting algorithm is a method of order $O((nk)^{\frac 3 2})$.
 
 ## Embedders which work on $SP^m(\mathbb R)$ only.
 
