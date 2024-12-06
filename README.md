@@ -22,7 +22,7 @@ has order $O(n k^2)$ in general, but happens to be optimal (i.e. embeds into $nk
 has order $O(n^2 k)$.  Its exact order is  $ORDER(n,k) = n + (k-1) n (n+1)/2$. 
 * The ['even' Busarial embedder](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py)
 has order $Binom(n+k,n)-1$. While this embedder is very inefficient, it does not treat any components in the $k$-space differently than any other.  
-* If one were to use the Busarial embedder when $k\ge n$ and the polynomial embedder when $n\ge k$ then one would have, in effect, a single method of order $O((nk^{\frac 3 2})$. [Check this statement! It is probably not true!]
+* If one were to use the Busarial embedder when $k\ge n$ and the polynomial embedder when $n\ge k$ then one would have, in effect, a single method of order $O((nk)^{\frac 3 2})$. [Check this statement! It is probably not true!]
 
 ## Obsolete/Retired/Historical embedders:
 * An early (nonlinear) [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder 
