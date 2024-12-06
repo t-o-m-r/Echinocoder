@@ -8,7 +8,7 @@ This is a library contains functions which are able to perform:
 
 Most embedders work only reals inputs and generate only real embeddings as that's the whole purpose of the libarary. However, some embedders will accept complex numbers as inputs and can generate complex numbers as outputs.  Where this is the case it is not always documented. Some of the embedders which can process complex inputs and outputs are nonetheless used (in complex mode) as steps in the implementation of other embedders.  The capacity for some embedders to process complex numbers such routines should be considered private (unexposed) even if technically visible. This is to allow interface standardisation.
 
-## $SP^n(\mathbb R^k)$ -- i.e. multiset embedders:
+## Embedders for $SP^n(\mathbb R^k)$ -- for multisets of vectors:
 
 All these are (or should be) instances of [MultisetEmbedder](MultisetEmbedder.py).
 
