@@ -23,7 +23,10 @@ have order $O(n m^2)$ in general, but happen to be efficient (i.e. embed into $n
 * If one were to use the busar embedder when $k\ge n$ and the polynomial embedder when $n\ge k$ then one would have, in effect, a single method of order $O((nkk^{\frac 3 2})$. [Check this statement! It is probably not true!]
 
 ## Obsolete/Retired/Historical embedders:
-* This early (nonlinear) [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $k$ and embeds into $4 n k+1$ reals. ([embedder source](Historical/C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py)).  In principle it could embed into just $2 n k + 1$ reals.  However, and implementation choice which is expected to make the outputs more stable leads to the number of outputs being $4 n k + 1$ instead.
+* An early (nonlinear) [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder 
+([embedder source](Historical/C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py))
+workedfor any $n$ and $k$ and embedded into $4 n k+1$ reals. 
+In principle the method could embed into just $2 n k + 1$ reals.  However, an implementation choice which was expected to make the outputs more stable leads to the number of outputs being $4 n k + 1$ instead.
 
 ## Embedders which work on $SP^m(\mathbb R)$ only (i.e. $k=1$ is hard coded and inputs are 1-d lists  not 2-d arrays)
 
