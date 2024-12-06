@@ -1,9 +1,5 @@
 # Unomment one of the next few lines to select the embedder to use:
 
-#from Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset import Embedder
-# from Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset import embed
-from Historical.C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset import Embedder
-# from C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset import Embedder
 
 
 
@@ -46,7 +42,22 @@ def make_output_scalars(R):
 n = 3
 k = 2
 
-embedder = Embedder()
+# Uncomment one of the next few pairs of lines:
+
+# import Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset import Embedder
+# embedder = Embedder()
+
+# from Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset import embed
+# embedder = Embedder()
+
+# from Historical.C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset import Embedder
+# embedder = Embedder()
+
+# from C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset import Embedder
+# embedder = Embedder()
+
+from C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset import Embedder
+embedder = Embedder(n=n, k=k)
 
 big_n_for_embedding = embedder.size_from_n_k(n,k)
 
