@@ -37,11 +37,49 @@ class MultisetEmbedder:
         * a return value of >=0 is the number of reals in an embedding if sets of size (n,k) are encodable, and
         * a return value of -1 indicates that embedding for that n and k is impossible.
 
+    No embedder should have to deal with $k<0$ or $n<0$ as these are crazy nonsense.
+
     """
 
     def embed(self, data: np.ndarray, debug=False) -> np.ndarray:
-        raise NotImplementedError()
 
+        n,k = data.shape
+        expected_order = self.size_from_n_k(n,k)
+
+        if n<0 or k<0:
+            raise ValueError("Numpy array's should not have negative sizes!!!")
+        if n==1:
+            embedding = data.flatten() # This implmentation is a coverall.
+            assert len(embedding) == k
+            assert len(embedding) == expected_order
+            return embedding
+        if k==1:
+            assert k==1 and n>=0 # Preconditions for calling self.embed_kOne !
+            assert self.is_kOne_n_k(n, k) # Precondition for calling self.embed_kOne !
+            embedding = self.embed_kOne(data, debug) # Derived classes should implement this method!
+            assert len(embedding) == n # Derived classes are required to meet this condition in their output!
+            assert len(embedding) == expected_order
+            return embedding
+
+        assert n>1 and k>1
+        assert k>1 and n>1 # Preconditions for calling self.embed_generic !
+        assert self.is_generic_n_k(n,k) # Precondition for calling self.embed_generic !
+        embedding = self.embed_generic(data, debug) # Derived classes should implement this method!
+        assert len(embedding) == expected_order
+        return embedding
+
+    def size_from_n_k(self, n: int, k: int) -> int:
+        """
+        This function returns the number of reals that the embedding would contain if a set containing n "k-vectors" were to be embedded. Derived classes implmenting this method should return -1 if they are not able to embed sets for that n and k.
+        """
+        if n<0 or k<0:
+            return -1
+        if n==1:
+            return k
+        if k==1:
+            return n
+        return self.size_from_n_k_generic(n, k) # Derived classes should implement this method!
+        
     def size_from_array(self, data: np.ndarray) -> int:
         """
         This function returns the number of reals that the embedding would contain if the set represented by "data" were to be embedded. -1 is returned if data of the supplied type is not encodable by this embedder.
@@ -49,8 +87,46 @@ class MultisetEmbedder:
         n,k = data.shape
         return self.size_from_n_k(n,k)
 
-    def size_from_n_k(self, n: int, k: int) -> int:
+
+    def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
         """
-        This function returns the number of reals that the embedding would contain if a set containing n "k-vectors" were to be embedded. Derived classes implmenting this method should return -1 if they are not able to embed sets for that n and k.
+        Derived classes should implement this method.
+        This method should OPTIMALLY embed data for which n>=0 and k==1. We call this "kOne data".
+        OPTIMALLY means that the embedding size must therefore be n.
+        Implementations may assume (without checking) that data fed to it has the above type.
         """
         raise NotImplementedError()
+
+    def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:
+        """
+        Derived classes should implement this method.
+        This method should embed data for which n>1 and k>1. We call this "generic data".
+        Implementations may assume (without checking) that data fed to it has the above type.
+        """
+        raise NotImplementedError()
+
+    def size_from_n_k_generic(self, n: int, k:int) -> int:
+        """
+        Derived classes should implement this method.
+        This method should report the embedding size for data for which n>1 and k>1. We call this "generic data".
+        Implementations may assume (without checking) that data fed to it has the above type.
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    def is_kOne_data(data: np.ndarray) -> bool:
+        n,k = data.shape
+        return MultisetEmbedder.is_kOne_n_k(n,k)
+
+    @staticmethod
+    def is_kOne_n_k(n: int, k: int) -> bool:
+        return n>=0 and k==1
+
+    @staticmethod
+    def is_generic_data(data: np.ndarray) -> bool:
+        n,k = data.shape
+        return MultisetEmbedder.is_generic_n_k(n,k)
+
+    @staticmethod
+    def is_generic_n_k(n: int, k: int) -> bool:
+        return n>1 and k>1

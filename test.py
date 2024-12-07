@@ -94,6 +94,8 @@ def test_tools():
         fail_count += 1
         print("FAIL in tools.invert_perm")
 
+    assert fail_count == 0
+
     inp = np.array([[1, 0, 2],
                     [0, 5, 2],
                     [3, 0, 8]])

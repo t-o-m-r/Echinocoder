@@ -10,7 +10,8 @@ from MultisetEmbedder import MultisetEmbedder
 Eji = namedtuple("Eji", ["j", "i"])
 
 class Embedder(MultisetEmbedder):
-    def embed(self, data: np.ndarray, debug=False) -> np.ndarray:
+    def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:
+        assert MultisetEmbedder.is_generic_data(data) # Precondition
         if debug:
             print(f"data is {data}")
     
@@ -129,7 +130,7 @@ class Embedder(MultisetEmbedder):
     
         return embedding
     
-    def size_from_n_k(self, n: int, k: int) -> int:
+    def size_from_n_k_generic(self, n: int, k: int) -> int:
         return 2*n*k + 1
     
 def eji_set_to_np_array(eji_set, n, k):
