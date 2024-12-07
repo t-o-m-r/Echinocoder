@@ -12,7 +12,7 @@ Most embedders work only reals inputs and generate only real embeddings as that'
 
 ## Embedders for $SP^n(\mathbb R^k)$ -- for multisets of vectors:
 
-All these are (or should be) instances of [MultisetEmbedder](MultisetEmbedder.py).  The orders (embedding sized) quoted in the table below are for $k>1$ only, since for $k\le 1$ all algorithms should fall back to an optimal embedding, i.e. one for which the exact order is $nk$.
+All these are (or should be) instances of [MultisetEmbedder](MultisetEmbedder.py).
 
 ### Embedder summaries:
 
@@ -25,7 +25,8 @@ All these are (or should be) instances of [MultisetEmbedder](MultisetEmbedder.py
 | Bursarial  | $O(nk\cdot n)$    | $n + (k-1) n (n+1)/2$  | No      |  Yes  |       | [link](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py) |
 | Hybrid | $O(nk\cdot \sqrt{nk})$ | Minimum of Polynomial and Bursarial orders | No      |  Yes  | This method uses whichever of Polynomial or Bursarial has smallest order. | [link](Cinf_hybrid_embedder_for_array_of_reals_as_multiset.py) |
 
-Note that for $n\le 1$ and $k\le 1$ all embedders have exact order $nk$.
+The orders (i.e. embedding sizes) quoted in the table above are for $k>1$ only. For $k\le 1$ each algorithm should fall back to an optimal embedding, i.e. one for which the exact order is $nk$.
+
 ### Further details:
 
 * The [Simplicial Complex](https://en.wikipedia.org/wiki/Simplicial_complex) embedder works for any $n$ and $k$ and embeds into $2 n k+1$ reals.  The [simplical complex embedder sources](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py) may be browsed.
