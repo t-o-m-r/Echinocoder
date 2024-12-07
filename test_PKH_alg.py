@@ -248,7 +248,7 @@ class Test_c_dc_pair_generation(unittest.TestCase):
         c_dc_pairs_calculated = make_c_dc_pairs(delta)
         self.assertEqual(c_dc_pairs_expected, c_dc_pairs_calculated)
 
-        for c, dc in c_dc_pairs_calculated:
+        for c, _ in c_dc_pairs_calculated:
             c.check_valid() # Will throw if bad!
 
 class Test_simplex_eji_ordering_generation(unittest.TestCase):
