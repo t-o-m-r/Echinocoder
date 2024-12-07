@@ -289,42 +289,42 @@ class Test_simplex_eji_ordering_generation(unittest.TestCase):
         self.assertEqual(ordering_calculated, ordering_expected)
 
 class TestSimplexPositions(unittest.TestCase):
-        def test_pos_within_simplex(self):
-            aBad = Position_within_Simplex([2, 2, 3])
-            self.assertRaises(Exception, aBad.check_valid)
+    def test_pos_within_simplex(self):
+        aBad = Position_within_Simplex([2, 2, 3])
+        self.assertRaises(Exception, aBad.check_valid)
 
-            a = Position_within_Simplex([0.1, 0.25, 0.15])
-            a.check_valid()
+        a = Position_within_Simplex([0.1, 0.25, 0.15])
+        a.check_valid()
 
-            b = Position_within_Simplex(np.array([0.5, 0.25, 0.25]))
-            b.check_valid()
-            self.assertEqual(b, Position_within_Simplex([0.5, 0.25, 0.25])) # Not using np.array
+        b = Position_within_Simplex(np.array([0.5, 0.25, 0.25]))
+        b.check_valid()
+        self.assertEqual(b, Position_within_Simplex([0.5, 0.25, 0.25])) # Not using np.array
 
-            c = Position_within_Simplex([1.0/3.0, 1.0/3.0, 1.0/3.0])
-            c.check_valid()
+        c = Position_within_Simplex([1.0/3.0, 1.0/3.0, 1.0/3.0])
+        c.check_valid()
 
-            dBad = Position_within_Simplex([0, -0.23, 0])
-            self.assertRaises(Exception, dBad.check_valid)
+        dBad = Position_within_Simplex([0, -0.23, 0])
+        self.assertRaises(Exception, dBad.check_valid)
 
-            big_1 = Position_within_Simplex_Product([b, c, a, a, b])
-            big_1.check_valid()
+        big_1 = Position_within_Simplex_Product([b, c, a, a, b])
+        big_1.check_valid()
 
-            self.assertEqual(big_1[0], b)
-            self.assertEqual(big_1[1], c)
-            self.assertEqual(big_1[2], a)
-            self.assertEqual(big_1[3], a)
-            self.assertEqual(big_1[4], b)
+        self.assertEqual(big_1[0], b)
+        self.assertEqual(big_1[1], c)
+        self.assertEqual(big_1[2], a)
+        self.assertEqual(big_1[3], a)
+        self.assertEqual(big_1[4], b)
 
-            big_2 = Position_within_Simplex_Product([[0.1, 0.2], [0.3, 0.11]])
-            self.assertEqual(big_2[0], Position_within_Simplex([0.1, 0.2]))
-            self.assertEqual(big_2[1], Position_within_Simplex([0.3, 0.11]))
-            self.assertEqual(big_2[0, 0], 0.1)
-            self.assertEqual(big_2[0, 1], 0.2)
-            self.assertEqual(big_2[1, 0], 0.3)
-            self.assertEqual(big_2[1, 1], 0.11)
+        big_2 = Position_within_Simplex_Product([[0.1, 0.2], [0.3, 0.11]])
+        self.assertEqual(big_2[0], Position_within_Simplex([0.1, 0.2]))
+        self.assertEqual(big_2[1], Position_within_Simplex([0.3, 0.11]))
+        self.assertEqual(big_2[0, 0], 0.1)
+        self.assertEqual(big_2[0, 1], 0.2)
+        self.assertEqual(big_2[1, 0], 0.3)
+        self.assertEqual(big_2[1, 1], 0.11)
 
-            big_3 = Position_within_Simplex_Product([b, c, b, b, dBad])
-            self.assertRaises(Exception, big_3.check_valid)
+        big_3 = Position_within_Simplex_Product([b, c, b, b, dBad])
+        self.assertRaises(Exception, big_3.check_valid)
 
 class Test_perm_detection(unittest.TestCase):
     def test(self):

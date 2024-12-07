@@ -27,7 +27,7 @@ fail_count = 0
 
 def self_test_realprojectivespace_embedder(embedder):
     for inp, out in embedder.unit_test_input_output_pairs:
-       test_realprojectivespace_embedder(inp, embedder=embedder, expected_embedding=out)
+        test_realprojectivespace_embedder(inp, embedder=embedder, expected_embedding=out)
 
 def test_realprojectivespace_embedder(data, embedder=None, embedders=None, expected_embedding=None):
     global fail_count
@@ -71,17 +71,17 @@ def test_tools():
     print()
 
     for data, expected in ( ([1,2,3,4,5,], [1+2j, 3+4j, 5,]),  ([1,2,3,4,], [1+2j, 3+4j, ]),  ):
-       data = np.asarray(data)
-       expected = np.asarray(expected)
-       out = tools.real_pairs_to_complex_zip(data)
-       print("tools.real_pairs_to_complex_zip")
-       print("data in ",data)
-       print("out_expected ",expected)
-       print("out_real     ",out)
-       if not np.array_equal(expected,out):
-           fail_count += 1
-           print("FAIL in real_pairs_to_complex_zip")
-       print()
+        data = np.asarray(data)
+        expected = np.asarray(expected)
+        out = tools.real_pairs_to_complex_zip(data)
+        print("tools.real_pairs_to_complex_zip")
+        print("data in ",data)
+        print("out_expected ",expected)
+        print("out_real     ",out)
+        if not np.array_equal(expected,out):
+            fail_count += 1
+            print("FAIL in real_pairs_to_complex_zip")
+        print()
 
     perm = [3,0,1,2]
     inverse_perm_calculated = tools.invert_perm(perm)

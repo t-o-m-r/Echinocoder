@@ -31,7 +31,7 @@ def real_pairs_to_complex_zip(np_array):
     reals = np_array[0::2]
     imags = np_array[1::2]
     if len(imags)<len(reals):
-       imags = np.append(imags, [0])
+        imags = np.append(imags, [0])
     print("input ",np_array)
     print("reals ",reals)
     print("images ",imags)
