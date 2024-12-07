@@ -61,7 +61,7 @@ In principle the method could be re-written to embed into just $2 n k + 1$ reals
 
 ## Testing/examples
 
-[example.py](example.py) is a simple example showing how one of the embedders could be used.
+[example.py](example.py) is a simple example showing how some of the embedders could be used.
 
 [test.py](test.py) excercises some of the embedders. If they all work the script should end with a message saying something like 
 
