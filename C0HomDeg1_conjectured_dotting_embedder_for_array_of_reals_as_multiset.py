@@ -63,29 +63,29 @@ def tost(): # Renamed from test -> tost to avoid pycharm mis-detecting / mis-run
     try:
         bad_input = np.asarray([[]]) # non data
         _ = embedder.embed(bad_input)
-        assert False # We should not get here! Last line should throw Value Error
-    except:
         assert True
+    except ValueError:
+        assert False
 
     try:
         bad_input = np.asarray([[4,2,2],[-3,5,1],[8,9,0],[2,7,4],[3,2,1]]) # k=3 data but k=2 embedder
         _ = embedder.embed(bad_input)
         assert False # We should not get here! Last line should throw Value Error
-    except:
+    except ValueError:
         assert True
 
     try:
         bad_input = np.asarray([[4,2],[-3,5],[8,9],[2,7],[3,2],[7,7]]) # n=6 data but n=5 embedder
         _ = embedder.embed(bad_input)
         assert False # We should not get here! Last line should throw Value Error
-    except:
+    except ValueError:
         assert True
 
     try:
         good_input = np.asarray([[4,2],[-3,5],[8,9],[2,7],[3,2]])
         _ = embedder.embed(good_input)
         assert True # We should not get here! Last line should throw Value Error
-    except:
+    except ValueError:
         assert False
 
 def run_unit_tests():

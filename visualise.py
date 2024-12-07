@@ -49,42 +49,42 @@ def evaluate_embedding(x, n, k, embedder):
 
     return evaluate_embedding.last_ret
 
-n = 3
-k = 2
+def add_bokeh_root():
+    n = 3
+    k = 2
+    
+    # Uncomment one of the next few pairs of lines:
+    
+    # import Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset import Embedder
+    # embedder = Embedder()
+    
+    # from Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset import Embedder
+    # embedder = Embedder()
+    
+    # from Historical.C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset import Embedder
+    # embedder = Embedder()
+    
+    # from C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset import Embedder
+    # embedder = Embedder()
+    
+    from C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset import Embedder
+    embedder = Embedder(n=n, k=k)
+    
+    evaluate_embedding.last_x=None
+    evaluate_embedding.last_n=None
+    evaluate_embedding.last_k=None
+    evaluate_embedding.last_outs=None
+    
+    bokeh_vis = BokehFunctionVisualiser2D(
+        lambda x: evaluate_embedding(x, n, k, embedder),
+        make_input_scalars(n, k),
+        make_output_scalars(embedder.size_from_n_k(n,k)),
+        center_point=10 * (np.random.random(size=n * k) - 0.5),
+        panel_1d_kwargs={'use_points': True},
+        use_points_for_xsecs=True,
+    )
+    curdoc().add_root(bokeh_vis.root)
 
-# Uncomment one of the next few pairs of lines:
-
-# import Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset import Embedder
-# embedder = Embedder()
-
-# from Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset import Embedder
-# embedder = Embedder()
-
-# from Historical.C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset import Embedder
-# embedder = Embedder()
-
-# from C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset import Embedder
-# embedder = Embedder()
-
-from C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset import Embedder
-embedder = Embedder(n=n, k=k)
-
-evaluate_embedding.last_x=None
-evaluate_embedding.last_n=None
-evaluate_embedding.last_k=None
-evaluate_embedding.last_outs=None
-
-bokeh_vis = BokehFunctionVisualiser2D(
-    lambda x: evaluate_embedding(x, n, k, embedder),
-    make_input_scalars(n, k),
-    make_output_scalars(embedder.size_from_n_k(n,k)),
-    center_point=10 * (np.random.random(size=n * k) - 0.5),
-    panel_1d_kwargs={'use_points': True},
-    use_points_for_xsecs=True,
-)
-curdoc().add_root(bokeh_vis.root)
-
-#if __name__ == "__main__":
-#    main()
+add_bokeh_root()
 
 
