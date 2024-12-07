@@ -39,7 +39,7 @@ class MultisetEncoder:
 
     """
 
-    def encoder(self, data: np.ndarray, debug=False) -> np.ndarray:
+    def encode(self, data: np.ndarray, debug=False) -> np.ndarray:
         raise NotImplementedError()
 
     def size_from_array(self, data: np.ndarray) -> int:

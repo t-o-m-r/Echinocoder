@@ -90,7 +90,7 @@ def tost(): # Renamed from test -> tost to avoid pycharm mis-detecting / mis-run
 def run_unit_tests():
     tost() # Renamed from test -> tost to avoid pycharm mis-detecting / mis-running unit tests!
 
-if __name__ == "__main__":
+def main():
     run_unit_tests()
 
     encoder = Encoder(k=2, extra_dots=10)
@@ -101,3 +101,6 @@ if __name__ == "__main__":
     print(f"{good_input}")
     print("leads to:")
     print(f"{output}")
+
+if __name__ == "__main__":
+    main()
