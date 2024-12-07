@@ -1,15 +1,6 @@
-## PKH questions:
-
- * Is num vertices really $n(k+1)$ ?  I think it might be  $(k+1)^n$.
-
- * Am I now correctly implementing the modding out?
-
-
 ## General TODO:
 
 Consider writing a tool to get all the simplices for a given (n,k) and see which ones need barycentric subdivision and which ones don't.  More than this, look to see how many vertices cause the ambiguity (if that's meaningful!!) ... i.e. we want to see if it would be possible to get away with just putting a single vertex at the centre of each simplex rather than full on barycentric subdivision.
-
-The Simplicial encoder uses a complex trick to avoid the r values in pr growing without limit .... however as a consequence we embed in an unnesssarily large space of size 4nm+1 instead of 2nm+1.  We should think about ways of avoiding that doubling!
 
 ## Item 1
 
