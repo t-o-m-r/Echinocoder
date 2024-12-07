@@ -3,8 +3,9 @@
 import unittest
 
 import numpy as np
+import tools
 
-from Historical.C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset import *
+from Historical.C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset import Eji_Ordering, Position_within_Simplex_Product, make_flat_sums, Maximal_Simplex_Vertex, make_c_dc_pairs, Eji, Maximal_Simplex, Eji_LinComb, Position_within_Simplex, ell
 
 class Test_Ell(unittest.TestCase):
     def test_sn_perm_collision(self):

@@ -62,36 +62,31 @@ def tost(): # Renamed from test -> tost to avoid pycharm mis-detecting / mis-run
 
     try:
         bad_input = np.asarray([[]]) # non data
-        embedding = embedder.embed(bad_input)
+        _ = embedder.embed(bad_input)
         assert False # We should not get here! Last line should throw Value Error
     except:
         assert True
 
     try:
         bad_input = np.asarray([[4,2,2],[-3,5,1],[8,9,0],[2,7,4],[3,2,1]]) # k=3 data but k=2 embedder
-        embedding = embedder.embed(bad_input)
+        _ = embedder.embed(bad_input)
         assert False # We should not get here! Last line should throw Value Error
     except:
         assert True
 
     try:
         bad_input = np.asarray([[4,2],[-3,5],[8,9],[2,7],[3,2],[7,7]]) # n=6 data but n=5 embedder
-        embedding = embedder.embed(bad_input)
+        _ = embedder.embed(bad_input)
         assert False # We should not get here! Last line should throw Value Error
     except:
         assert True
 
     try:
         good_input = np.asarray([[4,2],[-3,5],[8,9],[2,7],[3,2]])
-        embedding = embedder.embed(good_input)
+        _ = embedder.embed(good_input)
         assert True # We should not get here! Last line should throw Value Error
     except:
         assert False
-
-    #calculated = np.array([2, 3, 4, 1, 0])
-    #expected = np.array([2, 3, 4, 1, 0])
-    #np.testing.assert_array_equal(calculated, expected)
-
 
 def run_unit_tests():
     tost() # Renamed from test -> tost to avoid pycharm mis-detecting / mis-running unit tests!

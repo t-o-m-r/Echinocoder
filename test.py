@@ -301,8 +301,6 @@ class Test_Embedders(unittest.TestCase):
 def test_everything():
     test_tools()
     print(str(fail_count)+" failures")
-    import tuple_rank
-    tuple_rank.unit_test_tuple_rank()
 
 print(__file__, __line__)
 unittest.main(exit=False)

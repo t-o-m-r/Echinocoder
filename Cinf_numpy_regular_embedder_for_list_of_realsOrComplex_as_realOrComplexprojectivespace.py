@@ -47,8 +47,8 @@ unit_test_input_output_pairs = [
        ( np.asarray([3+2j,4+1j,-2,5-4j]), [(5+12j), (20+22j), (3+0j), (30-8j), (52-22j), (-20+16j), (9-40j)], ),
 ]
 
-# Just for testing/debug:
-if __name__ == "__main__":
+
+def main():
     data=[3,4,-2,5]
     #data=[3+2j,4,-2,5-4j]
     #data=[3+2j,4+1j,-2,5-4j]
@@ -70,4 +70,8 @@ if __name__ == "__main__":
      [  9  12  -6  15]]
     traces  [9, 24, 4, 14, 44, -20, 25]
     """
+
+# Just for testing/debug:
+if __name__ == "__main__":
+    main()
 

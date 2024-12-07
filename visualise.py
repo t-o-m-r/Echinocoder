@@ -99,3 +99,8 @@ bokeh_vis = BokehFunctionVisualiser2D(
     use_points_for_xsecs=True,
 )
 curdoc().add_root(bokeh_vis.root)
+
+#if __name__ == "__main__":
+#    main()
+
+

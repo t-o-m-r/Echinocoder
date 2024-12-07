@@ -26,8 +26,8 @@ class Embedder(MultisetEmbedder):
         sorted_data = sorted( flattened_data, key = lambda x : -x[0])
     
         if debug:
-            print(f"sorted flattened data is")
-            [print(bit) for bit in sorted_data]
+            print("sorted flattened data is")
+            _ = [print(bit) for bit in sorted_data]
     
         min_element = sorted_data[-1][0]
         max_element = sorted_data[0][0]
@@ -35,20 +35,20 @@ class Embedder(MultisetEmbedder):
         difference_data = [ (x[0]-y[0], x[1]) for x,y in pairwise(sorted_data) ]
     
         if debug:
-            print(f"difference data is")
-            [print(bit) for bit in difference_data]
+            print("difference data is")
+            _ = [print(bit) for bit in difference_data]
     
         difference_data_with_MSVs = [
             (delta, Maximal_Simplex_Vertex(set([eji for (_, eji) in difference_data[0:i + 1]]))) for i, (delta, _) in enumerate(difference_data)]
     
         if debug:
-            print(f"difference data with MSVs:")
-            [print(bit) for bit in difference_data_with_MSVs]
+            print("difference data with MSVs:")
+            _ = [print(bit) for bit in difference_data_with_MSVs]
     
         sorted_difference_data_with_MSVs = sorted(difference_data_with_MSVs, key=lambda x: -x[0] )
         if debug:
-            print(f"sorted difference data with MSVs:")
-            [print(bit) for bit in sorted_difference_data_with_MSVs]
+            print("sorted difference data with MSVs:")
+            _ = [print(bit) for bit in sorted_difference_data_with_MSVs]
     
         # Barycentrically subdivide:
         deltas_in_current_order = [delta for delta, _ in sorted_difference_data_with_MSVs]
@@ -64,13 +64,13 @@ class Embedder(MultisetEmbedder):
         difference_data_in_subdivided_simplex = [ (  (i+1)*(deltas_in_current_order[i]-(deltas_in_current_order[i+1] if i+1<expected_number_of_vertices else 0)),  Eji_LinComb(n, k, msvs_in_current_order[:i+1])) for i in range(expected_number_of_vertices)]
     
         if debug:
-            print(f"difference data in Barycentrically subdivided simplex:")
-            [print(bit) for bit in difference_data_in_subdivided_simplex]
+            print("difference data in Barycentrically subdivided simplex:")
+            _ = [print(bit) for bit in difference_data_in_subdivided_simplex]
     
         canonical_difference_data = [(delta, msv.get_canonical_form()) for (delta, msv) in difference_data_in_subdivided_simplex]
         if debug:
-            print(f"canonical difference data is:")
-            [print(bit) for bit in canonical_difference_data]
+            print("canonical difference data is:")
+            _ = [print(bit) for bit in canonical_difference_data]
     
         #j_order = first_occurrences_numpy(np.asarray([ eji.j for _,eji in sorted_data ]))
         #perm = invert_perm(j_order)
@@ -104,8 +104,8 @@ class Embedder(MultisetEmbedder):
         # bigN does not count any min and max elements, which would be extra.
         difference_point_pairs = [(delta, eji_lin_com.hash_to_point_in_unit_hypercube(bigN)) for (delta, eji_lin_com) in canonical_difference_data]
         if debug:
-            print(f")difference point pairs are:")
-            [print(bit) for bit in difference_point_pairs]
+            print("difference point pairs are:")
+            _ = [print(bit) for bit in difference_point_pairs]
     
         first_half_of_embedding = sum([delta * point for delta, point in difference_point_pairs]) + np.zeros(bigN)
         if debug:

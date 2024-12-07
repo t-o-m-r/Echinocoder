@@ -54,7 +54,7 @@ def tuple_rank(tup, k):
     return rank
 
 def unit_test_tuple_rank():
-    fails = 0;
+    fails = 0
 
     fails += 0 != tuple_rank((), 1)
     fails += 0 != tuple_rank((), 10)

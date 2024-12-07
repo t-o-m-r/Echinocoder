@@ -48,8 +48,7 @@ unit_test_input_output_pairs = [
                     ( np.asarray([3,4,-2  ]), [ -7, 24, -12, -16, 4] ),
                     ]
 
-# Just for testing/debug:
-if __name__ == "__main__":
+def main():
     for data in (np.asarray([3,4,-2,5]), np.asarray([3,4,-2])):
         print()
         complex_data = tools.real_pairs_to_complex_zip(data)
@@ -81,4 +80,9 @@ if __name__ == "__main__":
         complex_embedding [ -7.+24.j -12.-16.j   4. +0.j]
         real_embedding  [ -7.  24. -12. -16.   4.]
         """
+
+
+# Just for testing/debug:
+if __name__ == "__main__":
+    main()
 

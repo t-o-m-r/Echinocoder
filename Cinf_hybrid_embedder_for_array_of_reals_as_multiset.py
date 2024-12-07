@@ -47,14 +47,13 @@ class Embedder(MultisetEmbedder):
 
 
 def tost(): # Renamed from test -> tost to avoid pycharm mis-detecting / mis-running unit tests!
-
     embedder = Embedder()
 
     poly_input = np.asarray([[4,2],[-3,5],[8,9],[2,7],[3,2]])
-    embedding = embedder.embed(poly_input, debug=True)
+    _ = embedder.embed(poly_input, debug=True)
 
     burs_input = np.asarray([[4,2,-3,5,8],[9,2,7,3,2]])
-    embedding = embedder.embed(burs_input, debug=True)
+    _ = embedder.embed(burs_input, debug=True)
 
 
 def run_unit_tests():
