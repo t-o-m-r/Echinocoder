@@ -124,8 +124,8 @@ class Test_Eji_Linear_Combinations(unittest.TestCase):
 
         import hashlib
         m = hashlib.md5(np.array((3, 4, 5)))
-        hash = int.from_bytes(m.digest(), 'big')
-        self.assertEqual(hash, 11334969359266172727733649456890768914)
+        our_hash = int.from_bytes(m.digest(), 'big')
+        self.assertEqual(our_hash, 11334969359266172727733649456890768914)
 
 class Test_flat_sums(unittest.TestCase):
     def test(self):
