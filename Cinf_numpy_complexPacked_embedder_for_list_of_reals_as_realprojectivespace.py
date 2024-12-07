@@ -50,35 +50,35 @@ unit_test_input_output_pairs = [
 
 # Just for testing/debug:
 if __name__ == "__main__":
-  for data in (np.asarray([3,4,-2,5]), np.asarray([3,4,-2])):
-    print()
-    complex_data = tools.real_pairs_to_complex_zip(data)
-    complex_embedding = underlying_embedder.embed(complex_data)
-    real_embedding = tools.expand_complex_to_real_pairs(complex_embedding)
-    # Now trim off last entry but ONLY IF we know it will be zero by construction -- this is when the data has an odd length
-    if len(data)%2 == 1:
-        real_embedding = real_embedding[:-1]
-
-    print("data ",data)
-    print("complex_data ",complex_data)
-    print("complex_embedding",complex_embedding)
-    print("real_embedding ",real_embedding)
-    # Should print
-    """
-    input  [ 3  4 -2  5]
-    reals  [ 3 -2]
-    images  [4 5]
-    data  [ 3  4 -2  5]
-    complex_data  [ 3.+4.j -2.+5.j]
-    complex_embedding [ -7.+24.j -52.+14.j -21.-20.j]
-    real_embedding  [ -7.  24. -52.  14. -21. -20.]
+    for data in (np.asarray([3,4,-2,5]), np.asarray([3,4,-2])):
+        print()
+        complex_data = tools.real_pairs_to_complex_zip(data)
+        complex_embedding = underlying_embedder.embed(complex_data)
+        real_embedding = tools.expand_complex_to_real_pairs(complex_embedding)
+        # Now trim off last entry but ONLY IF we know it will be zero by construction -- this is when the data has an odd length
+        if len(data)%2 == 1:
+            real_embedding = real_embedding[:-1]
     
-    input  [ 3  4 -2]
-    reals  [ 3 -2]
-    images  [4 0]
-    data  [ 3  4 -2]
-    complex_data  [ 3.+4.j -2.+0.j]
-    complex_embedding [ -7.+24.j -12.-16.j   4. +0.j]
-    real_embedding  [ -7.  24. -12. -16.   4.]
-    """
+        print("data ",data)
+        print("complex_data ",complex_data)
+        print("complex_embedding",complex_embedding)
+        print("real_embedding ",real_embedding)
+        # Should print
+        """
+        input  [ 3  4 -2  5]
+        reals  [ 3 -2]
+        images  [4 5]
+        data  [ 3  4 -2  5]
+        complex_data  [ 3.+4.j -2.+5.j]
+        complex_embedding [ -7.+24.j -52.+14.j -21.-20.j]
+        real_embedding  [ -7.  24. -52.  14. -21. -20.]
+        
+        input  [ 3  4 -2]
+        reals  [ 3 -2]
+        images  [4 0]
+        data  [ 3  4 -2]
+        complex_data  [ 3.+4.j -2.+0.j]
+        complex_embedding [ -7.+24.j -12.-16.j   4. +0.j]
+        real_embedding  [ -7.  24. -12. -16.   4.]
+        """
 

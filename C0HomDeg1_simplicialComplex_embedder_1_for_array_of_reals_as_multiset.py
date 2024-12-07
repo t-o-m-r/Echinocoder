@@ -257,13 +257,13 @@ class Eji_LinComb:
 
 
 def tost(): # Renamed from test -> tost to avoid pycharm mis-detecting / mis-running unit tests!
-        calculated = first_occurrences_numpy(np.array([2, 3, 3, 4, 2, 1, 4, 0, 3, 2, 3, 4]))
-        expected = np.array([2, 3, 4, 1, 0])
-        np.testing.assert_array_equal(calculated, expected)
+    calculated = first_occurrences_numpy(np.array([2, 3, 3, 4, 2, 1, 4, 0, 3, 2, 3, 4]))
+    expected = np.array([2, 3, 4, 1, 0])
+    np.testing.assert_array_equal(calculated, expected)
 
-        calculated = first_occurrences_numpy(np.array([2,2,0,2,1,3,0,2,1,0,2,3,0,2,1,3,0,2,]))
-        expected = np.array([2, 0, 1, 3])
-        np.testing.assert_array_equal(calculated, expected)
+    calculated = first_occurrences_numpy(np.array([2,2,0,2,1,3,0,2,1,0,2,3,0,2,1,3,0,2,]))
+    expected = np.array([2, 0, 1, 3])
+    np.testing.assert_array_equal(calculated, expected)
 
 
 
@@ -273,11 +273,11 @@ def run_unit_tests():
 if __name__ == "__main__":
     run_unit_tests()
 
-    input = np.asarray([[4,2],[-3,5],[8,9],[2,7]])
+    some_input = np.asarray([[4,2],[-3,5],[8,9],[2,7]])
     embedder = Embedder()
-    output = embedder.embed(input, debug=True)
+    output = embedder.embed(some_input, debug=True)
 
     print("Embedding:")
-    print(f"{input}")
+    print(f"{some_input}")
     print("leads to:")
     print(f"{output}")
