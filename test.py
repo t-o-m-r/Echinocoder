@@ -126,27 +126,37 @@ class Test_Embedders(unittest.TestCase):
         for i in range(number_of_shuffled_copies):
             for embedder in embedders:
                 print(f"embedder is {embedder}")
-                embedding = embedder.embed(shuffled_data)
-                #embedding_fails = expected_embedding is not None and not np.array_equal(np.asarray(embedding),np.asarray(expected_embedding))
-                # Check subsequent embeddings are same as first embedding. I.e. check for permutation invariance.
-                if i==0:
-                    first_embedding[embedder]=embedding
-                else:
-                    #print("MOOOCOWFIRST",embedder, first_embedding[embedder])
-                    #print("MOOOCOW__NOW",embedder, embedding)
-                    if exact:
-                        np.testing.assert_equal(embedding, first_embedding[embedder], strict=True)
-                    else:
-                        np.testing.assert_allclose(np.array(embedding, dtype=float), np.array(first_embedding[embedder], dtype=float), atol=absolute_tolerance, rtol=relative_tolerance, strict=True, equal_nan=False)
+                
+                try_to_encode = True
+                if hasattr(embedder, "size_from_array"):
+                    siz = embedder.size_from_array(shuffled_data)
+                    if siz==-1:
+                        try_to_encode = False
 
-                # Also checks embedding against expected, if given
-                if expected_embedding is not None:
-                    #print("MOOO1",embedding)
-                    #print("MOOO2",expected_embedding)
-                    if exact:
-                        np.testing.assert_equal(embedding, expected_embedding, strict=True)
+                if not try_to_encode:
+                    print(f"Skipping test of data on {embedder} as shape ({shuffled_data.shape}) is wrong.")
+                else:
+                    embedding = embedder.embed(shuffled_data)
+                    #embedding_fails = expected_embedding is not None and not np.array_equal(np.asarray(embedding),np.asarray(expected_embedding))
+                    # Check subsequent embeddings are same as first embedding. I.e. check for permutation invariance.
+                    if i==0:
+                        first_embedding[embedder]=embedding
                     else:
-                        np.testing.assert_allclose(np.array(embedding, dtype=float), np.array(expected_embedding, dtype=float), atol=absolute_tolerance, rtol=relative_tolerance, strict=True, equal_nan=False)
+                        #print("MOOOCOWFIRST",embedder, first_embedding[embedder])
+                        #print("MOOOCOW__NOW",embedder, embedding)
+                        if exact:
+                            np.testing.assert_equal(embedding, first_embedding[embedder], strict=True)
+                        else:
+                            np.testing.assert_allclose(np.array(embedding, dtype=float), np.array(first_embedding[embedder], dtype=float), atol=absolute_tolerance, rtol=relative_tolerance, strict=True, equal_nan=False)
+
+                    # Also checks embedding against expected, if given
+                    if expected_embedding is not None:
+                        #print("MOOO1",embedding)
+                        #print("MOOO2",expected_embedding)
+                        if exact:
+                            np.testing.assert_equal(embedding, expected_embedding, strict=True)
+                        else:
+                            np.testing.assert_allclose(np.array(embedding, dtype=float), np.array(expected_embedding, dtype=float), atol=absolute_tolerance, rtol=relative_tolerance, strict=True, equal_nan=False)
 
             np.random.shuffle(shuffled_data) 
         print()
@@ -161,6 +171,7 @@ class Test_Embedders(unittest.TestCase):
         make_randoms_reproducable()
         all_ar_embedders=[ 
             embedder_C0HomDeg1_simplex1,
+            embedder_conjectured_dotting,
             embedder_Cinf_np_ar,
             embedder_Cinf_sp_bur_ar,
             embedder_hybrid,
