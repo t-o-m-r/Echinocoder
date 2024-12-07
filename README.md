@@ -25,7 +25,7 @@ All these are (or should be) instances of [MultisetEmbedder](MultisetEmbedder.py
 | Bursarial  | $O(nk\cdot n)$    | $n + (k-1) n (n+1)/2$  | No      |  Yes  |       | [link](Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset.py) |
 | Hybrid | $O(nk\cdot \sqrt{nk})$ | Minimum of Polynomial and Bursarial orders | No      |  Yes  | This method uses whichever of Polynomial or Bursarial has smallest order. | [link](Cinf_hybrid_embedder_for_array_of_reals_as_multiset.py) |
 
-The orders (i.e. embedding sizes) quoted in the table above are for $k>1$ only. For $k\le 1$ each algorithm should fall back to an optimal embedding, i.e. one for which the exact order is $nk$.
+The orders (i.e. embedding sizes) quoted in the table above are for $n>1$ and $k>1$ only. For $n\le 1$ or $k\le 1$ each algorithm should fall back to an optimal embedding, i.e. one for which the exact order is $nk$.
 
 ### Further details:
 
