@@ -32,7 +32,7 @@ class Embedder(MultisetEmbedder):
         return embedding
    
     def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
-        return MultisetEncoder.embed_kOne_polynomial(data)
+        return MultisetEmbedder.embed_kOne_polynomial(data)
 
     def size_from_n_k_generic(self, n: int, k: int) -> int:
         poly_size = self._poly_encoder.size_from_n_k(n,k)

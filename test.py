@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
 
-import  Cinf_python_polynomial_embedder_for_list_of_reals_as_multiset as embedder_Cinf_py_li
+import Historical.C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset as C0_np_simplex_historical
+embedder_C0_np_simplex_historical = C0_np_simplex_historical.Embedder()
+
+import C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset as C0HomDeg1_simplex1
+embedder_C0HomDeg1_simplex1 = C0HomDeg1_simplex1.Embedder()
+import C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset as conjectured_dotting
+embedder_conjectured_dotting = conjectured_dotting.Embedder(n=2, k=2)
 import  Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset as Cinf_np_ar
 embedder_Cinf_np_ar = Cinf_np_ar.Embedder()
 import      Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset as Cinf_sp_bur_ar
 embedder_Cinf_sp_bur_ar = Cinf_sp_bur_ar.Embedder()
+import Cinf_hybrid_embedder_for_array_of_reals_as_multiset as hybrid
+embedder_hybrid = hybrid.Embedder()
+
+import  Cinf_python_polynomial_embedder_for_list_of_reals_as_multiset as embedder_Cinf_py_li
 import  Cinf_sympy_evenBursar_embedder_for_array_of_reals_as_multiset as embedder_Cinf_sp_evenBur_ar
 import   Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset as embedder_Cinf_np_li
 import              C0_sorting_embedder_for_list_of_reals_as_multiset as embedder_C0_li
-import Historical.C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset as C0_np_simplex_historical
-embedder_C0_np_simplex_historical = C0_np_simplex_historical.Embedder()
-import C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset as C0HomDeg1_simplex1
-embedder_C0HomDeg1_simplex1 = C0HomDeg1_simplex1.Embedder()
-
 import data_sources
 import numpy as np
 import unittest
@@ -154,7 +159,13 @@ class Test_Embedders(unittest.TestCase):
 
 
         make_randoms_reproducable()
-        all_ar_embedders=[ embedder_Cinf_np_ar, embedder_Cinf_sp_bur_ar, embedder_C0HomDeg1_simplex1, embedder_C0_np_simplex_historical ]
+        all_ar_embedders=[ 
+            embedder_C0HomDeg1_simplex1,
+            embedder_Cinf_np_ar,
+            embedder_Cinf_sp_bur_ar,
+            embedder_hybrid,
+            embedder_C0_np_simplex_historical,
+            ]
     
         print(__file__, __line__)
         self.tost_multiset_embedder(

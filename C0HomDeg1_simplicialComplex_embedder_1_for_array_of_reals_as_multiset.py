@@ -12,8 +12,8 @@ Eji = namedtuple("Eji", ["j", "i"])
 class Embedder(MultisetEmbedder):
 
     def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
-        assert MultisetEmbedder.is_kOne_data(data) # Precondition
-        return sorted(data.flatten())
+        return MultisetEmbedder.embed_kOne_sorting(data)
+
 
 
     def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:

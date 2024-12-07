@@ -97,7 +97,17 @@ class MultisetEmbedder:
         This method should OPTIMALLY embed data for which n>=0 and k==1. We call this "kOne data".
         OPTIMALLY means that the embedding size must therefore be n.
         Implementations may assume (without checking) that data fed to it has the above type.
-        It is likely that most implementations will use ether embed_kOne_sorting or embed_kOne_polynomial depending on whether they want linearity or whether they want differentiability.
+        It is likely that most implementations will implement this method either as:
+
+            def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
+                return MultisetEmbedder.embed_kOne_sorting(data) # Want piecewise linear!
+
+        or as:
+
+            def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
+                return MultisetEmbedder.embed_kOne_polynomial(data) # Want Cinf!
+
+        depending on whether they want piecewise linearity or differentiability.
         """
         raise NotImplementedError()
 
@@ -116,6 +126,12 @@ class MultisetEmbedder:
         Implementations may assume (without checking) that data fed to it has the above type.
         """
         raise NotImplementedError()
+
+    def test_me(self):
+        _ = self.size_from_n_k_generic(2,2) # Check implementation exists
+        _ = self.embed_generic(np.array([[1,2],[3,4]]), dtype=np.float64) # Check implementation exits
+        _ = self.embed_kOne(np.array([[1,],[3,],]), dtype=np.float64) # Check implementation exits
+        
 
     @staticmethod
     def embed_kOne_sorting(data: np.ndarray) -> np.ndarray:
