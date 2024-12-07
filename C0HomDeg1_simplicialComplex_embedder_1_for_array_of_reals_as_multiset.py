@@ -274,7 +274,8 @@ if __name__ == "__main__":
     run_unit_tests()
 
     input = np.asarray([[4,2],[-3,5],[8,9],[2,7]])
-    output = embed(input, debug=True)
+    embedder = Embedder()
+    output = embedder.embed(input, debug=True)
 
     print("Embedding:")
     print(f"{input}")

@@ -129,8 +129,8 @@ class MultisetEmbedder:
 
     def test_me(self):
         _ = self.size_from_n_k_generic(2,2) # Check implementation exists
-        _ = self.embed_generic(np.array([[1,2],[3,4]]), dtype=np.float64) # Check implementation exits
-        _ = self.embed_kOne(np.array([[1,],[3,],]), dtype=np.float64) # Check implementation exits
+        _ = self.embed_generic(np.array([[1,2],[3,4]], dtype=np.float64)) # Check implementation exits
+        _ = self.embed_kOne(np.array([[1,],[3,],], dtype=np.float64)) # Check implementation exits
         
 
     @staticmethod
