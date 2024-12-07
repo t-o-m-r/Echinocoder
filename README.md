@@ -12,11 +12,11 @@ Most embedders work only reals inputs and generate only real embeddings as that'
 
 ## Embedders for $SP^n(\mathbb R^k)$ -- for multisets of vectors:
 
-All these are (or should be) instances of [MultisetEmbedder](MultisetEmbedder.py).
+All these are (or should be) instances of [MultisetEmbedder](MultisetEmbedder.py).  The orders (embedding sized) quoted in the table below are for $k>1$ only, since for $k\le 1$ all algorithms should fall back to an optimal embedding, i.e. one for which the exact order is $nk$.
 
 ### Embedder summaries:
 
-| Method  | Order (leading) | Order (exact) | Piecewise Linear | Infinitely Differentiable | Notes | Source |
+| Method  | Order (leading) | Exact order (for $k>1$) | Piecewise Linear | Infinitely Differentiable | Notes | Source |
 |---------|-----------------|---------------|------------------|---------------------------|-------|--------|
 | Simplex | $O(nk)$         | $2nk+1$       | Yes              |  No   |       | [link](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py) |
 | Dotting Conjecture | $O(nk\cdot \log n)$   | $n((k-1)(\lfloor{ \log_2 n }\rfloor+1)+1)$  | Yes   |   No   | Conjuectured (but not yet proved!) to be an embedding. | [link](C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset.py) |
