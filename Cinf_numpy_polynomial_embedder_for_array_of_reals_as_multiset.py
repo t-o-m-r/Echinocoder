@@ -57,7 +57,7 @@ class Embedder(MultisetEmbedder):
         for row1_index, row2_index in itertools.combinations(range(m), 2):
             pair_of_rows = data[:,[row1_index, row2_index]]
             #print("About to request coding for",pair_of_rows)
-            embedding_for_pair = self.embed(pair_of_rows)
+            embedding_for_pair = self.embed_generic(pair_of_rows, debug)
             if current_embedding_index == 0:
                 # Allocate array of appropriate type for all the pairs that will come later:
                 # Get embedding size.  This SHOULD be 2*n but safer to get from data for future proofing
