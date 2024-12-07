@@ -49,6 +49,8 @@ class MultisetEmbedder:
 
         if n<0 or k<0:
             raise ValueError("Numpy array's should not have negative sizes!!!")
+        if n==0 or k==0:
+            return np.asarray([], dtype=np.float64)
         if n==1:
             embedding = data.flatten() # This implmentation is a coverall.
             assert len(embedding) == k
@@ -62,8 +64,7 @@ class MultisetEmbedder:
             assert len(embedding) == expected_order
             return embedding
 
-        assert n>1 and k>1
-        assert k>1 and n>1 # Preconditions for calling self.embed_generic !
+        assert n>1 and k>1 # Preconditions for calling self.embed_generic !
         assert self.is_generic_n_k(n,k) # Precondition for calling self.embed_generic !
         embedding = self.embed_generic(data, debug) # Derived classes should implement this method!
         assert len(embedding) == expected_order
@@ -75,6 +76,8 @@ class MultisetEmbedder:
         """
         if n<0 or k<0:
             return -1
+        if n==0 or k==0:
+            return 0
         if n==1:
             return k
         if k==1:

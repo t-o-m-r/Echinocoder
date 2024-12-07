@@ -29,7 +29,7 @@ class Embedder(MultisetEmbedder):
         self.k = k
         self._dotting_encoder  = dotting_encoder.Encoder(k=k, extra_dots=extra_dots)
 
-    def embed(self, data: np.ndarray, debug=False) -> np.ndarray:
+    def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:
         if self.size_from_array(data) == -1:
             raise ValueError(f"We do not undertake to embed data of shape {data.shape}")
 
@@ -45,12 +45,13 @@ class Embedder(MultisetEmbedder):
         assert len(embedding) == self.size_from_n_k(n, k)
         return embedding
     
-    def size_from_n_k(self, n: int, k: int) -> int:
-        if n<=0 or k<=0:
-            return -1 # We choose not to undertake to implement non-data.
+    def size_from_n_k_generic(self, n: int, k: int) -> int:
         if n!=self.n or k!=self.k:
             return -1 # We are optimised to work with a certain n and a certain k
         return self._dotting_encoder.size_from_n_k(n,k)
+
+    def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
+        return MultisetEmbedder.embed_kOne_sorting(data)
 
 
 def tost(): # Renamed from test -> tost to avoid pycharm mis-detecting / mis-running unit tests!

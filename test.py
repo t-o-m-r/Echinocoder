@@ -120,6 +120,7 @@ class Test_Embedders(unittest.TestCase):
         first_embedding = dict()
         for i in range(number_of_shuffled_copies):
             for embedder in embedders:
+                print(f"embedder is {embedder}")
                 embedding = embedder.embed(shuffled_data)
                 #embedding_fails = expected_embedding is not None and not np.array_equal(np.asarray(embedding),np.asarray(expected_embedding))
                 # Check subsequent embeddings are same as first embedding. I.e. check for permutation invariance.
@@ -153,6 +154,7 @@ class Test_Embedders(unittest.TestCase):
 
 
         make_randoms_reproducable()
+        all_ar_embedders=[ embedder_Cinf_np_ar, embedder_Cinf_sp_bur_ar, embedder_C0HomDeg1_simplex1, embedder_C0_np_simplex_historical ]
     
         print(__file__, __line__)
         self.tost_multiset_embedder(
@@ -181,14 +183,32 @@ class Test_Embedders(unittest.TestCase):
     
         print(__file__, __line__)
         self.tost_multiset_embedder(
+           data=data_sources.random_real_array_data(mn=(4,0)),
+           embedders=all_ar_embedders,
+        )
+    
+        print(__file__, __line__)
+        self.tost_multiset_embedder(
+           data=data_sources.random_real_array_data(mn=(0,4)),
+           embedders=all_ar_embedders,
+        )
+    
+        print(__file__, __line__)
+        self.tost_multiset_embedder(
+           data=data_sources.random_real_array_data(mn=(4,1)),
+           embedders=all_ar_embedders,
+        )
+    
+        print(__file__, __line__)
+        self.tost_multiset_embedder(
            data=data_sources.random_real_array_data(mn=(1,4)),
-           embedders=[ embedder_Cinf_np_ar, ],
+           embedders=all_ar_embedders,
         )
     
         print(__file__, __line__)
         self.tost_multiset_embedder(
            data=data_sources.random_real_array_data(mn=(2,3)),
-           embedders=[ embedder_Cinf_np_ar, ],
+           embedders=all_ar_embedders,
         )
     
         print(__file__, __line__)
@@ -263,6 +283,6 @@ def test_everything():
     tuple_rank.unit_test_tuple_rank()
 
 print(__file__, __line__)
-test_everything()
 unittest.main(exit=False)
+test_everything()
 

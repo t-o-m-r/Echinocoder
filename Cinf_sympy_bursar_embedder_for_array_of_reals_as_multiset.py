@@ -113,26 +113,26 @@ def embed_without_flattening(data):
     #
     # return ans
 
-#def embedding_size_from_array(data: np.ndarray) -> int:
-#    n,k = data.shape
-#    return embedding_size_from_n_k(n,k)
-
 class Embedder(MultisetEmbedder):
-    def size_from_n_k(self, n: int, k: int) -> int:
-        if k==0: return 0
+    def size_from_n_k_generic(self, n: int, k: int) -> int:
         ans = n + (k-1)*n*(n+1)//2  # We only want ordinary division "/" but we use "//" to avoid promoting to float and result is same.
         #print("SIZE == ",ans)
         return ans
-    
-    def embed(self, data: np.ndarray, debug=False) -> np.ndarray:
+
+    def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
+        return MultisetEmbedder.embed_kOne_polynomial(data)
+ 
+    def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:
     
         n = len(data)
-        if n==0:
-            return []
+        assert n>1
+        ##if n==0:
+        ##    return []
     
         m = len(data[0])
-        if m==0:
-            return []
+        assert m>1
+        ##if m==0:
+        ##    return []
     
         flattened_coeffs = [ a for b in embed_without_flattening(data) for a in b ]
     

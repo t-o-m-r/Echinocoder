@@ -18,18 +18,27 @@ import itertools
 import tools
 
 class Embedder(MultisetEmbedder):
-    def embed(self, data: np.ndarray, debug=False) -> np.ndarray:
-    
+
+
+    def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
+        return MultisetEmbedder.embed_kOne_polynomial(data)
+
+    def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:
+
+        assert MultisetEmbedder.is_generic_data(data) # Precondition for being called.
         n,m = data.shape
+        assert n>1 and m>1 # Should be same as last assert, but belt and braces!
+
         #print(f"Size (m,n)=({m},{n})")
     
         # We need to do different things depending on the shape of the input:
     
-        if m==1:
-            # The "vectors" are 1-long, so reduce the thing to a list.
-            real_embedding = Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset.embed(data[:,0])
-            assert len(real_embedding) == self.size_from_n_k(n,m)
-            return real_embedding
+        assert m != 1 
+        ## NOT NEEDED - HANDLED BY embed_kOne ## if m==1:
+        ## NOT NEEDED - HANDLED BY embed_kOne ##     # The "vectors" are 1-long, so reduce the thing to a list.
+        ## NOT NEEDED - HANDLED BY embed_kOne ##     real_embedding = Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset.embed(data[:,0])
+        ## NOT NEEDED - HANDLED BY embed_kOne ##     assert len(real_embedding) == self.size_from_n_k(n,m)
+        ## NOT NEEDED - HANDLED BY embed_kOne ##     return real_embedding
     
         if m==2:
             # The "vectors" are 2-long, so turn them into complex numbers, embed, and expand:
@@ -63,8 +72,7 @@ class Embedder(MultisetEmbedder):
         assert len(real_embedding) == self.size_from_n_k(n,m)
         return real_embedding
 
-    def size_from_n_k(self, n: int, k: int) -> int:
-        if n==0 or k==0: return 0
-        return n*k*(k-1) if k>1 else n
+    def size_from_n_k_generic(self, n: int, k: int) -> int:
+        return n*k*(k-1)
 
 

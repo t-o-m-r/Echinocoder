@@ -15,7 +15,7 @@ class Embedder(MultisetEmbedder):
         self._poly_encoder = poly_encoder.Embedder()
         self._burs_encoder = burs_encoder.Embedder()
 
-    def embed(self, data: np.ndarray, debug=False) -> np.ndarray:
+    def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:
         poly_size = self._poly_encoder.size_from_array(data)
         burs_size = self._burs_encoder.size_from_array(data)
         
@@ -30,8 +30,11 @@ class Embedder(MultisetEmbedder):
 
         assert len(embedding) == self.size_from_array(data)
         return embedding
-    
-    def size_from_n_k(self, n: int, k: int) -> int:
+   
+    def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
+        return MultisetEncoder.embed_kOne_polynomial(data)
+
+    def size_from_n_k_generic(self, n: int, k: int) -> int:
         poly_size = self._poly_encoder.size_from_n_k(n,k)
         burs_size = self._burs_encoder.size_from_n_k(n,k)
         

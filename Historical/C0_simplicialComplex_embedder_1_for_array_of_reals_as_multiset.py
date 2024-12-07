@@ -73,8 +73,11 @@ from typing import Union
 import hashlib
 
 class Embedder(MultisetEmbedder):
-    def embed(self, data: np.ndarray, debug=False) -> np.ndarray:
+    def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:
         return self.embed_internal(data)
+
+    def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
+        return MultisetEmbedder.embed_kOne_sorting(data)
  
     def embed_internal(self, data: Union[np.ndarray, 'Position_within_Simplex_Product'],
                use_n2k2_optimisation=False, input_is_in_DeltakToN=False) -> np.ndarray:
@@ -197,7 +200,7 @@ class Embedder(MultisetEmbedder):
         #
         # return point_in_R_bigN
     
-    def size_from_n_k(self, n: int, k: int) -> int:
+    def size_from_n_k_generic(self, n: int, k: int) -> int:
         return 4*n*k + 1
     
 
