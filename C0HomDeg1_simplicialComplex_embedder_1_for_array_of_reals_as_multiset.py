@@ -10,6 +10,12 @@ from MultisetEmbedder import MultisetEmbedder
 Eji = namedtuple("Eji", ["j", "i"])
 
 class Embedder(MultisetEmbedder):
+
+    def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
+        assert MultisetEmbedder.is_kOne_data(data) # Precondition
+        return sorted(data.flatten())
+
+
     def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:
         assert MultisetEmbedder.is_generic_data(data) # Precondition
         if debug:

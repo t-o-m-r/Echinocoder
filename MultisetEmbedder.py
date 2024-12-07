@@ -1,4 +1,5 @@
 import numpy as np
+import Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset as poly_list
 
 class MultisetEmbedder:
     """
@@ -87,13 +88,13 @@ class MultisetEmbedder:
         n,k = data.shape
         return self.size_from_n_k(n,k)
 
-
     def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
         """
         Derived classes should implement this method.
         This method should OPTIMALLY embed data for which n>=0 and k==1. We call this "kOne data".
         OPTIMALLY means that the embedding size must therefore be n.
         Implementations may assume (without checking) that data fed to it has the above type.
+        It is likely that most implementations will use ether embed_kOne_sorting or embed_kOne_polynomial depending on whether they want linearity or whether they want differentiability.
         """
         raise NotImplementedError()
 
@@ -112,6 +113,16 @@ class MultisetEmbedder:
         Implementations may assume (without checking) that data fed to it has the above type.
         """
         raise NotImplementedError()
+
+    @staticmethod
+    def embed_kOne_sorting(data: np.ndarray) -> np.ndarray:
+        assert MultisetEmbedder.is_kOne_data(data)
+        return np.sort(data.flatten())
+
+    @staticmethod
+    def embed_kOne_polynomial(data: np.ndarray) -> np.ndarray:
+        assert MultisetEmbedder.is_kOne_data(data)
+        return poly_list.embed(data.flatten())
 
     @staticmethod
     def is_kOne_data(data: np.ndarray) -> bool:
