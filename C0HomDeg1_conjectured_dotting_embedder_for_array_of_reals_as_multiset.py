@@ -30,19 +30,15 @@ class Embedder(MultisetEmbedder):
         self._dotting_encoder  = dotting_encoder.Encoder(k=k, extra_dots=extra_dots)
 
     def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:
-        if self.size_from_array(data) == -1:
+        expected_size = self.size_from_array(data)
+        if expected_size == -1:
             raise ValueError(f"We do not undertake to embed data of shape {data.shape}")
-
         if debug:
             print(f"data is {data}")
-    
         embedding = self._dotting_encoder.encode(data)
-
         if debug:
             print(f"Embedding is {embedding} with length {len(embedding)}")
-
-        n,k = data.shape
-        assert len(embedding) == self.size_from_n_k(n, k)
+        assert len(embedding) == expected_size
         return embedding
     
     def size_from_n_k_generic(self, n: int, k: int) -> int:
