@@ -9,10 +9,32 @@ direcs =  [(1,0), (2,1), (1,1), (0,1)]
 direcs =  [(1,0), (2,1), (1,1), (0,1), (1,-1)]
 direcs =  [(1,0), (2,1), (1,1), (0,1), (1,-1), (1,2)]
 direcs =  [(1,0), (2,1), (1,1), (0,1), (1,-1), (1,2), ]
-direcs =  [(1,0), (2,1), (1,1), (1,2), (0,1), (-1,2),(-1,1), (-2,1)]
 direcs = [(1,0),(0,1)] + [(np.random.normal(), np.random.normal()) for i in range(4)]
-scale_factor = 20
-
+direcs =  [(1,0), (2,1), (1,1), (1,2), (0,1), (-1,2),(-1,1), (-2,1)]
+direcs =  [(1,0), (2/3, 1/3), (1,1), (1/3.1,2/3.1), (0,1), (-1/3.2,2/3.2),(-1,1), (-2/3.3,1/3.3)]
+direcs =  [(2,0), (2, 1), (1.5,1.5), (1,2), (0,2), (-1,2),(-1.5,1.5), (-2,1)]
+direcs =  [(4,0), (4, 2), (3,3), (2,4), (0,4), (-2,4), (-3,3), (-4,2)]
+direcs1 =  [
+    (4,0),
+    (4,2),
+    (3,3),
+    (2,4),
+    (0,4),
+    (-2,4),
+    (-3,3),
+    (-4,2),
+]
+direcs2 =  [
+    (-4,2),
+    (-2,4),
+    (4,2),
+    (4,0),
+    (3,3),
+    (2,4),
+    (0,4),
+    (-3,3),
+]
+direcs = direcs1
 width = 500
 height = 500
 d = draw.Drawing(width, height, origin='top-left')
@@ -40,7 +62,7 @@ print(f"red is {red}")
 print(f"blue is {blue}")
 
 
-for direc in direcs[1:]:
+for direc in direcs[1:7]:
     print(f"Direc is {direc}")
     new_red = set([ sum_vecs(v,direc) for v in blue ])
     new_blue = set([ sum_vecs(v,direc) for v in red ])
@@ -81,7 +103,8 @@ for v in red:
         x2 = width * (0.05 * (1 - x2) + 0.95 * x2)  # in [0, width]
         y2 = height * (0.05 * (1 - y2) + 0.95 * y2)  # in [0, width]
 
-        d.append(draw.Lines(x1,y1, x2,y2,
+        if n in [0]:
+             d.append(draw.Lines(x1,y1, x2,y2,
                             stroke=my_colour(n),
                             #stroke='black',
                             ))
