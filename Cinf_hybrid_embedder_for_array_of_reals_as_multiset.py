@@ -5,9 +5,8 @@ import Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset     as burs_enc
 
 class Embedder(MultisetEmbedder):
     """
-    This encoder encodes via sorted length-n lists of dot products.
-    The first k-such lists are with standard coordinate axes.
-    After that come "extra_dots" extra dot products. extra_dots is set in the constructor.
+    This encoder uses whichever of the bursarial or polynomial encoders would be modt efficient
+    for the set to be encoded.
     """
 
     def __init__(self):
