@@ -53,8 +53,8 @@ def sum_vecs(v1,v2):
 
 test_sum = sum_vecs((3,4),(5,6))
 print(f"Sum vecs (3,4)+(5,6) = {test_sum}")
-red = set( [ zero_vec ] )
-blue = set( [ direcs[0] ] )
+red = [ zero_vec ]
+blue =  [ direcs[0] ]
 
 
 
@@ -64,19 +64,42 @@ print(f"blue is {blue}")
 
 for direc in direcs[1:7]:
     print(f"Direc is {direc}")
-    new_red = set([ sum_vecs(v,direc) for v in blue ])
-    new_blue = set([ sum_vecs(v,direc) for v in red ])
-    red_with_duplicates = red | new_red
-    blue_with_duplicates = blue | new_blue
-    # remove duplicates
-    red = red_with_duplicates - blue_with_duplicates
-    blue = blue_with_duplicates - red_with_duplicates
+    new_red = [ sum_vecs(v,direc) for v in blue ]
+    new_blue = [ sum_vecs(v,direc) for v in red ]
+    red = red + new_red
+    blue = blue + new_blue
+
     print(f"\nAdding direc {direc}:")
     print(f"red ={red}")
     print(f"blue={blue}")
 
-all_x = [v[0] for v in red | blue]
-all_y = [v[1] for v in red | blue]
+# Now remove duplicates
+try_again = True
+while try_again:
+    try_again = False
+    for i in red:
+        if i in blue:
+            red.remove(i)
+            blue.remove(i)
+            try_again = True
+
+        if try_again:
+            break
+
+    for i in blue:
+        if i in red:
+            red.remove(i)
+            blue.remove(i)
+            try_again = True
+
+        if try_again:
+            break
+
+
+
+
+all_x = [v[0] for v in red + blue]
+all_y = [v[1] for v in red + blue]
 x_min = min( all_x )
 x_max = max( all_x )
 y_min = min( all_y )
