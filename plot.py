@@ -4,6 +4,13 @@ import drawsvg as draw
 import os
 import numpy as np
 
+def direcs_in_circle(lumps_per_quad):
+    fac = math.pi/(lumps_per_quad*2)
+    rr = 10
+    return [ (int(rr*math.cos(n*fac)), int(rr*math.sin(n*fac))) for n in range(lumps_per_quad*2) ]
+
+
+
 zero_vec =(0,0)
 direcs =  [(1,0), (2.1,1), (0.89, 1.0), (1, 2.04), (0,1), (-1.022, 1.997), (-1.07, 1.05), (-2.002, 1.08)]
 
@@ -31,7 +38,8 @@ direcs = [(4,0),(4,2),(4,5),(3,6),(3,8),(1,9),
           (0,4),(-1,4),(-3,4),(-3,3),(-4,3),(-4,1),
           (1,2),(1,3),(1,4),(1,5),(1,6),
           ] # Was slow to plot with OLD duplicate removal alg, but fast with the new one.
-
+direcs = direcs_in_circle(5)
+direcs = direcs_in_circle(8)
 
 width = 500
 height = 500
