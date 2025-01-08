@@ -30,8 +30,7 @@ direcs = [(4,0),(4,2),(4,5),(3,6),(3,8),(1,9),
 direcs = [(4,0),(4,2),(4,5),(3,6),(3,8),(1,9),
           (0,4),(-1,4),(-3,4),(-3,3),(-4,3),(-4,1),
           (1,2),(1,3),(1,4),(1,5),(1,6),
-          ] # Slow to plot, but plottable.
-
+          ] # Was slow to plot with OLD duplicate removal alg, but fast with the new one.
 
 
 width = 500
@@ -61,8 +60,40 @@ print(f"red is {red}")
 print(f"blue is {blue}")
 
 
-def remove_duplicates_from(red, blue):
-    print("Removing duplucates")
+def NEW_remove_duplicates_from(red, blue):
+    print("Removing duplucates (NEW)")
+    from collections import Counter
+    red_counts_dict = Counter(red)
+    blue_counts_dict = Counter(blue)
+    all_count_dict = Counter(red+blue)
+    red.clear()
+    blue.clear()
+    for val, counts in all_count_dict.items():
+        if val in red_counts_dict and val in blue_counts_dict:
+            # it is in both so some consolidation is required
+            nr = red_counts_dict[val]
+            nb = blue_counts_dict[val]
+            count_red = max(nr-nb, 0)
+            count_blue = max(nb-nr, 0)
+        elif val in red_counts_dict:
+            # it is only in red so preserve red
+            count_red = counts
+            count_blue = 0
+        elif val in blue_counts_dict:
+            # it is only in blue so preserve blue
+            count_red = 0
+            count_blue = counts
+        else:
+            # should not get here
+            raise Exception("Something went wrong!")
+        assert count_red == 0 or count_blue == 0
+        for i in range(count_red):
+            red.append(val)
+        for i in range(count_blue):
+            blue.append(val)
+
+def OLD_remove_duplicates_from(red, blue):
+    print("Removing duplucates (OLD)")
     try_again = True
     while try_again:
         try_again = False
@@ -91,7 +122,7 @@ for nd,direc in enumerate(direcs[1:]): # Must begin [1: as we already have the f
     new_blue = [ sum_vecs(v,direc) for v in red ]
     red = red + new_red
     blue = blue + new_blue
-    remove_duplicates_from(red, blue)
+    NEW_remove_duplicates_from(red, blue)
 
     print(f" ... added direc {direc} which is {nd+1} of {len(direcs[1:])}")
     #print(f"red ={red}")
