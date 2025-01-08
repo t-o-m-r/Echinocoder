@@ -1,3 +1,5 @@
+import math
+
 import drawsvg as draw
 import os
 import numpy as np
@@ -8,14 +10,27 @@ direcs =  [(1,0), (2.1,1), (0.89, 1.0), (1, 2.04), (0,1), (-1.022, 1.997), (-1.0
 direcs =  [(1,0), (2,1), (1,1), (0,1)]
 direcs =  [(1,0), (2,1), (1,1), (0,1), (1,-1)]
 direcs =  [(1,0), (2,1), (1,1), (0,1), (1,-1), (1,2)]
-direcs =  [(1,0), (2,1), (1,1), (0,1), (1,-1), (1,2), ]
 direcs = [(1,0),(0,1)] + [(np.random.normal(), np.random.normal()) for i in range(4)]
 direcs =  [(1,0), (2,1), (1,1), (1,2), (0,1), (-1,2),(-1,1), (-2,1)]
-direcs =  [(1,0), (2/3, 1/3), (1,1), (1/3.1,2/3.1), (0,1), (-1/3.2,2/3.2),(-1,1), (-2/3.3,1/3.3)]
 direcs =  [(2,0), (2, 1), (1.5,1.5), (1,2), (0,2), (-1,2),(-1.5,1.5), (-2,1)]
 direcs =  [(4,0), (4, 2), (3,3), (2,4), (0,4), (-2,4), (-3,3), (-4,2)]
 direcs =  [(4,0), (4, 2), (3,3), (2,4), (0,4), (-2,4), (-3,3)] # Has double blobs
-
+direcs =  [(1,0), (2/3, 1/3), (1,1), (1/3.101,2/3.1), (0,1), (-1/3.2,2/3.2),(-1,1), (-2/3.3,1/3.3)] # Broken??
+direcs =  [(4,0), (0,4),
+           (4, 2), (2,4), (-2,4), (4,-2),
+           (4,1), (4,-1), (1,4), (1,-4),
+           (3,3), (-3,3),
+           ] # Has many double blobs and a nice striping
+direcs = [(4,0),(4,1),(4,3),(3,3),(3,4),(1,4),
+          (0,4),(-1,4),(-3,4),(-3,3),(-4,3),(-4,1),
+          ]
+direcs = [(4,0),(4,2),(4,5),(3,6),(3,8),(1,9),
+          (0,4),(-1,4),(-3,4),(-3,3),(-4,3),(-4,1),
+          ]
+direcs = [(4,0),(4,2),(4,5),(3,6),(3,8),(1,9),
+          (0,4),(-1,4),(-3,4),(-3,3),(-4,3),(-4,1),
+          (1,2),(1,3),(1,4),(1,5),(1,6),
+          ] # Slow to plot, but plottable.
 
 
 
@@ -46,38 +61,42 @@ print(f"red is {red}")
 print(f"blue is {blue}")
 
 
-for direc in direcs[1:]:
-    print(f"Direc is {direc}")
+def remove_duplicates_from(red, blue):
+    print("Removing duplucates")
+    try_again = True
+    while try_again:
+        try_again = False
+        for i in red:
+            if i in blue:
+                red.remove(i)
+                blue.remove(i)
+                try_again = True
+
+            if try_again:
+                break
+
+        for i in blue:
+            if i in red:
+                red.remove(i)
+                blue.remove(i)
+                try_again = True
+
+            if try_again:
+                break
+
+
+for nd,direc in enumerate(direcs[1:]): # Must begin [1: as we already have the first element in red and blue
+    print(f"Adding direc is {direc}")
     new_red = [ sum_vecs(v,direc) for v in blue ]
     new_blue = [ sum_vecs(v,direc) for v in red ]
     red = red + new_red
     blue = blue + new_blue
+    remove_duplicates_from(red, blue)
 
-    print(f"\nAdding direc {direc}:")
-    print(f"red ={red}")
-    print(f"blue={blue}")
+    print(f" ... added direc {direc} which is {nd+1} of {len(direcs[1:])}")
+    #print(f"red ={red}")
+    #print(f"blue={blue}")
 
-# Now remove duplicates
-try_again = True
-while try_again:
-    try_again = False
-    for i in red:
-        if i in blue:
-            red.remove(i)
-            blue.remove(i)
-            try_again = True
-
-        if try_again:
-            break
-
-    for i in blue:
-        if i in red:
-            red.remove(i)
-            blue.remove(i)
-            try_again = True
-
-        if try_again:
-            break
 
 
 
@@ -93,12 +112,14 @@ y_range = max(y_max-y_min, 1)
 print(f"x range {x_min} to {x_max} and y range {y_min} to {y_max}")
 
 def my_colour(n):
-    cols = ["black", "red", "blue","green","magenta","pink","orange"]
+    cols = ["black", "red", "blue","green",
+            "magenta","pink","orange","gray",
+            "pink", "light_green", "purple"]
     if n<0 or n>=len(cols):
         n=0
     return cols[n]
-for v in red:
-    for n,direc in enumerate(direcs):
+for nv, v in enumerate(red):
+    for nd,direc in enumerate(direcs):
         sf = len(direcs)
         x1 = (v[0]-sf*direc[0]-x_min)/x_range # in [0,1]
         y1 = (v[1]-sf*direc[1]-y_min)/y_range # in [0,1]
@@ -110,9 +131,9 @@ for v in red:
         x2 = width * (0.05 * (1 - x2) + 0.95 * x2)  # in [0, width]
         y2 = height * (0.05 * (1 - y2) + 0.95 * y2)  # in [0, width]
 
-        if n in [1]:
+        if nv in [4, 19]:
              d.append(draw.Lines(x1,y1, x2,y2,
-                            stroke=my_colour(n),
+                            stroke=my_colour(nd),
                             #stroke='black',
                             ))
 
@@ -125,9 +146,9 @@ for colour, vertices in ( ('red',red), ('blue',blue)):
         x = width * (0.05 * (1 - x) + 0.95 * x)  # in [0, width]
         y = height * (0.05 * (1 - y) + 0.95 * y)  # in [0, width]
 
-        r = min(width, height)/2/50
+        r = min(width, height)/2/50/2
         count = vertices.count(v)
-        r=r*count
+        r=r*math.sqrt(count)
 
         #print(f"Drawing a radius {r} {colour} circle at ({x}, {y}) ")
         d.append(draw.Circle(x, y, r, fill=colour,
