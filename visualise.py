@@ -25,15 +25,17 @@ def make_output_scalars(R):
 
 def evaluate_embedding(x, n, k, embedder):
 
-    #print("Cache test")
-    if evaluate_embedding.last_x is not None and len(x)==len(evaluate_embedding.last_x):
-        if (x==evaluate_embedding.last_x).all() and (n==evaluate_embedding.last_n) and (k==evaluate_embedding.last_k):
-            # We hit the cache!
-            #print("Cache hit")
-            return evaluate_embedding.last_ret
-        else:
-            #print("Cache fail")
-            pass
+    ##### Lines starting like this comment out old caching mechanism
+    #####
+    ##### #print("Cache test")
+    ##### if evaluate_embedding.last_x is not None and len(x)==len(evaluate_embedding.last_x):
+    #####     if (x==evaluate_embedding.last_x).all() and (n==evaluate_embedding.last_n) and (k==evaluate_embedding.last_k):
+    #####         # We hit the cache!
+    #####         #print("Cache hit")
+    #####         return evaluate_embedding.last_ret
+    #####     else:
+    #####         #print("Cache fail")
+    #####         pass
 
     outs = []
     for sample in x:
@@ -42,12 +44,14 @@ def evaluate_embedding(x, n, k, embedder):
         assert len(embedding) == embedder.size_from_n_k(n,k)
         outs.append(embedding)
 
-    evaluate_embedding.last_x = x.copy()
-    evaluate_embedding.last_n = n
-    evaluate_embedding.last_k = k
-    evaluate_embedding.last_ret = np.asarray(outs)
+    ##### evaluate_embedding.last_x = x.copy()
+    ##### evaluate_embedding.last_n = n
+    ##### evaluate_embedding.last_k = k
+    ##### evaluate_embedding.last_ret = np.asarray(outs)
+    #####
+    ##### return evaluate_embedding.last_ret
 
-    return evaluate_embedding.last_ret
+    return np.asarray(outs)
 
 def add_bokeh_root():
     n = 3

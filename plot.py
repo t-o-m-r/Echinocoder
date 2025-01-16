@@ -1,13 +1,17 @@
+# Note: https://en.wikipedia.org/wiki/Regular_polytope may be related
+
 import math
 
 import drawsvg as draw
 import os
 import numpy as np
 
-def direcs_in_circle(lumps_per_quad):
+
+draw_border = False
+
+def direcs_in_circle(lumps_per_quad, r=10):
     fac = math.pi/(lumps_per_quad*2)
-    rr = 10
-    return [ (int(rr*math.cos(n*fac)), int(rr*math.sin(n*fac))) for n in range(lumps_per_quad*2) ]
+    return [ (int(r*math.cos(n*fac)), int(r*math.sin(n*fac))) for n in range(lumps_per_quad*2) ]
 
 
 
@@ -23,42 +27,59 @@ direcs =  [(2,0), (2, 1), (1.5,1.5), (1,2), (0,2), (-1,2),(-1.5,1.5), (-2,1)]
 direcs =  [(4,0), (4, 2), (3,3), (2,4), (0,4), (-2,4), (-3,3), (-4,2)]
 direcs =  [(4,0), (4, 2), (3,3), (2,4), (0,4), (-2,4), (-3,3)] # Has double blobs
 direcs =  [(1,0), (2/3, 1/3), (1,1), (1/3.101,2/3.1), (0,1), (-1/3.2,2/3.2),(-1,1), (-2/3.3,1/3.3)] # Broken??
-direcs =  [(4,0), (0,4),
-           (4, 2), (2,4), (-2,4), (4,-2),
-           (4,1), (4,-1), (1,4), (1,-4),
-           (3,3), (-3,3),
-           ] # Has many double blobs and a nice striping
 direcs = [(4,0),(4,1),(4,3),(3,3),(3,4),(1,4),
           (0,4),(-1,4),(-3,4),(-3,3),(-4,3),(-4,1),
-          ]
-direcs = [(4,0),(4,2),(4,5),(3,6),(3,8),(1,9),
-          (0,4),(-1,4),(-3,4),(-3,3),(-4,3),(-4,1),
-          ]
+          ] # Has some 2-ers.
+direcs = [(4,0),(4,2),(4,5),(3,6),(3,8),(1,9),(0,4),(-1,4),(-3,4),(-3,3),(-4,3),(-4,1),] # Has some 5-ers
 direcs = [(4,0),(4,2),(4,5),(3,6),(3,8),(1,9),
           (0,4),(-1,4),(-3,4),(-3,3),(-4,3),(-4,1),
           (1,2),(1,3),(1,4),(1,5),(1,6),
           ] # Was slow to plot with OLD duplicate removal alg, but fast with the new one.
 direcs = direcs_in_circle(5)
-direcs = direcs_in_circle(8)
+direcs =  [(4,0), (0,4),
+           (4, 2), (2,4), (-2,4), (4,-2),
+           (4,1), (4,-1), (1,4), (1,-4),
+           (3,3), (-3,3),
+           ] # Has many double blobs and a nice striping
+direcs = [(5,0),(4,3),(3,4),(0,5),(-3,4),(-4,3)]
+direcs = [(1,0,0),(0,1,0),(1,2,3)]
+
+
+direcs =  [(1,0), (2,1), (1,1), (0,1), (1,-1), (1,2)]
+direcs =  [(1,0), (2,1), (1,1), (0,1), (1,-1)]
+direcs =  [(4,0), (4, 2), (3,3), (2,4), (0,4), (-2,4), (-3,3)] # Has double blobs
+direcs =  [(1,0), (2/3, 1/3), (1,1), (1/3.101,2/3.1), (0,1), (-1/3.2,2/3.2),(-1,1), (-2/3.3,1/3.3)] # Broken??
+direcs = direcs_in_circle(8, r=3) # Has some 14-ers! :)
+
+direcs_really_messy = direcs_in_circle(8, r=3) # Has some 14-ers! :)
+direcs = [(1,0),(0,1),(1,2),(1,2)]
+direcs =  [(4,0), (4, 2), (3,3), (2,4), (0,4), (-2,4), (-3,3)] # Has double blobs
 
 width = 500
 height = 500
 d = draw.Drawing(width, height, origin='top-left')
 
-d.append(draw.Lines(width*0.01, height*0.01,
-                     width*0.01, height*0.99,
-                     width*0.99, height*0.99,
+if draw_border:
+    d.append(draw.Lines(width*0.01, height*0.01,
+                    width*0.01, height*0.99,
+                    width*0.99, height*0.99,
                     width*0.99, height*0.01,
                     close=True,
-            fill="#ffffff",#fill='#eeee00',
+            fill="#ffffff", #fill='#eeee00',
             stroke='black'))
 
 
 def sum_vecs(v1,v2):
     return tuple( x1+x2 for x1,x2 in zip(v1,v2) )
 
-test_sum = sum_vecs((3,4),(5,6))
-print(f"Sum vecs (3,4)+(5,6) = {test_sum}")
+def ttest_sum():
+    v1=(3,4,5)
+    v2=(5,6,1)
+    sum = sum_vecs(v1,v2)
+    print(f"Sum vecs {v1}+{v2} = {sum}")
+
+ttest_sum()
+
 red = [ zero_vec ]
 blue =  [ direcs[0] ]
 
@@ -170,7 +191,7 @@ for nv, v in enumerate(red):
         x2 = width * (0.05 * (1 - x2) + 0.95 * x2)  # in [0, width]
         y2 = height * (0.05 * (1 - y2) + 0.95 * y2)  # in [0, width]
 
-        if nv in [4, 19]:
+        if nv in [1, 16] or True:
              d.append(draw.Lines(x1,y1, x2,y2,
                             stroke=my_colour(nd),
                             #stroke='black',
@@ -178,6 +199,7 @@ for nv, v in enumerate(red):
 
 
 for colour, vertices in ( ('red',red), ('blue',blue)):
+    vcount=0
     for v in set(vertices):
         x = (v[0]-x_min)/x_range # in [0,1]
         y = (v[1]-y_min)/y_range # in [0,1]
@@ -185,15 +207,30 @@ for colour, vertices in ( ('red',red), ('blue',blue)):
         x = width * (0.05 * (1 - x) + 0.95 * x)  # in [0, width]
         y = height * (0.05 * (1 - y) + 0.95 * y)  # in [0, width]
 
-        r = min(width, height)/2/50/2
+        r1 = min(width, height)/2/50*2
         count = vertices.count(v)
-        r=r*math.sqrt(count)
+        vcount += count
 
-        #print(f"Drawing a radius {r} {colour} circle at ({x}, {y}) ")
-        d.append(draw.Circle(x, y, r, fill=colour,
+        for i in range(count)[::-1]:
+
+            r = r1*math.sqrt(i+1)
+            rr = r1*math.sqrt(i+1-0.8)
+
+            #print(f"Drawing a radius {r} {colour} circle at ({x}, {y}) ")
+            d.append(draw.Circle(x, y, r, fill=colour,
                              #stroke_width=1,
                              #stroke='black'
                              ))
+            if i>0:
+                d.append(draw.Circle(x, y, rr, fill="white",
+                                     # stroke_width=1,
+                                     # stroke='black'
+                                     ))
+        if count>1:
+            fs=2
+            d.append(draw.Text(str(count), font_size=r1*2*fs, x=x-fs*r1, y=y-fs*1*r1, colour="white"))
+
+    print(f"Drew {vcount} vertices of one colour.")
 
     """
     d.append(draw.Lines(0, 45,
