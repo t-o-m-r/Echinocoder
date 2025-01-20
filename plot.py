@@ -242,7 +242,20 @@ for colour, vertices in ( ('red',red), ('blue',blue)):
             stroke='black'))
     """
 
-
+print("Red  points were ",red)
+print("Blue points were ",blue)
+#print("Perp direcs were ", direcs)
+actual_direcs = [ (y,-x) for (x,y) in direcs ]
+print("Direcs were ",actual_direcs, "\n\n")
+for ddd in actual_direcs:
+    print("\n With direc ",ddd," ... ")
+    x1,y1 = ddd
+    red_scalar_products = [ x1*x2 + y1*y2 for  x2,y2 in red ]
+    blue_scalar_products = [ x1*x2 + y1*y2 for  x2,y2 in blue ]
+    red_scalar_products.sort()
+    blue_scalar_products.sort()
+    print("red scalar products sorted are ", red_scalar_products) 
+    print("blue scalar products sorted are ", blue_scalar_products) 
 
 d.save_svg('example.svg')
 print("In ")
