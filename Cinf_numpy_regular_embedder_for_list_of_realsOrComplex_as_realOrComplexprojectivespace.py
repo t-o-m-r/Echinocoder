@@ -35,9 +35,9 @@
 
 import numpy as np
 
-def embed(data):
+def embed(data, debug=False):
     # data=np.asarray(data)
-    return np.asarray([ np.trace(np.flipud(np.outer(data,data)),diag) for diag in range(1-len(data),len(data)) ])
+    return np.asarray([ np.trace(np.flipud(np.outer(data,data)),diag) for diag in range(1-len(data),len(data)) ]) # This is not a multiset encoder, so don't need len(data), None
 
 unit_test_input_output_pairs = [
        ( np.asarray([ ]), [ ], ),

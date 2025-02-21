@@ -2,6 +2,7 @@ import numpy as np
 from MultisetEmbedder import MultisetEmbedder
 import Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset as poly_encoder
 import Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset     as burs_encoder
+from typing import Any
 
 class Embedder(MultisetEmbedder):
     """
@@ -14,7 +15,7 @@ class Embedder(MultisetEmbedder):
         self._poly_encoder = poly_encoder.Embedder()
         self._burs_encoder = burs_encoder.Embedder()
 
-    def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:
+    def embed_generic(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
         poly_size = self._poly_encoder.size_from_array(data)
         burs_size = self._burs_encoder.size_from_array(data)
         
@@ -22,16 +23,17 @@ class Embedder(MultisetEmbedder):
             raise ValueError()
         elif poly_size <= burs_size:
             if debug: print(f"Hybrid uses poly embedder for data of shape {data.shape}.")
-            embedding = self._poly_encoder.embed(data)
+            embedding, size, metadata = self._poly_encoder.embed(data)
         else:
             if debug: print(f"Hybrid uses burs embedder for data of shape {data.shape}.")
-            embedding = self._burs_encoder.embed(data)
+            embedding, metadata = self._burs_encoder.embed(data)
 
         assert len(embedding) == self.size_from_array(data)
-        return embedding
+        return embedding, metadata
    
-    def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
-        return MultisetEmbedder.embed_kOne_polynomial(data)
+    def embed_kOne(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
+        metadata = None
+        return MultisetEmbedder.embed_kOne_polynomial(data), metadata
 
     def size_from_n_k_generic(self, n: int, k: int) -> int:
         poly_size = self._poly_encoder.size_from_n_k(n,k)

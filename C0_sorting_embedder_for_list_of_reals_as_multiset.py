@@ -11,5 +11,5 @@
 #
 #        [-2, 3, 4].
 
-def embed(data):
-    return sorted(data)
+def embed(data, debug=False):
+    return sorted(data), len(data), None

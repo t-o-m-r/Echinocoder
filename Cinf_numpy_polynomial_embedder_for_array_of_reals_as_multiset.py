@@ -16,14 +16,17 @@ import numpy as np
 import Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset
 import itertools
 import tools
+from typing import Any
 
 class Embedder(MultisetEmbedder):
 
 
-    def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
-        return MultisetEmbedder.embed_kOne_polynomial(data)
+    def embed_kOne(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
+        metadata = None
+        return MultisetEmbedder.embed_kOne_polynomial(data), metadata
 
-    def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:
+    def embed_generic(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
+        metadata_out = None
 
         assert MultisetEmbedder.is_generic_data(data) # Precondition for being called.
         n,m = data.shape
@@ -43,10 +46,10 @@ class Embedder(MultisetEmbedder):
         if m==2:
             # The "vectors" are 2-long, so turn them into complex numbers, embed, and expand:
             complex_list = data[:,0]+complex(0,1)*data[:,1]
-            complex_embedding = Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset.embed(complex_list) # Yes, this is explopiting a secret private feature ...
+            complex_embedding, shape_, metadata_ = Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset.embed(complex_list) # Yes, this is explopiting a secret private feature ...
             real_embedding = tools.expand_complex_to_real_pairs(complex_embedding)
             assert len(real_embedding) == self.size_from_n_k(n,m)
-            return real_embedding
+            return real_embedding, metadata_out
     
         # The "vectors" are 3-or-more-long, so need to take all m-choose-2 pairings of elements in them, and send them out.
         # We can use the m==2 case code above for that.
@@ -57,7 +60,7 @@ class Embedder(MultisetEmbedder):
         for row1_index, row2_index in itertools.combinations(range(m), 2):
             pair_of_rows = data[:,[row1_index, row2_index]]
             #print("About to request coding for",pair_of_rows)
-            embedding_for_pair = self.embed_generic(pair_of_rows, debug)
+            embedding_for_pair, metadata_3 = self.embed_generic(pair_of_rows, debug)
             if current_embedding_index == 0:
                 # Allocate array of appropriate type for all the pairs that will come later:
                 # Get embedding size.  This SHOULD be 2*n but safer to get from data for future proofing
@@ -70,7 +73,7 @@ class Embedder(MultisetEmbedder):
     
         assert len(real_embedding) == n*m*(m-1)
         assert len(real_embedding) == self.size_from_n_k(n,m)
-        return real_embedding
+        return real_embedding, metadata_out
 
     def size_from_n_k_generic(self, n: int, k: int) -> int:
         return n*k*(k-1)

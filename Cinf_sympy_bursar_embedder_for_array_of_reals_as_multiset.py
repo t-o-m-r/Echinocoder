@@ -54,6 +54,7 @@ import numpy as np
 #import tools
 from sympy import Poly, abc
 from MultisetEmbedder import MultisetEmbedder
+from typing import Any
 
 def embed_without_flattening(data):
     
@@ -119,20 +120,17 @@ class Embedder(MultisetEmbedder):
         #print("SIZE == ",ans)
         return ans
 
-    def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
-        return MultisetEmbedder.embed_kOne_polynomial(data)
+    def embed_kOne(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
+        metadata = None
+        return MultisetEmbedder.embed_kOne_polynomial(data), metadata
  
-    def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:
+    def embed_generic(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
     
         n = len(data)
         assert n>1
-        ##if n==0:
-        ##    return []
     
         m = len(data[0])
         assert m>1
-        ##if m==0:
-        ##    return []
     
         flattened_coeffs = [ a for b in embed_without_flattening(data) for a in b ]
     
@@ -143,5 +141,6 @@ class Embedder(MultisetEmbedder):
             print("Expected Order",EXPECTED_ORDER)     
             print("Actual Order",ACTUAL_ORDER)     
             raise Exception("Bug in implementation of Bursar's method!")
-    
-        return flattened_coeffs
+   
+        metadata = None
+        return flattened_coeffs, metadata

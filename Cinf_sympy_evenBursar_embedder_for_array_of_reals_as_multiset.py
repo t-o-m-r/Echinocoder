@@ -35,11 +35,13 @@
 #
 # . Note that the coeff of y^n is skipped (not embedd) as it is always 1.
 
-from math import prod
+from math import prod, comb
 #from itertools import combinations
 #import numpy as np
 #import toolsA
 import sympy
+
+from MultisetEmbedder import MultisetEmbedder
 
 # get_tuples gets list of tuples of fixed length and fixed total over the non-negativ3 integers.
 # E.G.:
@@ -54,86 +56,90 @@ def get_tuples(length, total):
         for t in get_tuples(length - 1, total - i):
             yield (i,) + t
 
+class Embedder(MultisetEmbedder):
+    def size_from_n_k_generic(self, n: int, k: int) -> int:
+        ans = comb(k+n, n) - 1  # math.comb
+        return ans
 
-def embed(data):
+
+    def embed_generic(self, data, debug=False):
+        
+        #print("Data is")
+        #print(data)
     
-    #print("Data is")
-    #print(data)
-
-    n = len(data)
-    if n==0:
-        return []
-
-    m = len(data[0])
-    if m==0:
-        return []
-
-    #part = sum( [ sympy.Poly(sympy.symbols("x"+str(i)))*val for i, val in enumerate(data[0]) ] )
-    #print("******** FIRST PART IS ",part)
-    polys = [ 
-      sum( [ sympy.Poly(sympy.symbols("x"+str(i)))*val for i, val in enumerate(vector) ] )
-      + sympy.Poly(sympy.abc.y) for vector in data ]
-
-    #print("****** polys",polys)
-
-    product = prod(polys)
-    #print ("**** Product",product)
-
-    # # extract coeffs from product slowly:
-    # for c in range(1,n+1):
-    #      yPower = n-c
-    #      for xPower in range(c*(m-1)+1):
-    #          coeff = product.coeff_monomial((abc.x)**xPower * (abc.y)**yPower) # This could be made faster by using coeff_monomial((xPower,yPower)) or coeff_monomial((yPower,xPower)) however I have not figured out how to guarantee which order will work reliably.
-    #          print(coeff)
-
-
-    monomials = get_tuples(m+1, n)
-    itermonomials = iter(monomials)
-    firstMonomial = next(itermonomials)
-    # Confirm that coeff of first monomial is one .. the y^n term:
-    firstCoeff = product.coeff_monomial(firstMonomial)
-    if firstCoeff!=1:
-        print("Expecfted 1 for coeffiecient of y^n term but got ",firstCoeff)
-        raise Exception("Bug in implementation of evenBursar's method!")
-    # Now that we skipped that term:    
-    coeffs = [ product.coeff_monomial( monomial ) for monomial in itermonomials ]
-
-    # # extract coeffs from product fast:
-    # coeffs = [ [
-    #          product.coeff_monomial((sympy.abc.x)**xPower * (sympy.abc.y)**(n-c) ) # n-c==yPower.  This line could be made faster by using coeff_monomial((xPower,yPower)) or coeff_monomial((yPower,xPower)) however I have not figured out how to guarantee which order will work reliably.
-    #            for xPower in range(c*(m-1)+1) ]
-    #            for c in range(1,n+1) ]
-
-    #print("**** Coeffs",coeffs)
-
-    EXPECTED_ORDER = sympy.binomial(m+n,n)-1
-    ACTUAL_ORDER = len(coeffs)
-    if ACTUAL_ORDER != EXPECTED_ORDER:
-        print("Expecfted ",EXPECTED_ORDER," for length of embedding but got ",ACTUAL_ORDER)
-        raise Exception("Bug in implementation of evenBursar's method!")
+        n = len(data)
+        assert n!=0
     
-    return coeffs
-
-    #xPolys = [ np.polynomial.Polynomial(vector) for vector in data ] 
-    #print("x polynomials are: ")
-    #for xPoly in xPolys:
-    #    print (xPoly)
-    # 
-    #n=len(data)
-
-    #return [ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(len(data)) ]
-
-    # return [ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(len(data)) ]
+        m = len(data[0])
+        assert m!=0
     
-    # Alternative
-    # 
-    # ans = np.array([ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(len(data)) ])
-    #
-    # All embedders have to output lists of real numbers (at least for now) so:
-    #if np.iscomplexobj(ans):
-    #  ans=tools.expand_complex_to_real_pairs(ans)
-    #
-    # return ans
+        #part = sum( [ sympy.Poly(sympy.symbols("x"+str(i)))*val for i, val in enumerate(data[0]) ] )
+        #print("******** FIRST PART IS ",part)
+        polys = [ 
+          sum( [ sympy.Poly(sympy.symbols("x"+str(i)))*val for i, val in enumerate(vector) ] )
+          + sympy.Poly(sympy.abc.y) for vector in data ]
+    
+        #print("****** polys",polys)
+    
+        product = prod(polys)
+        #print ("**** Product",product)
+    
+        # # extract coeffs from product slowly:
+        # for c in range(1,n+1):
+        #      yPower = n-c
+        #      for xPower in range(c*(m-1)+1):
+        #          coeff = product.coeff_monomial((abc.x)**xPower * (abc.y)**yPower) # This could be made faster by using coeff_monomial((xPower,yPower)) or coeff_monomial((yPower,xPower)) however I have not figured out how to guarantee which order will work reliably.
+        #          print(coeff)
+    
+    
+        monomials = get_tuples(m+1, n)
+        itermonomials = iter(monomials)
+        firstMonomial = next(itermonomials)
+        # Confirm that coeff of first monomial is one .. the y^n term:
+        firstCoeff = product.coeff_monomial(firstMonomial)
+        if firstCoeff!=1:
+            print("Expecfted 1 for coeffiecient of y^n term but got ",firstCoeff)
+            raise Exception("Bug in implementation of evenBursar's method!")
+        # Now that we skipped that term:    
+        coeffs = [ product.coeff_monomial( monomial ) for monomial in itermonomials ]
+    
+        # # extract coeffs from product fast:
+        # coeffs = [ [
+        #          product.coeff_monomial((sympy.abc.x)**xPower * (sympy.abc.y)**(n-c) ) # n-c==yPower.  This line could be made faster by using coeff_monomial((xPower,yPower)) or coeff_monomial((yPower,xPower)) however I have not figured out how to guarantee which order will work reliably.
+        #            for xPower in range(c*(m-1)+1) ]
+        #            for c in range(1,n+1) ]
+    
+        #print("**** Coeffs",coeffs)
+    
+        EXPECTED_ORDER = sympy.binomial(m+n,n)-1
+        ACTUAL_ORDER = len(coeffs)
+        if ACTUAL_ORDER != EXPECTED_ORDER:
+            print("Expecfted ",EXPECTED_ORDER," for length of embedding but got ",ACTUAL_ORDER)
+            raise Exception("Bug in implementation of evenBursar's method!")
+       
+        metadata = None
+        return coeffs, metadata
+    
+        #xPolys = [ np.polynomial.Polynomial(vector) for vector in data ] 
+        #print("x polynomials are: ")
+        #for xPoly in xPolys:
+        #    print (xPoly)
+        # 
+        #n=len(data)
+    
+        #return [ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(len(data)) ]
+    
+        # return [ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(len(data)) ]
+        
+        # Alternative
+        # 
+        # ans = np.array([ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(len(data)) ])
+        #
+        # All embedders have to output lists of real numbers (at least for now) so:
+        #if np.iscomplexobj(ans):
+        #  ans=tools.expand_complex_to_real_pairs(ans)
+        #
+        # return ans
 
 
 

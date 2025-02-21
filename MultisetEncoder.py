@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Any
 
 class MultisetEncoder:
     """
@@ -28,7 +29,11 @@ class MultisetEncoder:
     output under permutations of input vectors could easily sort their vectors (in any way) prior to using any 
     encoder.
 
-    All encoders return one dimensional arrays of real floats.
+    All encoders return a type containing:
+
+        (1) a one-dimensional arrays of real floats,
+        (2) the size (n,k) of the encoded data,
+        (3) some meta-data about the encoding method, or None.
 
     In principle, a given encoder can embed sets of different sizes n and or k.  However, 
     some encoders might wish to restrict themselves to certain fixed n or k at initialisation (e.g. if 
@@ -44,7 +49,7 @@ class MultisetEncoder:
 
     """
 
-    def encode(self, data: np.ndarray, debug=False) -> np.ndarray:
+    def encode(self, data: np.ndarray, debug=False) -> (np.ndarray, (int, int), Any):
         raise NotImplementedError()
 
     def size_from_array(self, data: np.ndarray) -> int:

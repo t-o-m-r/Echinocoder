@@ -11,11 +11,12 @@ import  Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset as Cinf_np
 embedder_Cinf_np_ar = Cinf_np_ar.Embedder()
 import      Cinf_sympy_bursar_embedder_for_array_of_reals_as_multiset as Cinf_sp_bur_ar
 embedder_Cinf_sp_bur_ar = Cinf_sp_bur_ar.Embedder()
+import  Cinf_sympy_evenBursar_embedder_for_array_of_reals_as_multiset as Cinf_sp_evenBur_ar
+embedder_Cinf_sp_evenBur_ar = Cinf_sp_evenBur_ar.Embedder()
 import Cinf_hybrid_embedder_for_array_of_reals_as_multiset as hybrid
 embedder_hybrid = hybrid.Embedder()
 
 import  Cinf_python_polynomial_embedder_for_list_of_reals_as_multiset as embedder_Cinf_py_li
-import  Cinf_sympy_evenBursar_embedder_for_array_of_reals_as_multiset as embedder_Cinf_sp_evenBur_ar
 import   Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset as embedder_Cinf_np_li
 import              C0_sorting_embedder_for_list_of_reals_as_multiset as embedder_C0_li
 import data_sources
@@ -136,7 +137,9 @@ class Test_Embedders(unittest.TestCase):
                 if not try_to_encode:
                     print(f"Skipping test of data on {embedder} as shape ({shuffled_data.shape}) is wrong.")
                 else:
-                    embedding = embedder.embed(shuffled_data)
+                    print(f"Trying embedder {embedder} on {shuffled_data}.")
+                    embedding, size_, metadata_ = embedder.embed(shuffled_data, debug = True)
+                    print(f"got {embedding}, {size_}, {metadata_}")
                     #embedding_fails = expected_embedding is not None and not np.array_equal(np.asarray(embedding),np.asarray(expected_embedding))
                     # Check subsequent embeddings are same as first embedding. I.e. check for permutation invariance.
                     if i==0:
@@ -169,7 +172,7 @@ class Test_Embedders(unittest.TestCase):
 
 
         make_randoms_reproducable()
-        all_ar_embedders=[ 
+        all_ar_embedders=[
             embedder_C0HomDeg1_simplex1,
             embedder_conjectured_dotting,
             embedder_Cinf_np_ar,
@@ -177,7 +180,8 @@ class Test_Embedders(unittest.TestCase):
             embedder_hybrid,
             embedder_C0_np_simplex_historical,
             ]
-    
+   
+        
         print(__file__, __line__)
         self.tost_multiset_embedder(
            data=np.asarray([9,-4,21,-8,5]),
@@ -236,7 +240,12 @@ class Test_Embedders(unittest.TestCase):
         print(__file__, __line__)
         self.tost_multiset_embedder(
            data=data_sources.random_real_array_data(mn=(3,3)),
-           embedders=[ embedder_Cinf_np_ar, embedder_Cinf_sp_bur_ar, embedder_C0HomDeg1_simplex1, embedder_C0_np_simplex_historical ],
+           embedders=[ 
+           embedder_Cinf_np_ar, 
+           embedder_Cinf_sp_bur_ar, 
+           embedder_C0HomDeg1_simplex1, 
+           embedder_C0_np_simplex_historical,
+           ],
         )
     
         print(__file__, __line__)

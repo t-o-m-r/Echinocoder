@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Any
 import Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset as poly_list
 
 class MultisetEmbedder:
@@ -25,7 +26,11 @@ class MultisetEmbedder:
     and both should have the same output -- at least up to numerical precision. This leeway (permission to 
     have small deviations on account of floating point precision, rather than demanding bit-for-bit identical embeddings) is granted to implementations in order to allow them to be faster (sometimes) than would be the case if they were all required to canonicalise their input sets.  Someone wanting bit-for-bit identical output under permutations of input vectors could easily sort their vectors (in any way) prior to using any embedder.
 
-    All embedders return one dimensional arrays of real floats.
+    All embedders return a tuple, comprising:
+
+        (1) a one-dimensional arrays of real floats,
+        (2) the (n,k) size of the data which was encoded
+        (3) None or a meta-data packet describing how the data was encoded. 
 
     In principle, a given embedder "Alice" can embed sets of different sizes n and or k.  However, 
     some embedders might wish to restrict themselves to certain fixed n or k at initialisation (e.g. if 
@@ -42,7 +47,7 @@ class MultisetEmbedder:
 
     """
 
-    def embed(self, data: np.ndarray, debug=False) -> np.ndarray:
+    def embed(self, data: np.ndarray, debug=False) -> (np.ndarray, (int, int), Any):
 
         n,k = data.shape
         expected_order = self.size_from_n_k(n,k)
@@ -50,25 +55,25 @@ class MultisetEmbedder:
         if n<0 or k<0:
             raise ValueError("Numpy array's should not have negative sizes!!!")
         if n==0 or k==0:
-            return np.asarray([], dtype=np.float64)
+            return np.asarray([], dtype=np.float64), (n,k), None
         if n==1:
             embedding = data.flatten() # This implmentation is a coverall.
             assert len(embedding) == k
             assert len(embedding) == expected_order
-            return embedding
+            return embedding, (n,k), None
         if k==1:
             assert k==1 and n>=0 # Preconditions for calling self.embed_kOne !
             assert self.is_kOne_n_k(n, k) # Precondition for calling self.embed_kOne !
-            embedding = self.embed_kOne(data, debug) # Derived classes should implement this method!
+            embedding, metadata = self.embed_kOne(data, debug) # Derived classes should implement this method!
             assert len(embedding) == n # Derived classes are required to meet this condition in their output!
             assert len(embedding) == expected_order
-            return embedding
+            return embedding, (n,k), metadata
 
         assert n>1 and k>1 # Preconditions for calling self.embed_generic !
         assert self.is_generic_n_k(n,k) # Precondition for calling self.embed_generic !
-        embedding = self.embed_generic(data, debug) # Derived classes should implement this method!
+        embedding, metadata = self.embed_generic(data, debug) # Derived classes should implement this method!
         assert len(embedding) == expected_order
-        return embedding
+        return embedding, (n,k), metadata
 
     def size_from_n_k(self, n: int, k: int) -> int:
         """
@@ -91,7 +96,7 @@ class MultisetEmbedder:
         n,k = data.shape
         return self.size_from_n_k(n,k)
 
-    def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
+    def embed_kOne(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
         """
         Derived classes should implement this method.
         This method should OPTIMALLY embed data for which n>=0 and k==1. We call this "kOne data".
@@ -99,19 +104,19 @@ class MultisetEmbedder:
         Implementations may assume (without checking) that data fed to it has the above type.
         It is likely that most implementations will implement this method either as:
 
-            def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
+            def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray, Any:
                 return MultisetEmbedder.embed_kOne_sorting(data) # Want piecewise linear!
 
         or as:
 
-            def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
+            def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray, Any:
                 return MultisetEmbedder.embed_kOne_polynomial(data) # Want Cinf!
 
         depending on whether they want piecewise linearity or differentiability.
         """
         raise NotImplementedError()
 
-    def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:
+    def embed_generic(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
         """
         Derived classes should implement this method.
         This method should embed data for which n>1 and k>1. We call this "generic data".
@@ -141,7 +146,8 @@ class MultisetEmbedder:
     @staticmethod
     def embed_kOne_polynomial(data: np.ndarray) -> np.ndarray:
         assert MultisetEmbedder.is_kOne_data(data)
-        return poly_list.embed(data.flatten())
+        embedding, shape_, metadata_ =  poly_list.embed(data.flatten())
+        return embedding
 
     @staticmethod
     def is_kOne_data(data: np.ndarray) -> bool:

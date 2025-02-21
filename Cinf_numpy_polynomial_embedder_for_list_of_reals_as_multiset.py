@@ -11,8 +11,10 @@
 
 import numpy as np
 
-def embed(data):
-    return np.polynomial.polynomial.polyfromroots(-data)[-2::-1] # The -1 in [-2::-1] reverses the order of the list so that the terms linear in the roots come first. The -2 at the front forced the list to start from the coeffient for x^(n-1). (The coefficient of x^n is always 1 and we dont need it!)
+def embed(data, debug=False):
+    if debug:
+        print("Asked to encode ",data)
+    return np.polynomial.polynomial.polyfromroots(-data)[-2::-1], len(data), None  # The -1 in [-2::-1] reverses the order of the list so that the terms linear in the roots come first. The -2 at the front forced the list to start from the coeffient for x^(n-1). (The coefficient of x^n is always 1 and we dont need it!)
 
 
     ## Alternative:

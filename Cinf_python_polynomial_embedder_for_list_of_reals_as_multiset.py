@@ -18,8 +18,15 @@ from itertools import combinations
 #import tools
 
 
-def embed(data):
-    return [ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(len(data)) ]
+def embed(data, debug=False):
+    if debug:
+        print(f"Thinking about {data}")
+
+    ans = [ sum( [ prod(c)  for c in combinations(data, r+1) ] ) for r in range(len(data)) ], len(data), None
+    if debug:
+        print(f"Expect to produce {ans}.")
+
+    return ans
     
     # Alternative
     # 

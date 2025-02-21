@@ -6,17 +6,18 @@ import hashlib
 from dataclasses import dataclass, field
 from typing import Self
 from MultisetEmbedder import MultisetEmbedder
+from typing import Any
 
 Eji = namedtuple("Eji", ["j", "i"])
 
 class Embedder(MultisetEmbedder):
 
-    def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
-        return MultisetEmbedder.embed_kOne_sorting(data)
+    def embed_kOne(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
+        metadata = None
+        return MultisetEmbedder.embed_kOne_sorting(data), metadata
 
 
-
-    def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:
+    def embed_generic(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
         assert MultisetEmbedder.is_generic_data(data) # Precondition
         if debug:
             print(f"data is {data}")
@@ -134,7 +135,8 @@ class Embedder(MultisetEmbedder):
             print(f"embedding is {embedding}")
             print(f"embedding has length {length_of_embedding}")
     
-        return embedding
+        metadata = None
+        return embedding, metadata
     
     def size_from_n_k_generic(self, n: int, k: int) -> int:
         return 2*n*k + 1

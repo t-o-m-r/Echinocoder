@@ -4,6 +4,7 @@ from tools import sort_each_np_array_row
 from MultisetEmbedder import MultisetEmbedder
 import C0HomDeg1_dotting_encoder_for_array_of_reals_as_multiset as dotting_encoder
 import math
+from typing import Any
 
 class Embedder(MultisetEmbedder):
     """
@@ -29,25 +30,27 @@ class Embedder(MultisetEmbedder):
         self.k = k
         self._dotting_encoder  = dotting_encoder.Encoder(k=k, extra_dots=extra_dots)
 
-    def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:
+    def embed_generic(self, data: np.ndarray, debug=False) -> (np.ndarray, Any): # was embed(...).  fixed 21st Feb 2025.
         expected_size = self.size_from_array(data)
         if expected_size == -1:
             raise ValueError(f"We do not undertake to embed data of shape {data.shape}")
         if debug:
             print(f"data is {data}")
-        embedding = self._dotting_encoder.encode(data)
+        embedding, size, metadata = self._dotting_encoder.encode(data)
         if debug:
             print(f"Embedding is {embedding} with length {len(embedding)}")
         assert len(embedding) == expected_size
-        return embedding
+        metadata = None
+        return embedding, metadata
     
     def size_from_n_k_generic(self, n: int, k: int) -> int:
         if n!=self.n or k!=self.k:
             return -1 # We are optimised to work with a certain n and a certain k
         return self._dotting_encoder.size_from_n_k(n,k)
 
-    def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
-        return MultisetEmbedder.embed_kOne_sorting(data)
+    def embed_kOne(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
+        metadata = None
+        return MultisetEmbedder.embed_kOne_sorting(data), metadata
 
 
 def tost(): # Renamed from test -> tost to avoid pycharm mis-detecting / mis-running unit tests!

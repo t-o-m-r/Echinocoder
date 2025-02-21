@@ -2,6 +2,7 @@ import numpy as np
 from tools import sort_each_np_array_row
 #import hashlib
 from MultisetEncoder import MultisetEncoder
+from typing import Any
 
 
 class Encoder(MultisetEncoder):
@@ -24,7 +25,7 @@ class Encoder(MultisetEncoder):
 
         self.matrix = np.concatenate((np.identity(k), rng.standard_normal((self.extra_dots, self.k))), axis=0) # Technically this matrix should then be checked -- to see that none of its kxk minors have zero determinant. But for now we "assume" that that is true.
 
-    def encode(self, data: np.ndarray, debug=False) -> np.ndarray:
+    def encode(self, data: np.ndarray, debug=False) -> (np.ndarray, (int, int), Any):
         if debug:
             print(f"data is {data}")
     
@@ -34,9 +35,9 @@ class Encoder(MultisetEncoder):
         if n==0 or k==0:
             encoding = np.array([], dtype=np.float64)
             assert len(encoding) == self.size_from_n_k(n, k)
-            return encoding
+            return encoding, (n,k), None
 
-        if k!=self.k:
+        if k != self.k:
             assert self.size_from_n_k(n,k) == -1
             raise ValueError(f"This encoder is setup for k={self.k} so does not like data having k={k}")
 
@@ -48,10 +49,13 @@ class Encoder(MultisetEncoder):
         ##### THE ACTUAL ENCODING IS COMPLETE! ###########
 
         if debug:
-            print(f"Encoding is {encoding} with length {len(encoding)} rather than {self.size_from_n_k(n,k)}")
+            print(f"Encoding is {encoding} with length {len(encoding)} which should be {self.size_from_n_k(n,k)}")
         assert len(encoding) == self.size_from_n_k(n, k)
-        return encoding
-    
+        return encoding, (n,k), None
+
+    def decode(self, encoding, encoding_n_and_k):
+        return None
+
     def size_from_n_k(self, n: int, k: int) -> int:
         if k==0 or n==0:
             return 0

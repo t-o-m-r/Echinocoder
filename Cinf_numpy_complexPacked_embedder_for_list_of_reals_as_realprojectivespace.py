@@ -31,7 +31,7 @@ import numpy as np
 import tools
 import Cinf_numpy_regular_embedder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace as underlying_embedder
 
-def embed(data):
+def embed(data, debug=False):
     # data=np.asarray(data)
     complex_data = tools.real_pairs_to_complex_zip(data)
     complex_embedding = underlying_embedder.embed(complex_data)

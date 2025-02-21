@@ -69,15 +69,17 @@ from itertools import pairwise
 import numpy as np
 import unittest
 from dataclasses import dataclass, field
-from typing import Union
+from typing import Union, Any
 import hashlib
 
 class Embedder(MultisetEmbedder):
-    def embed_generic(self, data: np.ndarray, debug=False) -> np.ndarray:
-        return self.embed_internal(data)
+    def embed_generic(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
+        metadata = None
+        return self.embed_internal(data), metadata
 
-    def embed_kOne(self, data: np.ndarray, debug=False) -> np.ndarray:
-        return MultisetEmbedder.embed_kOne_sorting(data)
+    def embed_kOne(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
+        metadata = None
+        return MultisetEmbedder.embed_kOne_sorting(data), metadata
  
     def embed_internal(self, data: Union[np.ndarray, 'Position_within_Simplex_Product'],
                use_n2k2_optimisation=False, input_is_in_DeltakToN=False) -> np.ndarray:
