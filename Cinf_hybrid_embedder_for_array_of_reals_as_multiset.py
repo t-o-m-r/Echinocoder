@@ -23,10 +23,10 @@ class Embedder(MultisetEmbedder):
             raise ValueError()
         elif poly_size <= burs_size:
             if debug: print(f"Hybrid uses poly embedder for data of shape {data.shape}.")
-            embedding, size, metadata = self._poly_encoder.embed(data)
+            embedding, size_, metadata = self._poly_encoder.embed(data)
         else:
             if debug: print(f"Hybrid uses burs embedder for data of shape {data.shape}.")
-            embedding, metadata = self._burs_encoder.embed(data)
+            embedding, size_, metadata = self._burs_encoder.embed(data)
 
         assert len(embedding) == self.size_from_array(data)
         return embedding, metadata
