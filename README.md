@@ -2,7 +2,7 @@
 
 This is a library contains functions which are able to perform:
 
-  * Small [topological embeddings](https://en.wikipedia.org/wiki/Embedding) of real [symmetric product spaces](https://en.wikipedia.org/wiki/Symmetric_product_(topology)), $SP^n(\mathbb R^k)$.  These are continuous bijective mappings of multisets of size $n$ containing vectors in $\mathbb{R}^k$ into $\mathbb R^k$ for some $k$.
+  * Small [topological embeddings](https://en.wikipedia.org/wiki/Embedding) of real [symmetric product spaces](https://en.wikipedia.org/wiki/Symmetric_product_(topology)), $SP^n(\mathbb R^k)$.  These are continuous bijective mappings of multisets of size $n$ containing vectors in $\mathbb{R}^k$ into $\mathbb R^N$ for some $N$.
 
   * Small [topological embeddings](https://en.wikipedia.org/wiki/Embedding) of $\mathbb R^k/Z_2$. These are spaces in which $\vec x\in\mathbb R^k$ is identified with $-\vec x$.  I am not sure what these are really supposed to be called. This libarary currently calls them [real projective spaces](https://en.wikipedia.org/wiki/Real_projective_space) but that might be an abuse of terminology.
 
