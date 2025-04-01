@@ -2,7 +2,7 @@
 
 This is a library contains functions which are able to perform:
 
-  * Small [topological embeddings](https://en.wikipedia.org/wiki/Embedding) of real [symmetric product spaces](https://en.wikipedia.org/wiki/Symmetric_product_(topology)), $SP^n(\mathbb R^k)$.  These are continuous bijective mappings of multisets of size $n$ containing vectors in $\mathbb{R}^k$ into $\mathbb R^k$ for some $k$.
+  * Small [topological embeddings](https://en.wikipedia.org/wiki/Embedding) of real [symmetric product spaces](https://en.wikipedia.org/wiki/Symmetric_product_(topology)), $SP^n(\mathbb R^k)$.  These are continuous bijective mappings of multisets of size $n$ containing vectors in $\mathbb{R}^k$ into $\mathbb R^N$ for some $N$.
 
   * Small [topological embeddings](https://en.wikipedia.org/wiki/Embedding) of $\mathbb R^k/Z_2$. These are spaces in which $\vec x\in\mathbb R^k$ is identified with $-\vec x$.  I am not sure what these are really supposed to be called. This libarary currently calls them [real projective spaces](https://en.wikipedia.org/wiki/Real_projective_space) but that might be an abuse of terminology.
 
@@ -56,7 +56,7 @@ In principle the method could be re-written to embed into just $2 n k + 1$ reals
 ## Embedders for what this library calls $RP(\mathbb R^k)$ ([real projective space](https://en.wikipedia.org/wiki/Real_projective_space)s):
 
 * By setting $n=2$ and embedding the multiset $\left\\{\vec x,-\vec x\right\\}$ with $\vec x$ in $R^k$ one can use either of the Bursarial embedders to embed something this library calls $RP^k$ (which is possibly an abuse of the notation for real projective space of order $k$).  This $RP^k$ embedding would (for the (vanilla) Bursarial embedder) naively therefore be of size $2+(k-1)2(2+1)/2 = 2+3(k-1)$.  However, since all $k$ terms of order 1 in the auxiliary variable $y$ always disappear for multisets of this sort, the coefficients of those terms do not need to be recorded. This leaves only $2k-1$ reals needing to be recorded in the embedding for $RP^k$.  A method named [Cinf_numpy_regular_embedder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace](Cinf_numpy_regular_embedder_for_list_of_realsOrComplex_as_realOrComplexprojectivespace.py) implements this method. It is order $2n-1$ when $n>0$.
-* A small optimisation of the above method (implemented as [Cinf_numpy_complexPacked_embedder_for_list_of_reals_as_realprojectivespace](Cinf_numpy_complexPacked_embedder_for_list_of_reals_as_realprojectivespace.py))  reduces the by one when $n>0$ and $n$ is even.
+* A small optimisation of the above method (implemented as [Cinf_numpy_complexPacked_embedder_for_list_of_reals_as_realprojectivespace](Cinf_numpy_complexPacked_embedder_for_list_of_reals_as_realprojectivespace.py))  reduces the order by one when $n>0$ and $n$ is even.
 
 
 ## Testing/examples
