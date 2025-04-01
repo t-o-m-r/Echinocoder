@@ -61,9 +61,11 @@ class Embedder(MultisetEmbedder):
     
     
         # The coordinates in the barycentric subdivided daughter simplex are differences of the current deltas,
-        # which are up-weighted by a linear factor to make them approximately identically distributed.
-        difference_data_in_subdivided_simplex = [ (  (i+1)*(deltas_in_current_order[i]-(deltas_in_current_order[i+1] if i+1<expected_number_of_vertices else 0)),  Eji_LinComb(n, k, msvs_in_current_order[:i+1])) for i in range(expected_number_of_vertices)]
-    
+        # which are up-weighted by a linear factor to (1) preserve their sum so that (2) normalised barycentric coordinates transform into identically normalised barycentric coordinates, and so (3) this makes each component approximately identically distributed.
+        difference_data_in_subdivided_simplex = [ (  (i+1)*(deltas_in_current_order[i]-
+                 (deltas_in_current_order[i+1] if i+1<expected_number_of_vertices else 0)),
+                            Eji_LinComb(n, k, msvs_in_current_order[:i+1])) for i in range(expected_number_of_vertices)]
+
         if debug:
             print("difference data in Barycentrically subdivided simplex:")
             _ = [print(bit) for bit in difference_data_in_subdivided_simplex]
