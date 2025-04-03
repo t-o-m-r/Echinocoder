@@ -1,7 +1,9 @@
+# Based on OneNote -> Research -> Symmetries -> ERM - SIMPLEX EMBED #3 
+
 import numpy as np
 from itertools import pairwise
 from collections import namedtuple
-from tools import invert_perm, sort_np_array_rows_lexicographically
+from tools import sort_np_array_rows_lexicographically, sort_each_np_array_column
 import hashlib
 from dataclasses import dataclass, field
 from typing import Self
@@ -23,42 +25,112 @@ class Embedder(MultisetEmbedder):
             print(f"data is {data}")
     
         n,k = data.shape
-        flattened_data = [ ( data[j][i], Eji(j,i) ) for j in range(n) for i in range(k) ]
-        sorted_data = sorted( flattened_data, key = lambda x : -x[0])
-    
+
+        """ example data is [[ 4  2  3]
+                             [-3  5  1]
+                             [ 8  9  2]
+                             [ 2  7  2]] """
+
+        # The following "ascending data" has the x-components in ascending order, the y-components in asceding order,
+        # and so on. This has broken up the vectors.  I.e. the j=1 vector in ascending_data is not likely to
+        # be any of the vectors in the input (unless the data was already sorted appropriately).
+        # You can think of "ascending data" as representing all the things we want to encode EXCEPT the associations
+        # which link every element of each vector up in the right way.
+        ascending_data = sort_each_np_array_column(data)
+
+        # We need to extract the smallest x, the smallest y, the smallest z (and so on) as these form some of the
+        # outputs of the embedding.
+        min_elements = ascending_data[0]
         if debug:
-            print("sorted flattened data is")
-            _ = [print(bit) for bit in sorted_data]
-    
-        min_element = sorted_data[-1][0]
-        max_element = sorted_data[0][0]
-    
-        difference_data = [ (x[0]-y[0], x[1]) for x,y in pairwise(sorted_data) ]
+            print("min_elements is ")
+            print(min_elements)
+            """for our example data min_elements is [-3  2  1]"""
+
+        flattened_data_separated_by_cpt = [ [ ( data[j][i], Eji(j,i) ) for j in range(n) ] for i in range(k) ]
+        sorted_data_separated_by_cpt = [sorted(cpt, key = lambda x : -x[0]) for cpt in flattened_data_separated_by_cpt]
+        """ for our example data
+        sorted_data_separated_by_cpt is 
+[(np.int64(8), Eji(j=2, i=0)), (np.int64(4), Eji(j=0, i=0)), (np.int64(2), Eji(j=3, i=0)), (np.int64(-3), Eji(j=1, i=0))]
+[(np.int64(9), Eji(j=2, i=1)), (np.int64(7), Eji(j=3, i=1)), (np.int64(5), Eji(j=1, i=1)), (np.int64(2), Eji(j=0, i=1))]
+[(np.int64(3), Eji(j=0, i=2)), (np.int64(2), Eji(j=2, i=2)), (np.int64(2), Eji(j=3, i=2)), (np.int64(1), Eji(j=1, i=2))]
+        """
+        if debug:
+            print("sorted_data_separated_by_cpt is ")
+            _ = [print(bit) for bit in sorted_data_separated_by_cpt]
+
+        difference_data_by_cpt = [[ (x[0]-y[0], x[1]) for x,y in pairwise(cpt) ] for cpt in sorted_data_separated_by_cpt]
     
         if debug:
             print("difference data is")
-            _ = [print(bit) for bit in difference_data]
+            _ = [print(bit) for bit in difference_data_by_cpt]
+        """
+        difference data is
+[(np.int64(4), Eji(j=2, i=0)), (np.int64(2), Eji(j=0, i=0)), (np.int64(5), Eji(j=3, i=0))]
+[(np.int64(2), Eji(j=2, i=1)), (np.int64(2), Eji(j=3, i=1)), (np.int64(3), Eji(j=1, i=1))]
+[(np.int64(1), Eji(j=0, i=2)), (np.int64(0), Eji(j=2, i=2)), (np.int64(1), Eji(j=3, i=2))]
+        """
+        difference_data_with_MSVs_by_cpt = [[
+            (delta, Maximal_Simplex_Vertex(set([eji for (_, eji) in cpt[0:i + 1]]))) for i, (delta, _) in enumerate(cpt)]
+            for cpt in difference_data_by_cpt]
     
-        difference_data_with_MSVs = [
-            (delta, Maximal_Simplex_Vertex(set([eji for (_, eji) in difference_data[0:i + 1]]))) for i, (delta, _) in enumerate(difference_data)]
-    
+        if debug:
+            print("difference data with MSVs by cpt:")
+            _ = [print(bit) for bit in difference_data_with_MSVs_by_cpt]
+        """
+        difference data with MSVs by cpt:
+        [(np.int64(4), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0)})),
+           (np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0), Eji(j=0, i=0)})),
+             (np.int64(5), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0), Eji(j=3, i=0), Eji(j=0, i=0)}))]
+        [(np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=1)})),
+           (np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=3, i=1), Eji(j=2, i=1)})),
+             (np.int64(3), Maximal_Simplex_Vertex(_vertex_set={Eji(j=3, i=1), Eji(j=1, i=1), Eji(j=2, i=1)}))]
+        [(np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2)})), 
+           (np.int64(0), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2), Eji(j=2, i=2)})),
+             (np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2), Eji(j=3, i=2), Eji(j=2, i=2)}))]
+        """
+
+        # Now flatten the difference data:
+        difference_data_with_MSVs = [bit for cpt in difference_data_with_MSVs_by_cpt for bit in cpt]
         if debug:
             print("difference data with MSVs:")
             _ = [print(bit) for bit in difference_data_with_MSVs]
-    
+            """
+            difference data with MSVs:
+            (np.int64(4), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0)}))
+            (np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0), Eji(j=0, i=0)}))
+            (np.int64(5), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0), Eji(j=3, i=0), Eji(j=0, i=0)}))
+            (np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=1)}))
+            (np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=3, i=1), Eji(j=2, i=1)}))
+            (np.int64(3), Maximal_Simplex_Vertex(_vertex_set={Eji(j=3, i=1), Eji(j=1, i=1), Eji(j=2, i=1)}))
+            (np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2)}))
+            (np.int64(0), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2), Eji(j=2, i=2)}))
+            (np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2), Eji(j=3, i=2), Eji(j=2, i=2)}))
+            """
+
         sorted_difference_data_with_MSVs = sorted(difference_data_with_MSVs, key=lambda x: -x[0] )
         if debug:
             print("sorted difference data with MSVs:")
             _ = [print(bit) for bit in sorted_difference_data_with_MSVs]
-    
+            """
+            sorted difference data with MSVs:
+            (np.int64(5), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0), Eji(j=3, i=0), Eji(j=0, i=0)}))
+            (np.int64(4), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0)}))
+            (np.int64(3), Maximal_Simplex_Vertex(_vertex_set={Eji(j=3, i=1), Eji(j=1, i=1), Eji(j=2, i=1)}))
+            (np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0), Eji(j=0, i=0)}))
+            (np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=1)}))
+            (np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=3, i=1), Eji(j=2, i=1)}))
+            (np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2)}))
+            (np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2), Eji(j=3, i=2), Eji(j=2, i=2)}))
+            (np.int64(0), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2), Eji(j=2, i=2)}))
+            """
+
         # Barycentrically subdivide:
         deltas_in_current_order = [delta for delta, _ in sorted_difference_data_with_MSVs]
         msvs_in_current_order = [msv for _,msv in sorted_difference_data_with_MSVs]
     
-        expected_number_of_vertices = n * k - 1
+        expected_number_of_vertices = n * k - k
         assert len(deltas_in_current_order) == expected_number_of_vertices
         assert len(msvs_in_current_order) == expected_number_of_vertices
-    
     
         # The coordinates in the barycentric subdivided daughter simplex are differences of the current deltas,
         # which are up-weighted by a linear factor to (1) preserve their sum so that (2) normalised barycentric coordinates transform into identically normalised barycentric coordinates, and so (3) this makes each component approximately identically distributed.
@@ -102,37 +174,32 @@ class Embedder(MultisetEmbedder):
         #    print(f"cumulated canonical difference data (version 2) is:")
         #    [print(bit) for bit in cumulated_canonical_difference_data_2]
     
-        assert n*k - 1 == expected_number_of_vertices
-        bigN = 2 * (n*k - 1) + 1 # Size of the space into which the simplices are embedded.
+        assert n*k - k == expected_number_of_vertices
+        bigN = 2*(n - 1)*k + 1 # Size of the space into which the simplices are embedded.
         # bigN does not count any min and max elements, which would be extra.
         difference_point_pairs = [(delta, eji_lin_com.hash_to_point_in_unit_hypercube(bigN)) for (delta, eji_lin_com) in canonical_difference_data]
         if debug:
             print("difference point pairs are:")
             _ = [print(bit) for bit in difference_point_pairs]
     
-        first_half_of_embedding = sum([delta * point for delta, point in difference_point_pairs]) + np.zeros(bigN)
+        second_part_of_embedding = sum([delta * point for delta, point in difference_point_pairs]) + np.zeros(bigN)
         if debug:
-            print(f"first bit of embedding is: {first_half_of_embedding}")
-    
-    
+            print(f"first bit of embedding is: {second_part_of_embedding}")
     
         # Create a vector to contain the embedding:
         length_of_embedding = self.size_from_n_k(n,k)
     
-        assert length_of_embedding == bigN + 2
-        assert bigN == 2 * (n*k - 1) + 1
-        assert length_of_embedding == 2 * (n*k - 1) + 1 + 2  # bigN + 2
-        assert length_of_embedding == 2 * n * k + 1 # bigN + 2 expanded out.
-    
+        assert length_of_embedding == bigN + k
+        assert bigN == 2*(n - 1)*k + 1
+        assert length_of_embedding == 2*n*k +1 - k  # bigN + 2
+
         embedding = np.zeros(length_of_embedding, dtype=np.float64) # +2 for max_element and min_element .... TODO don't always need max_element!
     
-        # Populate first half of the embedding:
-        embedding[:bigN] = first_half_of_embedding
-        # Populate the last element of the embedding with the smallest element of the initial data.
-        embedding[-1] = min_element # TODO: Don't do this if nk==0, as nothing to record in that case.
-        # Populate the second last element of the embedding with the largest element of the initial data.
-        embedding[-2] = max_element # TODO: Don't do this if nk<=1, as min_element is enough in that case.
-    
+        # Populate the first part of the embedding with the smallest elements of the initial data.
+        embedding[:k] = min_elements
+        # Populate other half of the embedding:
+        embedding[k:bigN + k] = second_part_of_embedding
+
         if debug:
             print(f"embedding is {embedding}")
             print(f"embedding has length {length_of_embedding}")
@@ -141,7 +208,7 @@ class Embedder(MultisetEmbedder):
         return embedding, metadata
     
     def size_from_n_k_generic(self, n: int, k: int) -> int:
-        return 2*n*k + 1
+        return 2*n*k + 1 - k
     
 def eji_set_to_np_array(eji_set, n, k):
     ans = np.zeros(shape=(n, k))
@@ -277,7 +344,7 @@ def run_unit_tests():
 if __name__ == "__main__":
     run_unit_tests()
 
-    some_input = np.asarray([[4,2],[-3,5],[8,9],[2,7]])
+    some_input = np.asarray([[4,2,3],[-3,5,1],[8,9,2],[2,7,2]])
     embedder = Embedder()
     output = embedder.embed(some_input, debug=True)
 

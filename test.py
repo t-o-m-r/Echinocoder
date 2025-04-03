@@ -104,6 +104,7 @@ def test_tools():
 
     assert fail_count == 0
 
+    #### CHECK ARRAY ROW SORT ####
     inp = np.array([[1, 0, 2],
                     [0, 5, 2],
                     [3, 0, 8]])
@@ -112,7 +113,16 @@ def test_tools():
                          [0, 2, 5],
                          [0, 3, 8]])
     got = tools.sort_each_np_array_row(inp)
+    assert (got == expected).all()
 
+    #### CHECK ARRAY COLUMN SORT ####
+    inp = np.array([[1, 0, 3],
+                    [0, 5, 2],
+                    [3, 0, 8]])
+    expected = np.array([[0, 0, 2],
+                         [1, 0, 3],
+                         [3, 5, 8]])
+    got = tools.sort_each_np_array_column(inp)
     assert (got == expected).all()
 
         
