@@ -40,7 +40,7 @@ def evaluate_embedding(x, n, k, embedder):
     outs = []
     for sample in x:
         sample = sample.reshape(n, k)
-        embedding = np.asarray(embedder.embed(sample), dtype=float)
+        embedding = np.asarray(embedder.embed(sample)[0], dtype=float)
         assert len(embedding) == embedder.size_from_n_k(n,k)
         outs.append(embedding)
 
@@ -68,11 +68,14 @@ def add_bokeh_root():
     # from Historical.C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset import Embedder
     # embedder = Embedder()
     
-    # from C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset import Embedder
-    # embedder = Embedder()
+    #from C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset import Embedder
+    #embedder = Embedder()
     
-    from C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset import Embedder
-    embedder = Embedder(n=n, k=k)
+    from C0HomDeg1_simplicialComplex_embedder_2_for_array_of_reals_as_multiset import Embedder
+    embedder = Embedder()
+    
+    # from C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset import Embedder
+    # embedder = Embedder(n=n, k=k)
     
     evaluate_embedding.last_x=None
     evaluate_embedding.last_n=None
