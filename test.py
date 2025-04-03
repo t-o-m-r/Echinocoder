@@ -5,6 +5,8 @@ embedder_C0_np_simplex_historical = C0_np_simplex_historical.Embedder()
 
 import C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset as C0HomDeg1_simplex1
 embedder_C0HomDeg1_simplex1 = C0HomDeg1_simplex1.Embedder()
+import C0HomDeg1_simplicialComplex_embedder_2_for_array_of_reals_as_multiset as C0HomDeg1_simplex2
+embedder_C0HomDeg1_simplex2 = C0HomDeg1_simplex2.Embedder()
 import C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset as conjectured_dotting
 embedder_conjectured_dotting = conjectured_dotting.Embedder(n=2, k=2)
 import  Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset as Cinf_np_ar
@@ -174,6 +176,7 @@ class Test_Embedders(unittest.TestCase):
         make_randoms_reproducable()
         all_ar_embedders=[
             embedder_C0HomDeg1_simplex1,
+            embedder_C0HomDeg1_simplex2,
             embedder_conjectured_dotting,
             embedder_Cinf_np_ar,
             embedder_Cinf_sp_bur_ar,
@@ -244,6 +247,7 @@ class Test_Embedders(unittest.TestCase):
            embedder_Cinf_np_ar, 
            embedder_Cinf_sp_bur_ar, 
            embedder_C0HomDeg1_simplex1, 
+           embedder_C0HomDeg1_simplex2, 
            embedder_C0_np_simplex_historical,
            ],
         )
@@ -251,7 +255,13 @@ class Test_Embedders(unittest.TestCase):
         print(__file__, __line__)
         self.tost_multiset_embedder(
            data=data_sources.random_real_array_data(mn=(4,3)),
-           embedders=[ embedder_Cinf_np_ar, embedder_Cinf_sp_bur_ar, embedder_C0HomDeg1_simplex1, embedder_C0_np_simplex_historical ],
+           embedders=[ 
+             embedder_Cinf_np_ar, 
+             embedder_Cinf_sp_bur_ar, 
+             embedder_C0HomDeg1_simplex1, 
+             embedder_C0HomDeg1_simplex2, 
+             embedder_C0_np_simplex_historical,
+             ],
         )
     
         print(__file__, __line__)

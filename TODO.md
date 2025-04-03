@@ -1,5 +1,7 @@
 ## General TODO:
 
+Factor the repeated assessory functions out of the two simplex encoders.
+
 Consider writing a tool to get all the simplices for a given (n,k) and see which ones need barycentric subdivision and which ones don't.  More than this, look to see how many vertices cause the ambiguity (if that's meaningful!!) ... i.e. we want to see if it would be possible to get away with just putting a single vertex at the centre of each simplex rather than full on barycentric subdivision.
 
 ## Item 1

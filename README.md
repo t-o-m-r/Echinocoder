@@ -18,7 +18,8 @@ All these are (or should be) instances of [MultisetEmbedder](MultisetEmbedder.py
 
 | Method  | Order (leading) | Exact order (for $n>1$ and $k>1$) | Piecewise Linear | Infinitely Differentiable | Notes | Source |
 |---------|-----------------|---------------|------------------|---------------------------|-------|--------|
-| Simplex | $O(nk)$         | $2nk+1$       | Yes              |  No   |       | [link](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py) |
+| Simplex 1 | $O(nk)$         | $2nk+1$       | Yes              |  No   |       | [link](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py) |
+| Simplex 2 | $O(nk)$         | $2nk+1-k$       | Yes              |  No   |  Ignore for the moment, as work in progress     | [link](C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset.py) |
 | Dotting Conjecture | $O(nk\cdot \log n)$   | $n((k-1)(\lfloor{ \log_2 n }\rfloor+1)+1)$  | Yes   |   No   | Conjectured (but not yet proved!) to be an embedding. | [link](C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset.py) |
 | Dotting Overkill | $O(nk\cdot nk)$ |          | Yes              |  No   | Is provably an embedding, but is probably wasteful of resources. | | 
 | Polynomial | $O(nk\cdot k)$    | $nk(k-1)$     | No               |  Yes  |       | [link](Cinf_numpy_polynomial_embedder_for_array_of_reals_as_multiset.py) |
