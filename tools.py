@@ -7,6 +7,16 @@ class LineNo:
 
 __line__ = LineNo()
 
+def ascending_data(np_array_representing_set : np.ndarray) -> np.ndarray:
+        # The input is assumed to be an np_array with n elements, each being a vector, and with each vector holding k components.
+        # It represents a multiset of those n vectors. 
+        # The following "ascending data" has the x-components in ascending order, the y-components in asceding order,
+        # and so on. This has broken up the vectors.  I.e. the j=1 vector in ascending_data is not likely to
+        # be any of the vectors in the input (unless the data was already sorted appropriately).
+        # You can think of "ascending data" as representing all the things we want to encode EXCEPT the associations
+        # which link every element of each vector up in the right way.
+        return sort_each_np_array_column(np_array_representing_set)
+
 def expand_complex_to_real_pairs(np_array):
     """
     This function expands numpy arrays of complex numbers into arrays which are twice as long but which have real parts separated from complex parts.

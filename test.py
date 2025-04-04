@@ -30,9 +30,9 @@ fail_count = 0
 
 def self_test_realprojectivespace_embedder(embedder):
     for inp, out in embedder.unit_test_input_output_pairs:
-        test_realprojectivespace_embedder(inp, embedder=embedder, expected_embedding=out)
+        tost_realprojectivespace_embedder(inp, embedder=embedder, expected_embedding=out)
 
-def test_realprojectivespace_embedder(data, embedder=None, embedders=None, expected_embedding=None):
+def tost_realprojectivespace_embedder(data, embedder=None, embedders=None, expected_embedding=None):
     global fail_count
     print("ORIGINAL DATA is",data)
     data_copy = data.copy()
@@ -54,12 +54,9 @@ def make_randoms_reproducable():
     random.seed(1)
     np.random.seed(1)
 
-def test_tools():
-
-
+def tost_tools():
     global fail_count
     import tools
-
 
     data = np.asarray([3+4j, 4+2j])
     out_expected = [3, 4, 4, 2]
@@ -125,8 +122,6 @@ def test_tools():
     got = tools.sort_each_np_array_column(inp)
     assert (got == expected).all()
 
-        
-
 class Test_Embedders(unittest.TestCase):
     def tost_multiset_embedder(self, data, embedder=None, embedders=None, number_of_shuffled_copies=3, expected_embedding=None, relative_tolerance=0, absolute_tolerance=0):
         global fail_count
@@ -178,9 +173,10 @@ class Test_Embedders(unittest.TestCase):
 
     def test_various_embedders(self):
 
-        #with lists as inputs:
-        #self.assertEqual(ell( [(1,5),(2,42),(3,100)], 101),
-        #                 ell( [(7,5),(1,42),(3,100)], 101))  # ( (172) maps 1->7 and 2->1 in S(8) )
+        # with lists as inputs:
+        # self.assertEqual(ell( [(1,5),(2,42),(3,100)], 101),
+        #                  ell( [(7,5),(1,42),(3,100)], 101))
+        # ( (172) maps 1->7 and 2->1 in S(8) )
 
 
         make_randoms_reproducable()
@@ -193,8 +189,7 @@ class Test_Embedders(unittest.TestCase):
             embedder_hybrid,
             embedder_C0_np_simplex_historical,
             ]
-   
-        
+
         print(__file__, __line__)
         self.tost_multiset_embedder(
            data=np.asarray([9,-4,21,-8,5]),
@@ -327,11 +322,10 @@ class Test_Embedders(unittest.TestCase):
            absolute_tolerance=1e-7,
         )
 
-def test_everything():
-    test_tools()
+def tost_everything():
+    tost_tools()
     print(str(fail_count)+" failures")
 
 print(__file__, __line__)
 unittest.main(exit=False)
-test_everything()
-
+tost_everything()

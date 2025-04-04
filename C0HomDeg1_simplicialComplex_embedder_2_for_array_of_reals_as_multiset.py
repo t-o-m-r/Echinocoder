@@ -18,7 +18,6 @@ class Embedder(MultisetEmbedder):
         metadata = None
         return MultisetEmbedder.embed_kOne_sorting(data), metadata
 
-
     def embed_generic(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
         assert MultisetEmbedder.is_generic_data(data) # Precondition
         if debug:
@@ -26,10 +25,13 @@ class Embedder(MultisetEmbedder):
     
         n,k = data.shape
 
-        """ example data is [[ 4  2  3]
-                             [-3  5  1]
-                             [ 8  9  2]
-                             [ 2  7  2]] """
+        """
+        example data is [[ 4  2  3]
+                         [-3  5  1]
+                         [ 8  9  2]
+                         [ 2  7  2]] .
+        This is four vectors (n-4) in three dimensions (k=3).
+        """
 
         # The following "ascending data" has the x-components in ascending order, the y-components in asceding order,
         # and so on. This has broken up the vectors.  I.e. the j=1 vector in ascending_data is not likely to
@@ -133,7 +135,9 @@ class Embedder(MultisetEmbedder):
         assert len(msvs_in_current_order) == expected_number_of_vertices
     
         # The coordinates in the barycentric subdivided daughter simplex are differences of the current deltas,
-        # which are up-weighted by a linear factor to (1) preserve their sum so that (2) normalised barycentric coordinates transform into identically normalised barycentric coordinates, and so (3) this makes each component approximately identically distributed.
+        # which are up-weighted by a linear factor to (1) preserve their sum so that (2) normalised barycentric
+        # coordinates transform into identically normalised barycentric coordinates, and so (3) this makes each
+        # component approximately identically distributed.
         difference_data_in_subdivided_simplex = [ (  (i+1)*(deltas_in_current_order[i]-
                  (deltas_in_current_order[i+1] if i+1<expected_number_of_vertices else 0)),
                             Eji_LinComb(n, k, msvs_in_current_order[:i+1])) for i in range(expected_number_of_vertices)]
@@ -147,36 +151,9 @@ class Embedder(MultisetEmbedder):
             print("canonical difference data is:")
             _ = [print(bit) for bit in canonical_difference_data]
     
-        #j_order = first_occurrences_numpy(np.asarray([ eji.j for _,eji in sorted_data ]))
-        #perm = invert_perm(j_order)
-    
-        #if debug:
-        #    print(f"the j's appear in this order {j_order}")
-        #    print(f"inverse perm of j_order is  {perm}")
-    
-        #canonical_difference_data = [ (delta, Eji(perm[j], i) ) for delta, (j,i) in difference_data ]
-    
-        #if debug:
-        #    print(f"canonical difference data is:")
-        #    [print(bit) for bit in canonical_difference_data]
-    
-        #cumulated_canonical_difference_data_1 = [ (delta, Maximal_Simplex_Vertex(set([  eji for (_, eji) in canonical_difference_data[0:i+1] ])))  for i, (delta, _) in enumerate(canonical_difference_data)]
-        #if debug:
-        #    print(f"cumulated canonical difference data (version 1) is:")
-        #    [print(bit) for bit in cumulated_canonical_difference_data_1]
-    
-        # HERE
-    
-    
-        # Calculate same thing but in a different representation
-        #cumulated_canonical_difference_data_2 = [ ( delta, eji_set_to_np_array(eji_set, n, k) ) for (delta, eji_set) in cumulated_canonical_difference_data_1 ]
-        #if debug:
-        #    print(f"cumulated canonical difference data (version 2) is:")
-        #    [print(bit) for bit in cumulated_canonical_difference_data_2]
-    
         assert n*k - k == expected_number_of_vertices
         bigN = 2*(n - 1)*k + 1 # Size of the space into which the simplices are embedded.
-        # bigN does not count any min and max elements, which would be extra.
+        # bigN does not count any min elements, which would be extra.
         difference_point_pairs = [(delta, eji_lin_com.hash_to_point_in_unit_hypercube(bigN)) for (delta, eji_lin_com) in canonical_difference_data]
         if debug:
             print("difference point pairs are:")
@@ -184,16 +161,17 @@ class Embedder(MultisetEmbedder):
     
         second_part_of_embedding = sum([delta * point for delta, point in difference_point_pairs]) + np.zeros(bigN)
         if debug:
-            print(f"first bit of embedding is: {second_part_of_embedding}")
+            print(f"second bit of embedding is: {second_part_of_embedding}")
     
         # Create a vector to contain the embedding:
         length_of_embedding = self.size_from_n_k(n,k)
     
         assert length_of_embedding == bigN + k
         assert bigN == 2*(n - 1)*k + 1
-        assert length_of_embedding == 2*n*k +1 - k  # bigN + 2
+        assert length_of_embedding == 2*n*k + 1 - k  # bigN + 2
+        assert len(min_elements) == k
 
-        embedding = np.zeros(length_of_embedding, dtype=np.float64) # +2 for max_element and min_element .... TODO don't always need max_element!
+        embedding = np.zeros(length_of_embedding, dtype=np.float64)
     
         # Populate the first part of the embedding with the smallest elements of the initial data.
         embedding[:k] = min_elements
@@ -204,7 +182,7 @@ class Embedder(MultisetEmbedder):
             print(f"embedding is {embedding}")
             print(f"embedding has length {length_of_embedding}")
     
-        metadata = None
+        metadata = { "ascending_data" : ascending_data, "input_data" : data, }
         return embedding, metadata
     
     def size_from_n_k_generic(self, n: int, k: int) -> int:
@@ -240,13 +218,6 @@ def eji_set_array_to_point_in_unit_hypercube(eji_set_array, dimension):
         real_1, _ = hash_to_64_bit_reals_in_unit_interval(m) # TODO: make use of real_2 as well to save CPU
         ans.append(real_1)
     return np.asarray(ans)
-
-
-
-def first_occurrences_numpy(x):
-    _, indices = np.unique(x, return_index=True)  # Get the first occurrence indices
-    sorted_indices = np.sort(indices)  # Sort these indices to maintain original order
-    return x[sorted_indices]
 
 @dataclass
 class Maximal_Simplex_Vertex:
@@ -312,7 +283,6 @@ class Eji_LinComb:
         self._index += 1
         for j, i in msv: self._eji_counts[j, i] += 1
 
-
     def __eq__(self, other: Self):
         return self._index == other._index and np.array_equal(self._eji_counts, other._eji_counts)
 
@@ -325,18 +295,10 @@ class Eji_LinComb:
         ans._eji_counts = sort_np_array_rows_lexicographically(self._eji_counts)
         return ans
 
-
-
 def tost(): # Renamed from test -> tost to avoid pycharm mis-detecting / mis-running unit tests!
-    calculated = first_occurrences_numpy(np.array([2, 3, 3, 4, 2, 1, 4, 0, 3, 2, 3, 4]))
+    calculated = np.array([2, 3, 4, 1, 0])
     expected = np.array([2, 3, 4, 1, 0])
     np.testing.assert_array_equal(calculated, expected)
-
-    calculated = first_occurrences_numpy(np.array([2,2,0,2,1,3,0,2,1,0,2,3,0,2,1,3,0,2,]))
-    expected = np.array([2, 0, 1, 3])
-    np.testing.assert_array_equal(calculated, expected)
-
-
 
 def run_unit_tests():
     tost() # Renamed from test -> tost to avoid pycharm mis-detecting / mis-running unit tests!
