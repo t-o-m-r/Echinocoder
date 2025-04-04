@@ -1,3 +1,5 @@
+#!/usr/bin/env python 
+
 """
 The purpose of this script is to provide a method that will attempt a brute force decoding of any array encoder which outputs "input_data" within its metadata.
 """
