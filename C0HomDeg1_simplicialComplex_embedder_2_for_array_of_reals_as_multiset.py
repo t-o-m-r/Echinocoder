@@ -4,6 +4,7 @@ import numpy as np
 from itertools import pairwise
 from collections import namedtuple
 from tools import sort_np_array_rows_lexicographically, sort_each_np_array_column
+from tools import ascending_data as ascending_data_from_tools
 import hashlib
 from dataclasses import dataclass, field
 from typing import Self
@@ -38,7 +39,7 @@ class Embedder(MultisetEmbedder):
         # be any of the vectors in the input (unless the data was already sorted appropriately).
         # You can think of "ascending data" as representing all the things we want to encode EXCEPT the associations
         # which link every element of each vector up in the right way.
-        ascending_data = sort_each_np_array_column(data)
+        ascending_data = ascending_data_from_tools(data)
 
         # We need to extract the smallest x, the smallest y, the smallest z (and so on) as these form some of the
         # outputs of the embedding.

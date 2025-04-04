@@ -24,7 +24,7 @@ import              C0_sorting_embedder_for_list_of_reals_as_multiset as embedde
 import data_sources
 import numpy as np
 import unittest
-from tools import __line__
+from tools import __line__, permute_columns_except_first
 
 fail_count = 0
 
@@ -121,6 +121,29 @@ def tost_tools():
                          [3, 5, 8]])
     got = tools.sort_each_np_array_column(inp)
     assert (got == expected).all()
+
+
+    ### CHECK COLUMN PERMUTER ###
+    arr = np.array([[3, 4, 5], 
+                    [6, 7, 8]])
+    perm_gen = permute_columns_except_first(arr)
+    expected_answers = [
+                         np.array([[3, 4, 5],
+                                   [6, 7, 8]]),
+                         np.array([[3, 4, 8],
+                                   [6, 7, 5]]),
+                         np.array([[3, 7, 5],
+                                   [6, 4, 8]]),
+                         np.array([[3, 7, 8],
+                                   [6, 4, 5]]),
+                       ]
+    i=-1
+    for perm in perm_gen:
+       i+=1
+       print(perm, '\n')
+       assert (expected_answers[i] == perm).all()
+    assert i+1 == 4
+
 
 class Test_Embedders(unittest.TestCase):
     def tost_multiset_embedder(self, data, embedder=None, embedders=None, number_of_shuffled_copies=3, expected_embedding=None, relative_tolerance=0, absolute_tolerance=0):

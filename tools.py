@@ -1,5 +1,7 @@
 import numpy as np
 import inspect
+from itertools import permutations, product
+
 
 class LineNo:
     def __str__(self):
@@ -92,4 +94,21 @@ def sort_np_array_rows_lexicographically(array: np.ndarray) -> np.ndarray:
                             [3, 0, 8]])
     """
     return array[np.lexsort(array.T[::-1])]
+
+def permute_columns_except_first(arr):
+    # Ensure the input is a numpy array
+    arr = np.array(arr)
+    rows, cols = arr.shape
+
+    # Separate the fixed first column from the other columns
+    fixed_col = arr[:, [0]]
+    variable_cols = arr[:, 1:]
+
+    # Generate permutations for each column independently as generators
+    all_perms = (permutations(variable_cols[:, i]) for i in range(variable_cols.shape[1]))
+
+    # Create the product of all column permutations (as a generator)
+    for perm_set in product(*all_perms):
+        combined = np.hstack([fixed_col] + [np.array(col).reshape(-1, 1) for col in perm_set])
+        yield combined
 
