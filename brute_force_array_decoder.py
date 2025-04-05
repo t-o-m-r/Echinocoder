@@ -10,69 +10,85 @@ import numpy as np
 import C0HomDeg1_simplicialComplex_embedder_2_for_array_of_reals_as_multiset as simplex2
 import tools
 
+def do_test_on(embedder, data):
+    encoding, (n,k), metadata = embedder.embed(data)
+    
+    print(f"data = {data}")
+    print(f"ecoding = {encoding}")
+    print(f"metadata = {metadata}")
+    
+    def canonical_form(data):
+        return tools.sort_np_array_rows_lexicographically(data)
+    
+    # See if we can attempt brute force decode:
+    if "ascending_data" in metadata:
+        # yes, it seems we can try
+        ascending_data = metadata["ascending_data"]
+        print(f"ascending data = {ascending_data}")
+    
+        if "input_data" in metadata:
+            assert np.equal(ascending_data, tools.ascending_data(metadata["input_data"])).all()
+    
+        bad_matches = set()
+        good_matches = set()
+        bad_cover_factor = 0
+        good_cover_factor = 0
+
+        canonical = canonical_form(data)
+    
+        for hypothesis in tools.permute_columns_except_first(ascending_data):
+            #print("Might be:")
+            #print(hypothesis)
+            encoding_of_hypothesis, _, _ = embedder.embed(hypothesis)
+    
+            exact_match = np.array_equal(encoding_of_hypothesis, encoding)
+            approx_match = np.allclose(encoding_of_hypothesis, encoding)
+         
+            # Currenrly use approx match
+            if approx_match:
+                print("\n\nWe found an encoding match between")
+                print(data)
+                print("and")
+                print(hypothesis)
+                canonical_hypothesis = canonical_form(hypothesis)
+    
+                ch = tuple(tuple(i) for i in canonical_hypothesis.tolist())
+    
+                if (canonical == canonical_hypothesis).all():
+                    good_matches.add(ch)
+                    print("This is a GOOD DESIRED match.")
+                    good_cover_factor += 1
+                else:
+                    bad_matches.add(ch)
+                    print("This match is BAD.")
+                    bad_cover_factor += 1
+                print(f"So far: #GOOD={len(good_matches)} and #BAD={len(bad_matches)}.") 
+    
+        print(f"At end: GOOD={good_matches} and BAD={bad_matches}.") 
+        print(f"At end: #GOOD={len(good_matches)} and #BAD={len(bad_matches)}.") 
+        print(f"At end: #GOOD_COVER_FACTOR={good_cover_factor}")
+        print(f"At end: #BAD_COVER_FACTOR={bad_cover_factor}")
+    
+        assert len(bad_matches) == 0 
+        assert len(good_matches) == 1
+
+        print("Passed test\n=============\n")
+
 embedder = simplex2.Embedder()
 
-data = np.array([[1,2,3],
-                 [4,-5,6],
-                 [-7,8,9]])
+"""
+do_test_on(embedder, np.array([[1,2,3],
+                              [4,-5,6],
+                              [-7,8,9]]))
 
-encoding, (n,k), metadata = embedder.embed(data)
+do_test_on(embedder, np.array([[1,2,3],
+                              [4,-5,6],
+                              [4,-5,6],
+                              [-7,8,9]]))
+"""
 
-print(f"data = {data}")
-print(f"ecoding = {encoding}")
-print(f"metadata = {metadata}")
-
-def canonical_form(data):
-    return tools.sort_np_array_rows_lexicographically(data)
-
-# See if we can attempt brute force decode:
-if "ascending_data" in metadata:
-    # yes, it seems we can try
-    ascending_data = metadata["ascending_data"]
-    print(f"ascending data = {ascending_data}")
-
-    if "input_data" in metadata:
-        assert np.equal(ascending_data, tools.ascending_data(metadata["input_data"])).all()
-
-    bad_matches = set()
-    good_matches = set()
-    canonical = canonical_form(data)
-
-    for hypothesis in tools.permute_columns_except_first(ascending_data):
-        #print("Might be:")
-        #print(hypothesis)
-        encoding_of_hypothesis, _, _ = embedder.embed(hypothesis)
-
-        if (encoding_of_hypothesis == encoding).all(): # Ought to worry about rounding
-            print("\n\nWe found an exact encoding match between")
-            print(data)
-            print("and")
-            print(hypothesis)
-            canonical_hypothesis = canonical_form(hypothesis)
-
-            ch = tuple(tuple(i) for i in canonical_hypothesis.tolist())
-
-            if (canonical == canonical_hypothesis).all():
-                good_matches.add(ch)
-                print("This is a GOOD DESIRED match.")
-            else:
-                bad_matches.add(ch)
-                print("This match is BAD.")
-            print(f"So far: #GOOD={len(good_matches)} and #BAD={len(bad_matches)}.") 
-
-    print(f"At end: GOOD={good_matches} and BAD={bad_matches}.") 
-    print(f"At end: #GOOD={len(good_matches)} and #BAD={len(bad_matches)}.") 
-
-    assert len(bad_matches) == 0 
-    assert len(good_matches) == 1
-
-
-
-        
-
-
-
-
-
-
-
+do_test_on(embedder, np.array([[1,2,3],
+                              [4,-5,6],
+                              [4,-5,6],
+                              [4,-5,6],
+                              [-7,8,9]]))

@@ -1,6 +1,7 @@
 import numpy as np
 import inspect
 from itertools import permutations, product
+from distinct_permutations import distinct_permutations
 
 
 class LineNo:
@@ -105,10 +106,14 @@ def permute_columns_except_first(arr):
     variable_cols = arr[:, 1:]
 
     # Generate permutations for each column independently as generators
-    all_perms = (permutations(variable_cols[:, i]) for i in range(variable_cols.shape[1]))
+    print("Making all perms ... ")
+    all_perms = (distinct_permutations(variable_cols[:, i]) for i in range(variable_cols.shape[1]))
+    print("                 ... done.")
 
     # Create the product of all column permutations (as a generator)
+    #print("Making all products ... ")
     for perm_set in product(*all_perms):
+        #print("                         ... got a product")
         combined = np.hstack([fixed_col] + [np.array(col).reshape(-1, 1) for col in perm_set])
         yield combined
 
