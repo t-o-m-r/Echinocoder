@@ -35,11 +35,15 @@ def do_test_on(embedder, data):
         good_cover_factor = 0
 
         canonical = canonical_form(data)
-    
-        for hypothesis in tools.permute_columns_except_first(ascending_data):
+
+        next_print = 1
+        for counter, hypothesis in enumerate(tools.permute_columns_except_first(ascending_data)):
             #print("Might be:")
             #print(hypothesis)
             encoding_of_hypothesis, _, _ = embedder.embed(hypothesis)
+            if counter+1 == next_print:
+                next_print = int((next_print+1)*1.1)
+                print(".", end="", flush=True)
     
             exact_match = np.array_equal(encoding_of_hypothesis, encoding)
             approx_match = np.allclose(encoding_of_hypothesis, encoding)
@@ -74,21 +78,38 @@ def do_test_on(embedder, data):
 
         print("Passed test\n=============\n")
 
-embedder = simplex2.Embedder()
 
-"""
-do_test_on(embedder, np.array([[1,2,3],
-                              [4,-5,6],
-                              [-7,8,9]]))
 
-do_test_on(embedder, np.array([[1,2,3],
-                              [4,-5,6],
-                              [4,-5,6],
-                              [-7,8,9]]))
-"""
 
-do_test_on(embedder, np.array([[1,2,3],
-                              [4,-5,6],
-                              [4,-5,6],
-                              [4,-5,6],
-                              [-7,8,9]]))
+def run_the_decoder_a_few_times():
+    embedder = simplex2.Embedder()
+    
+    
+    do_test_on(embedder, np.array([[1,2,3],
+                                  [4,-5,6],
+                                  [-7,8,9]]))
+    
+    do_test_on(embedder, np.array([[1,2,3],
+                                  [4,-5,6],
+                                  [4,-5,6],
+                                  [-7,8,9]]))
+    
+    
+    do_test_on(embedder, np.array([[1,2,3],
+                                  [4,-5,6],
+                                  [4.1,-5.1,6.1],
+                                  [4.2,-5.2,6.2],
+                                  [-7,8,9]]))
+    
+    do_test_on(embedder, np.array([[1,2,3],
+                                  [4,-5,6],
+                                  [4,-5,6],
+                                  [4,-5,61],
+                                  [4,-5,61],
+                                  [4,-5,61],
+                                  [4,-5,61],
+                                  [4,-5,61],
+                                  [-7,8,9]]))
+
+if __name__ == "__main__":
+    run_the_decoder_a_few_times()

@@ -151,10 +151,14 @@ def distinct_permutations(iterable, r=None):
     return iter(() if r else ((),))
 
 
-
+def tost():
+    thing=[3,0,3]
+    print("distinct perms of",thing, "are")
+    expected_perms = [ (0,3,3), (3,0,3), (3,3,0) ]
+    for n, perm in enumerate(distinct_permutations(thing)):
+        print(f"Expected perm {expected_perms[n]} got perm {perm}.")
+        assert expected_perms[n] == perm
 
 if __name__ == "__main__":
-    thing=[1,0,1]
-    print("distinct perms of",thing, "are")
-    for perm in distinct_permutations(thing):
-        print("perm ",perm)
+    tost()
+

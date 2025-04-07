@@ -4,6 +4,12 @@ Factor the repeated assessory functions out of the two simplex encoders.
 
 The brute_force_decoder should probably allow for floating tolerances and near matches -- at least some of the time.
 
+The brute force decoder leaves the first column alone and then permutes the remaining columns. The saves some time, but not as much time as COULD potetntially be saved.  E.g. if the first column has all 4s in it, no perms of the second column (in a two column scenario) would ever be needed as they are not distinct.  E.g. permuting the second column here is a waste of time if the whole thing represents a multiset of tuples rather than a list of tuples.
+[(4,1),
+ (4,2),
+ (4,7)]
+ One step in the right direction would be not to freeze (arbitrarily) the first column, as we do at present, but instead to freeze the column with the most dissimilar elements. That would leave columnsa with repeats dominating the columns whih are subject to distinct_permuations.  This would not solve everything, though. Not sure how best to proceed.
+
 Consider writing a tool to get all the simplices for a given (n,k) and see which ones need barycentric subdivision and which ones don't.  More than this, look to see how many vertices cause the ambiguity (if that's meaningful!!) ... i.e. we want to see if it would be possible to get away with just putting a single vertex at the centre of each simplex rather than full on barycentric subdivision.
 
 ## Item 1
