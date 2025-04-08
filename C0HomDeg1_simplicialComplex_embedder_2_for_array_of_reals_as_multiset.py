@@ -272,6 +272,20 @@ class Embedder(MultisetEmbedder):
                                                                    [3, 3, 2]], dtype=uint16)))
             """
 
+            # Now, just for fun (experimentation, I don't know what the answer should be!) try the same linear
+            # combination as before -- except this time after canonicalisation of the vertices.
+            part_1_lin_comb = sum(coeff * (eji_lin_comb._eji_counts / eji_lin_comb._index)
+                                  for coeff, eji_lin_comb in canonical_difference_data)
+            part_2_lin_comb = np.tile(min_elements, (n, 1))  # Offsets due to min elements
+            print("\n[Just for fun ....")
+            print(f"part_1_lin_comb after canonicalisation is\n{part_1_lin_comb}")
+            print(f"part_2_lin_comb after canonicalisation is\n{part_2_lin_comb}")
+            checksum = part_1_lin_comb + part_2_lin_comb
+            print(f"canonicalised checksum after canonicalisation is\n{sort_np_array_rows_lexicographically(checksum)}")
+            print(f"while the canonicalised original data (which need not match checksum!!) is\n{sort_np_array_rows_lexicographically(data)}")
+            print("... end of fun.]")
+
+
         assert n*k - k == expected_number_of_vertices
         bigN = 2*(n - 1)*k + 1 # Size of the space into which the simplices are embedded.
         # bigN does not count any min elements, which would be extra.
@@ -319,11 +333,7 @@ def hash_to_128_bit_md5_int(md5):
     return int.from_bytes(md5.digest(), 'big') # 128 bits worth.
 
 def hash_to_64_bit_reals_in_unit_interval(md5):
-    """
-    An md5 sum is 64 bits long so we get two such reals.
-    N.B. This hash is of self._eji_counts only -- i.e. it ignores self._index.
-    For the purposes to which this hash will be used, that is believed to be apporopriate.
-    """
+    # An md5 sum is 64 bits long so we get two such reals.
 
     x = hash_to_128_bit_md5_int(md5)
     bot_64_bits = x & 0xffFFffFFffFFffFF
@@ -379,9 +389,6 @@ class Eji_LinComb:
     def hash_to_point_in_unit_hypercube(self, dimension):
         m = hashlib.md5()
         m.update(self._eji_counts)
-        #print("self._index is")
-        #print(self._index)
-        # self._index.nbytes returns the number of bytes in self._index as self._index is of a numpy type which provides this
         m.update(np.array([self._index])) # creating an array with a single element is a kludge to work around difficulties of using to_bytes on np_integers of unknown size
         ans = []
         for i in range(dimension):
@@ -427,7 +434,25 @@ def run_unit_tests():
 if __name__ == "__main__":
     run_unit_tests()
 
-    some_input = np.asarray([[4,2,3],[-3,5,1],[8,9,2],[2,7,2]])
+    default_test_input = np.asarray([[4,2,3],
+                                     [-3,5,1],
+                                     [8,9,2],
+                                     [2,7,2]])
+    """
+    experimental_test_input_1 = np.asarray([[4,3,3],
+                                            [-3,5,1],
+                                            [8,9,2],
+                                            [2,6,2]])
+    experimental_test_input_2 = np.asarray([[5, -1, 3],
+                                            [-3, 5, 2],
+                                            [6, -9, 2],
+                                            [2, 6, 5]])
+    experimental_test_input_3 = np.random.rand(4,3)
+    """
+
+    some_input = default_test_input
+    # some_input = experimental_test_input_3
+
     embedder = Embedder()
     output = embedder.embed(some_input, debug=True)
 
