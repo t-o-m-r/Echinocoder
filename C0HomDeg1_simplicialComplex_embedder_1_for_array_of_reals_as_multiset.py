@@ -21,35 +21,92 @@ class Embedder(MultisetEmbedder):
         assert MultisetEmbedder.is_generic_data(data) # Precondition
         if debug:
             print(f"data is {data}")
-    
+            """
+            data is [[ 4  2]
+                     [-3  5]
+                     [ 8  9]
+                     [ 2  7]]
+            """
         n,k = data.shape
+        if debug:
+            print(f"n={n}, k={k}")
+            """
+            n=4, k=2
+            """
+
         flattened_data = [ ( data[j][i], Eji(j,i) ) for j in range(n) for i in range(k) ]
         sorted_data = sorted( flattened_data, key = lambda x : -x[0])
     
         if debug:
             print("sorted flattened data is")
             _ = [print(bit) for bit in sorted_data]
+            """
+            sorted flattened data is
+            (np.int64(9), Eji(j=2, i=1))
+            (np.int64(8), Eji(j=2, i=0))
+            (np.int64(7), Eji(j=3, i=1))
+            (np.int64(5), Eji(j=1, i=1))
+            (np.int64(4), Eji(j=0, i=0))
+            (np.int64(2), Eji(j=0, i=1))
+            (np.int64(2), Eji(j=3, i=0))
+            (np.int64(-3), Eji(j=1, i=0))
+            """
     
         min_element = sorted_data[-1][0]
         max_element = sorted_data[0][0]
+        if debug:
+            print(f"min_element, max_element = {min_element, max_element}")
+            """
+            min_element, max_element = (np.int64(-3), np.int64(9))
+            """
     
         difference_data = [ (x[0]-y[0], x[1]) for x,y in pairwise(sorted_data) ]
     
         if debug:
             print("difference data is")
             _ = [print(bit) for bit in difference_data]
+            """
+            difference data is
+            (np.int64(1), Eji(j=2, i=1))
+            (np.int64(1), Eji(j=2, i=0))
+            (np.int64(2), Eji(j=3, i=1))
+            (np.int64(1), Eji(j=1, i=1))
+            (np.int64(2), Eji(j=0, i=0))
+            (np.int64(0), Eji(j=0, i=1))
+            (np.int64(5), Eji(j=3, i=0))
+            """
     
         difference_data_with_MSVs = [
             (delta, Maximal_Simplex_Vertex(set([eji for (_, eji) in difference_data[0:i + 1]]))) for i, (delta, _) in enumerate(difference_data)]
-    
+
         if debug:
             print("difference data with MSVs:")
             _ = [print(bit) for bit in difference_data_with_MSVs]
+            """
+           difference data with MSVs:
+           (np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=1)}))
+           (np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0), Eji(j=2, i=1)}))
+           (np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=3, i=1), Eji(j=2, i=0), Eji(j=2, i=1)}))
+           (np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=3, i=1), Eji(j=1, i=1), Eji(j=2, i=0), Eji(j=2, i=1)}))
+           (np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=1), Eji(j=0, i=0), Eji(j=3, i=1), Eji(j=1, i=1), Eji(j=2, i=0)}))
+           (np.int64(0), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=1), Eji(j=2, i=1), Eji(j=0, i=0), Eji(j=3, i=1), Eji(j=1, i=1), Eji(j=2, i=0)}))
+           (np.int64(5), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=1), Eji(j=2, i=1), Eji(j=0, i=0), Eji(j=3, i=1), Eji(j=1, i=1), Eji(j=2, i=0), Eji(j=3, i=0)}))
+           """
     
         sorted_difference_data_with_MSVs = sorted(difference_data_with_MSVs, key=lambda x: -x[0] )
         if debug:
             print("sorted difference data with MSVs:")
             _ = [print(bit) for bit in sorted_difference_data_with_MSVs]
+            """
+            sorted difference data with MSVs:
+            (np.int64(5), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=1), Eji(j=2, i=1), Eji(j=0, i=0), Eji(j=3, i=1), Eji(j=1, i=1), Eji(j=2, i=0), Eji(j=3, i=0)}))
+            (np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=3, i=1), Eji(j=2, i=0), Eji(j=2, i=1)}))
+            (np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=1), Eji(j=0, i=0), Eji(j=3, i=1), Eji(j=1, i=1), Eji(j=2, i=0)}))
+            (np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=1)}))
+            (np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0), Eji(j=2, i=1)}))
+            (np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=3, i=1), Eji(j=1, i=1), Eji(j=2, i=0), Eji(j=2, i=1)}))
+            (np.int64(0), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=1), Eji(j=2, i=1), Eji(j=0, i=0), Eji(j=3, i=1), Eji(j=1, i=1), Eji(j=2, i=0)}))
+            """
     
         # Barycentrically subdivide:
         deltas_in_current_order = [delta for delta, _ in sorted_difference_data_with_MSVs]
@@ -69,38 +126,73 @@ class Embedder(MultisetEmbedder):
         if debug:
             print("difference data in Barycentrically subdivided simplex:")
             _ = [print(bit) for bit in difference_data_in_subdivided_simplex]
+            """
+            difference data in Barycentrically subdivided simplex:
+            (np.int64(3), Eji_LinComb(_index=np.uint16(1), _eji_counts=array([ [1, 1],
+                                                                               [0, 1],
+                                                                               [1, 1],
+                                                                               [1, 1]], dtype=uint16)))
+            (np.int64(0), Eji_LinComb(_index=np.uint16(2), _eji_counts=array([ [1, 1],
+                                                                               [0, 1],
+                                                                               [2, 2],
+                                                                               [1, 2]], dtype=uint16)))
+            (np.int64(3), Eji_LinComb(_index=np.uint16(3), _eji_counts=array([ [2, 1],
+                                                                               [0, 2],
+                                                                               [3, 3],
+                                                                               [1, 3]], dtype=uint16)))
+            (np.int64(0), Eji_LinComb(_index=np.uint16(4), _eji_counts=array([ [2, 1],
+                                                                               [0, 2],
+                                                                               [3, 4],
+                                                                               [1, 3]], dtype=uint16)))
+            (np.int64(0), Eji_LinComb(_index=np.uint16(5), _eji_counts=array([ [2, 1],
+                                                                               [0, 2],
+                                                                               [4, 5],
+                                                                               [1, 3]], dtype=uint16)))
+            (np.int64(6), Eji_LinComb(_index=np.uint16(6), _eji_counts=array([ [2, 1],
+                                                                               [0, 3],
+                                                                               [5, 6],
+                                                                               [1, 4]], dtype=uint16)))
+            (np.int64(0), Eji_LinComb(_index=np.uint16(7), _eji_counts=array([ [3, 2],
+                                                                               [0, 4],
+                                                                               [6, 7],
+                                                                               [1, 5]], dtype=uint16)))
+            """
     
         canonical_difference_data = [(delta, msv.get_canonical_form()) for (delta, msv) in difference_data_in_subdivided_simplex]
         if debug:
             print("canonical difference data is:")
             _ = [print(bit) for bit in canonical_difference_data]
-    
-        #j_order = first_occurrences_numpy(np.asarray([ eji.j for _,eji in sorted_data ]))
-        #perm = invert_perm(j_order)
-    
-        #if debug:
-        #    print(f"the j's appear in this order {j_order}")
-        #    print(f"inverse perm of j_order is  {perm}")
-    
-        #canonical_difference_data = [ (delta, Eji(perm[j], i) ) for delta, (j,i) in difference_data ]
-    
-        #if debug:
-        #    print(f"canonical difference data is:")
-        #    [print(bit) for bit in canonical_difference_data]
-    
-        #cumulated_canonical_difference_data_1 = [ (delta, Maximal_Simplex_Vertex(set([  eji for (_, eji) in canonical_difference_data[0:i+1] ])))  for i, (delta, _) in enumerate(canonical_difference_data)]
-        #if debug:
-        #    print(f"cumulated canonical difference data (version 1) is:")
-        #    [print(bit) for bit in cumulated_canonical_difference_data_1]
-    
-        # HERE
-    
-    
-        # Calculate same thing but in a different representation
-        #cumulated_canonical_difference_data_2 = [ ( delta, eji_set_to_np_array(eji_set, n, k) ) for (delta, eji_set) in cumulated_canonical_difference_data_1 ]
-        #if debug:
-        #    print(f"cumulated canonical difference data (version 2) is:")
-        #    [print(bit) for bit in cumulated_canonical_difference_data_2]
+            """
+            canonical difference data is:
+            (np.int64(3), Eji_LinComb(_index=np.uint16(1), _eji_counts=array([ [0, 1],
+                                                                               [1, 1],
+                                                                               [1, 1],
+                                                                               [1, 1]], dtype=uint16)))
+            (np.int64(0), Eji_LinComb(_index=np.uint16(2), _eji_counts=array([ [0, 1],
+                                                                               [1, 1],
+                                                                               [1, 2],
+                                                                               [2, 2]], dtype=uint16)))
+            (np.int64(3), Eji_LinComb(_index=np.uint16(3), _eji_counts=array([ [0, 2],
+                                                                               [1, 3],
+                                                                               [2, 1],
+                                                                               [3, 3]], dtype=uint16)))
+            (np.int64(0), Eji_LinComb(_index=np.uint16(4), _eji_counts=array([ [0, 2],
+                                                                               [1, 3],
+                                                                               [2, 1],
+                                                                               [3, 4]], dtype=uint16)))
+            (np.int64(0), Eji_LinComb(_index=np.uint16(5), _eji_counts=array([ [0, 2],
+                                                                               [1, 3],
+                                                                               [2, 1],
+                                                                               [4, 5]], dtype=uint16)))
+            (np.int64(6), Eji_LinComb(_index=np.uint16(6), _eji_counts=array([ [0, 3],
+                                                                               [1, 4],
+                                                                               [2, 1],
+                                                                               [5, 6]], dtype=uint16)))
+            (np.int64(0), Eji_LinComb(_index=np.uint16(7), _eji_counts=array([ [0, 4],
+                                                                               [1, 5],
+                                                                               [3, 2],
+                                                                               [6, 7]], dtype=uint16)))
+            """
     
         assert n*k - 1 == expected_number_of_vertices
         bigN = 2 * (n*k - 1) + 1 # Size of the space into which the simplices are embedded.
@@ -109,12 +201,40 @@ class Embedder(MultisetEmbedder):
         if debug:
             print("difference point pairs are:")
             _ = [print(bit) for bit in difference_point_pairs]
+            """
+            difference point pairs are:
+            (np.int64(3), array([0.36848433, 0.77332117, 0.54246696, 0.00614587, 0.16145344,
+                   0.55737953, 0.47375708, 0.06267148, 0.79865181, 0.8432597 ,
+                   0.84076601, 0.10594082, 0.3266008 , 0.90278422, 0.1896093 ]))
+            (np.int64(0), array([0.52003891, 0.48375017, 0.34975908, 0.67179015, 0.24650177,
+                   0.84483603, 0.2045798 , 0.09470578, 0.80124256, 0.17797837,
+                   0.36914169, 0.54227452, 0.24279444, 0.87256648, 0.99460848]))
+            (np.int64(3), array([0.49341609, 0.36827551, 0.214953  , 0.22823927, 0.17179284,
+                   0.35992803, 0.7943664 , 0.46248194, 0.60113404, 0.97890249,
+                   0.02907581, 0.77631507, 0.78086964, 0.65656856, 0.7821651 ]))
+            (np.int64(0), array([0.99489997, 0.26532169, 0.23011443, 0.90270477, 0.76227446,
+                   0.94667702, 0.66704431, 0.28072375, 0.03818294, 0.25842508,
+                   0.3834133 , 0.11537521, 0.98898113, 0.33551268, 0.3673945 ]))
+            (np.int64(0), array([0.91440044, 0.75028794, 0.86116311, 0.59125468, 0.27837364,
+                   0.48841458, 0.6161909 , 0.04121007, 0.38811828, 0.81485344,
+                   0.97436848, 0.43717881, 0.47879426, 0.70649379, 0.98755494]))
+            (np.int64(6), array([0.74708393, 0.58110207, 0.08382841, 0.4662355 , 0.00111425,
+                   0.4591535 , 0.04375308, 0.55425583, 0.97060777, 0.6746829 ,
+                   0.42090082, 0.05307844, 0.78545894, 0.10950183, 0.74975874]))
+            (np.int64(0), array([0.93918985, 0.01933514, 0.15607528, 0.78203214, 0.15181967,
+                   0.2580524 , 0.04029809, 0.31253194, 0.49342975, 0.23897078,
+                   0.94414096, 0.52638471, 0.68395503, 0.12269188, 0.73733508]))
+            """
     
         first_half_of_embedding = sum([delta * point for delta, point in difference_point_pairs]) + np.zeros(bigN)
         if debug:
             print(f"first bit of embedding is: {first_half_of_embedding}")
-    
-    
+            """
+            first bit of embedding is:
+            [ 7.06820485  6.91140242  2.77523033  3.5005684   1.00642432  5.50684367
+              4.06688895  4.90099527 10.02300416  9.51458399  5.1349304   2.9652383
+              8.03516496  5.33506937  7.41387563]
+            """
     
         # Create a vector to contain the embedding:
         length_of_embedding = self.size_from_n_k(n,k)
@@ -136,6 +256,14 @@ class Embedder(MultisetEmbedder):
         if debug:
             print(f"embedding is {embedding}")
             print(f"embedding has length {length_of_embedding}")
+
+            """
+            embedding is [ 7.06820485  6.91140242  2.77523033  3.5005684   1.00642432  5.50684367
+                           4.06688895  4.90099527 10.02300416  9.51458399  5.1349304   2.9652383
+                           8.03516496  5.33506937  7.41387563  9.         -3.        ]
+
+            embedding has length 17
+            """
     
         metadata = None
         return embedding, metadata
