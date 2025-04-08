@@ -196,10 +196,10 @@ class Embedder(MultisetEmbedder):
 
 
         if debug:
-            # Do a check: the following linear comibation should be our original set:
-            part_1_lin_comb = sum( (coeff/eji_lin_comb._index) * eji_lin_comb._eji_counts
+            # Do a check: the following linear combination should be our original set:
+            part_1_lin_comb = sum( coeff * (eji_lin_comb._eji_counts /eji_lin_comb._index)
                                     for coeff, eji_lin_comb in difference_data_in_subdivided_simplex )
-            part_2_lin_comb = np.tile(min_elements, (n,1)) # Offsets
+            part_2_lin_comb = np.tile(min_elements, (n,1)) # Offsets due to min elements
             print(f"part_1_lin_comb is\n{part_1_lin_comb}")
             print(f"part_2_lin_comb is\n{part_2_lin_comb}")
             checksum = part_1_lin_comb+part_2_lin_comb
