@@ -59,46 +59,44 @@ class Embedder(MultisetEmbedder):
 
         flattened_data_separated_by_cpt = [ [ ( data[j][i], Eji(j,i) ) for j in range(n) ] for i in range(k) ]
         sorted_data_separated_by_cpt = [sorted(cpt, key = lambda x : -x[0]) for cpt in flattened_data_separated_by_cpt]
-        """ for our example data
-        sorted_data_separated_by_cpt is 
-[(np.int64(8), Eji(j=2, i=0)), (np.int64(4), Eji(j=0, i=0)), (np.int64(2), Eji(j=3, i=0)), (np.int64(-3), Eji(j=1, i=0))]
-[(np.int64(9), Eji(j=2, i=1)), (np.int64(7), Eji(j=3, i=1)), (np.int64(5), Eji(j=1, i=1)), (np.int64(2), Eji(j=0, i=1))]
-[(np.int64(3), Eji(j=0, i=2)), (np.int64(2), Eji(j=2, i=2)), (np.int64(2), Eji(j=3, i=2)), (np.int64(1), Eji(j=1, i=2))]
-        """
         if debug:
             print("sorted_data_separated_by_cpt is ")
             _ = [print(bit) for bit in sorted_data_separated_by_cpt]
+            """ for our example data
+            sorted_data_separated_by_cpt is 
+    [(np.int64(8), Eji(j=2, i=0)), (np.int64(4), Eji(j=0, i=0)), (np.int64(2), Eji(j=3, i=0)), (np.int64(-3), Eji(j=1, i=0))]
+    [(np.int64(9), Eji(j=2, i=1)), (np.int64(7), Eji(j=3, i=1)), (np.int64(5), Eji(j=1, i=1)), (np.int64(2), Eji(j=0, i=1))]
+    [(np.int64(3), Eji(j=0, i=2)), (np.int64(2), Eji(j=2, i=2)), (np.int64(2), Eji(j=3, i=2)), (np.int64(1), Eji(j=1, i=2))]
+            """
 
         difference_data_by_cpt = [[ (x[0]-y[0], x[1]) for x,y in pairwise(cpt) ] for cpt in sorted_data_separated_by_cpt]
-    
         if debug:
             print("difference data is")
             _ = [print(bit) for bit in difference_data_by_cpt]
-        """
-        difference data is
-[(np.int64(4), Eji(j=2, i=0)), (np.int64(2), Eji(j=0, i=0)), (np.int64(5), Eji(j=3, i=0))]
-[(np.int64(2), Eji(j=2, i=1)), (np.int64(2), Eji(j=3, i=1)), (np.int64(3), Eji(j=1, i=1))]
-[(np.int64(1), Eji(j=0, i=2)), (np.int64(0), Eji(j=2, i=2)), (np.int64(1), Eji(j=3, i=2))]
-        """
+            """
+            difference data is
+    [(np.int64(4), Eji(j=2, i=0)), (np.int64(2), Eji(j=0, i=0)), (np.int64(5), Eji(j=3, i=0))]
+    [(np.int64(2), Eji(j=2, i=1)), (np.int64(2), Eji(j=3, i=1)), (np.int64(3), Eji(j=1, i=1))]
+    [(np.int64(1), Eji(j=0, i=2)), (np.int64(0), Eji(j=2, i=2)), (np.int64(1), Eji(j=3, i=2))]
+            """
         difference_data_with_MSVs_by_cpt = [[
             (delta, Maximal_Simplex_Vertex(set([eji for (_, eji) in cpt[0:i + 1]]))) for i, (delta, _) in enumerate(cpt)]
             for cpt in difference_data_by_cpt]
-    
         if debug:
             print("difference data with MSVs by cpt:")
             _ = [print(bit) for bit in difference_data_with_MSVs_by_cpt]
-        """
-        difference data with MSVs by cpt:
-        [(np.int64(4), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0)})),
-           (np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0), Eji(j=0, i=0)})),
-             (np.int64(5), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0), Eji(j=3, i=0), Eji(j=0, i=0)}))]
-        [(np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=1)})),
-           (np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=3, i=1), Eji(j=2, i=1)})),
-             (np.int64(3), Maximal_Simplex_Vertex(_vertex_set={Eji(j=3, i=1), Eji(j=1, i=1), Eji(j=2, i=1)}))]
-        [(np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2)})), 
-           (np.int64(0), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2), Eji(j=2, i=2)})),
-             (np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2), Eji(j=3, i=2), Eji(j=2, i=2)}))]
-        """
+            """
+            difference data with MSVs by cpt:
+            [(np.int64(4), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0)})),
+               (np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0), Eji(j=0, i=0)})),
+                 (np.int64(5), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=0), Eji(j=3, i=0), Eji(j=0, i=0)}))]
+            [(np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=2, i=1)})),
+               (np.int64(2), Maximal_Simplex_Vertex(_vertex_set={Eji(j=3, i=1), Eji(j=2, i=1)})),
+                 (np.int64(3), Maximal_Simplex_Vertex(_vertex_set={Eji(j=3, i=1), Eji(j=1, i=1), Eji(j=2, i=1)}))]
+            [(np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2)})), 
+               (np.int64(0), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2), Eji(j=2, i=2)})),
+                 (np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2), Eji(j=3, i=2), Eji(j=2, i=2)}))]
+            """
 
         # Now flatten the difference data:
         difference_data_with_MSVs = [bit for cpt in difference_data_with_MSVs_by_cpt for bit in cpt]
@@ -152,16 +150,128 @@ class Embedder(MultisetEmbedder):
         difference_data_in_subdivided_simplex = [ (  (i+1)*(deltas_in_current_order[i]-
                  (deltas_in_current_order[i+1] if i+1<expected_number_of_vertices else 0)),
                             Eji_LinComb(n, k, msvs_in_current_order[:i+1])) for i in range(expected_number_of_vertices)]
+        if debug:
+            print("difference data in barycentrically subdivided simplex:")
+            _ = [print(bit) for bit in difference_data_in_subdivided_simplex]
+            """
+            difference data in barycentrically subdivided simplex:
+(np.int64(1), Eji_LinComb(_index=np.uint16(1), _eji_counts=array([ [1, 0, 0],
+                                                                   [0, 0, 0],
+                                                                   [1, 0, 0],
+                                                                   [1, 0, 0]], dtype=uint16)))
+(np.int64(2), Eji_LinComb(_index=np.uint16(2), _eji_counts=array([ [1, 0, 0],
+                                                                   [0, 0, 0],
+                                                                   [2, 0, 0],
+                                                                   [1, 0, 0]], dtype=uint16)))
+(np.int64(3), Eji_LinComb(_index=np.uint16(3), _eji_counts=array([ [1, 0, 0],
+                                                                   [0, 1, 0],
+                                                                   [2, 1, 0],
+                                                                   [1, 1, 0]], dtype=uint16)))
+(np.int64(0), Eji_LinComb(_index=np.uint16(4), _eji_counts=array([ [2, 0, 0],
+                                                                   [0, 1, 0],
+                                                                   [3, 1, 0],
+                                                                   [1, 1, 0]], dtype=uint16)))
+(np.int64(0), Eji_LinComb(_index=np.uint16(5), _eji_counts=array([ [2, 0, 0],
+                                                                   [0, 1, 0],
+                                                                   [3, 2, 0],
+                                                                   [1, 1, 0]], dtype=uint16)))
+(np.int64(6), Eji_LinComb(_index=np.uint16(6), _eji_counts=array([ [2, 0, 0],
+                                                                   [0, 1, 0],
+                                                                   [3, 3, 0],
+                                                                   [1, 2, 0]], dtype=uint16)))
+(np.int64(0), Eji_LinComb(_index=np.uint16(7), _eji_counts=array([ [2, 0, 1],
+                                                                   [0, 1, 0],
+                                                                   [3, 3, 0],
+                                                                   [1, 2, 0]], dtype=uint16)))
+(np.int64(8), Eji_LinComb(_index=np.uint16(8), _eji_counts=array([ [2, 0, 2],
+                                                                   [0, 1, 0],
+                                                                   [3, 3, 1],
+                                                                   [1, 2, 1]], dtype=uint16)))
+(np.int64(0), Eji_LinComb(_index=np.uint16(9), _eji_counts=array([ [2, 0, 3],
+                                                                   [0, 1, 0],
+                                                                   [3, 3, 2],
+                                                                   [1, 2, 1]], dtype=uint16)))
+            """
+
+
 
         if debug:
-            print("difference data in Barycentrically subdivided simplex:")
-            _ = [print(bit) for bit in difference_data_in_subdivided_simplex]
+            # Do a check: the following linear comibation should be our original set:
+            part_1_lin_comb = sum( (coeff/eji_lin_comb._index) * eji_lin_comb._eji_counts
+                                    for coeff, eji_lin_comb in difference_data_in_subdivided_simplex )
+            part_2_lin_comb = np.tile(min_elements, (n,1)) # Offsets
+            print(f"part_1_lin_comb is\n{part_1_lin_comb}")
+            print(f"part_2_lin_comb is\n{part_2_lin_comb}")
+            checksum = part_1_lin_comb+part_2_lin_comb
+            print(f"checksum is\n{checksum}")
+            print(f"while the original data (which should match checksum) is\n{data}")
+            """
+            part_1_lin_comb is
+            [[ 7.  0.  2.]
+             [ 0.  3.  0.]
+             [11.  7.  1.]
+             [ 5.  5.  1.]]
+            part_2_lin_comb is
+            [[-3  2  1]
+             [-3  2  1]
+             [-3  2  1]
+             [-3  2  1]]
+            checksum is
+            [[ 4.  2.  3.]
+             [-3.  5.  1.]
+             [ 8.  9.  2.]
+             [ 2.  7.  2.]]
+            while the original data (which should match checksum) is
+            [[ 4  2  3]
+             [-3  5  1]
+             [ 8  9  2]
+             [ 2  7  2]]
+             """
     
         canonical_difference_data = [(delta, msv.get_canonical_form()) for (delta, msv) in difference_data_in_subdivided_simplex]
         if debug:
             print("canonical difference data is:")
             _ = [print(bit) for bit in canonical_difference_data]
-    
+            """
+            canonical difference data is:
+(np.int64(1), Eji_LinComb(_index=np.uint16(1), _eji_counts=array([ [0, 0, 0],
+                                                                   [1, 0, 0],
+                                                                   [1, 0, 0],
+                                                                   [1, 0, 0]], dtype=uint16)))
+(np.int64(2), Eji_LinComb(_index=np.uint16(2), _eji_counts=array([ [0, 0, 0],
+                                                                   [1, 0, 0],
+                                                                   [1, 0, 0],
+                                                                   [2, 0, 0]], dtype=uint16)))
+(np.int64(3), Eji_LinComb(_index=np.uint16(3), _eji_counts=array([ [0, 1, 0],
+                                                                   [1, 0, 0],
+                                                                   [1, 1, 0],
+                                                                   [2, 1, 0]], dtype=uint16)))
+(np.int64(0), Eji_LinComb(_index=np.uint16(4), _eji_counts=array([ [0, 1, 0],
+                                                                   [1, 1, 0],
+                                                                   [2, 0, 0],
+                                                                   [3, 1, 0]], dtype=uint16)))
+(np.int64(0), Eji_LinComb(_index=np.uint16(5), _eji_counts=array([ [0, 1, 0],
+                                                                   [1, 1, 0],
+                                                                   [2, 0, 0],
+                                                                   [3, 2, 0]], dtype=uint16)))
+(np.int64(6), Eji_LinComb(_index=np.uint16(6), _eji_counts=array([ [0, 1, 0],
+                                                                   [1, 2, 0],
+                                                                   [2, 0, 0],
+                                                                   [3, 3, 0]], dtype=uint16)))
+(np.int64(0), Eji_LinComb(_index=np.uint16(7), _eji_counts=array([ [0, 1, 0],
+                                                                   [1, 2, 0],
+                                                                   [2, 0, 1],
+                                                                   [3, 3, 0]], dtype=uint16)))
+(np.int64(8), Eji_LinComb(_index=np.uint16(8), _eji_counts=array([ [0, 1, 0],
+                                                                   [1, 2, 1],
+                                                                   [2, 0, 2],
+                                                                   [3, 3, 1]], dtype=uint16)))
+(np.int64(0), Eji_LinComb(_index=np.uint16(9), _eji_counts=array([ [0, 1, 0],
+                                                                   [1, 2, 1],
+                                                                   [2, 0, 3],
+                                                                   [3, 3, 2]], dtype=uint16)))
+            """
+
         assert n*k - k == expected_number_of_vertices
         bigN = 2*(n - 1)*k + 1 # Size of the space into which the simplices are embedded.
         # bigN does not count any min elements, which would be extra.
