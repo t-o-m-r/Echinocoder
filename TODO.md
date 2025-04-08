@@ -1,5 +1,7 @@
 ## General TODO:
 
+In principle the Simplex1 and Simple2 algorithms could benefit from Using Eji_lin_combs everywhere instead of Eji's at the start and then Eji_lin_combs later on as they do at present.  This would likely be irrelevant for code run time (and only a trivial memory overhead) but it may simplify some of the checks one could do (such as always having ability to do linear combinations quickly to check that certain sums are preserved).
+
 Factor the repeated assessory functions out of the two simplex encoders.
 
 The brute_force_decoder should probably allow for floating tolerances and near matches -- at least some of the time.
