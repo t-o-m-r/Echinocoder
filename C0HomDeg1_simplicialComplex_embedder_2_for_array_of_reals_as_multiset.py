@@ -27,11 +27,19 @@ class Embedder(MultisetEmbedder):
         n,k = data.shape
 
         """
-        example data is [[ 4  2  3]
+        In some multi-line comments in this method we show intermediate
+        values that would result from
+
+                 data = [[ 4  2  3]
                          [-3  5  1]
                          [ 8  9  2]
-                         [ 2  7  2]] .
-        This is four vectors (n-4) in three dimensions (k=3).
+                         [ 2  7  2]] 
+
+        for which
+
+                n=4,    k=3.
+
+        as "data" describes  four vectors (n=4) in three dimensions (k=3).
         """
 
         # The following "ascending data" has the x-components in ascending order, the y-components in asceding order,
@@ -110,6 +118,9 @@ class Embedder(MultisetEmbedder):
             (np.int64(1), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2), Eji(j=3, i=2), Eji(j=2, i=2)}))
             """
 
+        # Now begin process of barycentric subdivision.
+        # First step is sorring the differences into numerical order:
+
         sorted_difference_data_with_MSVs = sorted(difference_data_with_MSVs, key=lambda x: -x[0] )
         if debug:
             print("sorted difference data with MSVs:")
@@ -127,7 +138,6 @@ class Embedder(MultisetEmbedder):
             (np.int64(0), Maximal_Simplex_Vertex(_vertex_set={Eji(j=0, i=2), Eji(j=2, i=2)}))
             """
 
-        # Barycentrically subdivide:
         deltas_in_current_order = [delta for delta, _ in sorted_difference_data_with_MSVs]
         msvs_in_current_order = [msv for _,msv in sorted_difference_data_with_MSVs]
     
