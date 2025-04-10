@@ -70,6 +70,31 @@ class PassThrough(EncDec):
     def decode(self, output_dict):
         return output_dict
 
+class MergeLinCombs(EncDec):
+    def __init__(self, input_lin_comb_names, output_lin_comb_name, pass_forward=None, pass_backward=None):
+        """
+        Merges linear combinations in the input dictionary and writes them to the output dictionary.
+        E.g. could combing  input["diff1"]=[(2,"i"), (5,"j")] and input["offset"] = [(3,"k")] into
+        output["out"] = [(2,"i"), (5,"j"), (3,"k")].
+
+        Args:
+            input_lin_comb_names: a list of lin_comb names, e.g. ["diff1", "offset"].
+            output_lin_comb_name: the name of the output lin comb, e.g. "out".
+        """
+        super().__init__(pass_forward, pass_backward)
+        self.input_lin_comb_names = input_lin_comb_names
+        self.output_lin_comb_name = output_lin_comb_name
+
+    def encode(self, input_dict, debug=False):
+        out_dict = self.get_default_output_dict(input_dict, debug)
+        out_lin_comb = []
+        for lin_comb_name in self.input_lin_comb_names:
+            lin_comb = input_dict[lin_comb_name]
+            out_lin_comb.extend(lin_comb)
+        out_dict[self.output_lin_comb_name] = out_lin_comb
+        return out_dict
+
+
 class ArrayToLinComb(EncDec):
     def __init__(self, input_array_name, output_lin_comb_name, pass_forward=None, pass_backward=None):
         super().__init__(pass_forward, pass_backward)
@@ -84,7 +109,7 @@ class ArrayToLinComb(EncDec):
         arr = np.asarray(input_dict[self.input_array_name])
         result = []
         for index, value in np.ndenumerate(arr):
-            basis = np.zeros_like(arr) +Fraction()
+            basis = np.zeros_like(arr)
             basis[index] = 1
             result.append((value, basis))
 
@@ -99,6 +124,8 @@ class Chain(EncDec):
 
     def encode(self, input_dict, debug=False):
         for encoder in self.encoder_decoder_list:
+            if debug:
+                print(f"Chain is about to run {encoder.__class__}")
             input_dict = encoder.encode(input_dict, debug=debug)
         return input_dict
 
@@ -164,7 +191,7 @@ class BarycentricSubdivide(EncDec):
         input_lin_comb = input_dict[self.input_name]
         """
         A linear combination is assumed to be represented as a list of pairs -- with the first element of each pair
-        being the coefficient and the second element of each pair being the corresponding basis verctor. I.e.
+        being the coefficient and the second element of each pair being the corresponding basis vector. I.e.
         [ (2, "i"), (1, "j"), (3, "k")]
         might represent the vector (2,1,3) with respect to the usual cartesian basis.
         """
@@ -200,8 +227,12 @@ class BarycentricSubdivide(EncDec):
                 return other
         """
 
-        diff_lin_comb = list( (  (fac := (i+1 if self.preserve_scale else 1))*(x-y), sum(basis_vecs[:i+1], start=0*basis_vecs[0])/fac) for i, (x,y) in enumerate(pairwise(coeffs)))
-        offset_lin_comb = [((fac := len(basis_vecs) if self.preserve_scale else 1)*coeffs[-1], sum(basis_vecs, start=0*basis_vecs[0])/fac)]
+        if self.preserve_scale:
+            diff_lin_comb = list(((fac := (i+1))*(x-y), sum(basis_vecs[:i+1], start=0*basis_vecs[0]+Fraction())/fac) for i, (x,y) in enumerate(pairwise(coeffs)))
+            offset_lin_comb = [((fac := len(basis_vecs))*coeffs[-1], sum(basis_vecs, start=0*basis_vecs[0]+Fraction())/fac)]
+        else:
+            diff_lin_comb = list(((x-y), sum(basis_vecs[:i+1], start=0*basis_vecs[0])) for i, (x,y) in enumerate(pairwise(coeffs)))
+            offset_lin_comb = [(coeffs[-1], sum(basis_vecs, start=0*basis_vecs[0]))]
 
         if debug:
             print(f"diff_lin_comb is\n{diff_lin_comb}")
@@ -283,7 +314,8 @@ def tost():
         ArrayToLinComb(input_array_name="set", output_lin_comb_name="lin_comb_0"),
         BarycentricSubdivide("lin_comb_0", "lin_comb_1_first_diffs", "offset", preserve_scale=False),
         BarycentricSubdivide("lin_comb_1_first_diffs", "lin_comb_2_second_diffs",
-                             "lin_comb_2_second_diffs", pass_forward="offset", pass_backward="offset", preserve_scale=True)
+                             "lin_comb_2_second_diffs", pass_forward="offset", pass_backward="offset", preserve_scale=False),
+        MergeLinCombs(["lin_comb_2_second_diffs", "offset"], "lin_comb_3"),
     ])
 
     input_dict = {
@@ -300,6 +332,8 @@ def tost():
     print(input_dict)
     print("to")
     print(f"{enc}")
+
+
 
     print("###########################################")
 
