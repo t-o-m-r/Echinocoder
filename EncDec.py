@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from fractions import Fraction
 from itertools import pairwise
 from multiprocessing.util import debug
 
@@ -86,7 +87,7 @@ class ArrayToLinComb(EncDec):
         arr = np.asarray(input_dict[self.input_array_name])
         result = []
         for index, value in np.ndenumerate(arr):
-            basis = np.zeros_like(arr)
+            basis = np.zeros_like(arr) +Fraction()
             basis[index] = 1
             result.append((value, basis))
 
@@ -129,7 +130,7 @@ class BarycentricSubdivide(EncDec):
     Decoding:
         Reverse of encoding.
     """
-    def __init__(self, input_name, diff_output_name, offset_output_name, pass_forward=None, pass_backward=None):
+    def __init__(self, input_name, diff_output_name, offset_output_name, pass_forward=None, pass_backward=None, preserve_scale=True):
         """
 
         Args:
@@ -149,6 +150,7 @@ class BarycentricSubdivide(EncDec):
         self.diff_output_name = diff_output_name
         self.offset_output_name = offset_output_name
         self.common_output_name = diff_output_name if diff_output_name==offset_output_name else None
+        self.preserve_scale = preserve_scale
 
 
     def encode(self, input_dict, pass_through=None, debug=False):
@@ -199,8 +201,10 @@ class BarycentricSubdivide(EncDec):
                 return other
         """
 
-        diff_lin_comb = list( (x-y, sum(basis_vecs[:i+1], start=0*basis_vecs[0])) for i, (x,y) in enumerate(pairwise(coeffs)))
-        offset_lin_comb = [(coeffs[-1], sum(basis_vecs, start=0*basis_vecs[0]))]
+
+        diff_lin_comb = list( (  (i+1 if self.preserve_scale else 1)*(x-y), sum(basis_vecs[:i+1], start=0*basis_vecs[0])/(i+1 if self.preserve_scale else 1)) for i, (x,y) in enumerate(pairwise(coeffs)))
+        fac = len(basis_vecs) if self.preserve_scale else 1
+        offset_lin_comb = [(fac*coeffs[-1], sum(basis_vecs, start=0*basis_vecs[0])/fac)]
 
         if debug:
             print(f"diff_lin_comb is\n{diff_lin_comb}")
@@ -280,9 +284,9 @@ def tost():
     print("###########################################")
     simplex1_different_bit = Chain([
         ArrayToLinComb(input_array_name="set", output_lin_comb_name="lin_comb_0"),
-        BarycentricSubdivide("lin_comb_0", "lin_comb_1_first_diffs", "offset"),
+        BarycentricSubdivide("lin_comb_0", "lin_comb_1_first_diffs", "offset", preserve_scale=False),
         BarycentricSubdivide("lin_comb_1_first_diffs", "lin_comb_2_second_diffs",
-                             "lin_comb_2_second_diffs", pass_forward="offset", pass_backward="offset")
+                             "lin_comb_2_second_diffs", pass_forward="offset", pass_backward="offset", preserve_scale=True)
     ])
 
     input_dict = {
