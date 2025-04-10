@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 from fractions import Fraction
 from itertools import pairwise
-from multiprocessing.util import debug
 
 import numpy as np
-from matplotlib.transforms import offset_copy
-from sympy.physics.vector import outer
 
 
 class EncDec:
@@ -121,6 +118,8 @@ class BarycentricSubdivide(EncDec):
         * creates a dictionary with an entry for self.output_name carrying the resulting linear combination, and
         * if "pass_through" is true, the encoder (and decode) will pass through all other elements of the input
           dictionary which do not result in overwriting of one of lin comb output.
+        * If preserve_scale is True (default) then the sum of the coeffiencients is preserved. Equivalently, the one
+          norm of each basis vector iw preserved at 1 if already at 1.
 
         A linear combination is assumed to be represented as a list of pairs -- with the first element of each pair
         being the coefficient and the second element of each pair being the corresponding basis verctor. I.e.
@@ -201,10 +200,8 @@ class BarycentricSubdivide(EncDec):
                 return other
         """
 
-
-        diff_lin_comb = list( (  (i+1 if self.preserve_scale else 1)*(x-y), sum(basis_vecs[:i+1], start=0*basis_vecs[0])/(i+1 if self.preserve_scale else 1)) for i, (x,y) in enumerate(pairwise(coeffs)))
-        fac = len(basis_vecs) if self.preserve_scale else 1
-        offset_lin_comb = [(fac*coeffs[-1], sum(basis_vecs, start=0*basis_vecs[0])/fac)]
+        diff_lin_comb = list( (  (fac := (i+1 if self.preserve_scale else 1))*(x-y), sum(basis_vecs[:i+1], start=0*basis_vecs[0])/fac) for i, (x,y) in enumerate(pairwise(coeffs)))
+        offset_lin_comb = [((fac := len(basis_vecs) if self.preserve_scale else 1)*coeffs[-1], sum(basis_vecs, start=0*basis_vecs[0])/fac)]
 
         if debug:
             print(f"diff_lin_comb is\n{diff_lin_comb}")
