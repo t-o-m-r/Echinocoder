@@ -1,8 +1,42 @@
 #!/usr/bin/env python
 from fractions import Fraction
 from itertools import pairwise
-
 import numpy as np
+
+def numpy_array_of_frac_to_str(arr : np.array):
+    """
+    Numpy arrays of fractions print in a really ugly way. This method is designed to output a human-readable
+    array representation that looks more readable. Its output is only for human consumption, not archival, so
+    don't try to read it back in. If the array happens not to conain fractions, it should still cope ... it will just
+    print the array as usual.
+
+    Args:
+        arr: array to print
+
+    Returns:
+
+    """
+
+    # This next line is heuristic but good enough for now as it will distinguish float and integer from Fraction
+    # (which is all we need it to do).
+    # is_array_of_fractions = ( arr.dtype == "O" )
+
+    # if not is_array_of_fractions:
+    #  Fall back to normal str
+    #   return str(arr)
+
+    ans = "["
+    for row in arr:
+        ans += "["
+        for elt in row:
+            ans += str(elt) + ", "
+        ans += "],  "
+    ans += "]"
+    return ans
+
+def pretty_print_lin_comb(lin_comb):
+    for coeff, basis_elt in lin_comb:
+        print(float(coeff), numpy_array_of_frac_to_str(basis_elt))
 
 
 class EncDec:
@@ -329,10 +363,15 @@ def tost():
                   }
     enc = simplex1_different_bit.encode(input_dict, debug=True)
     print(f"=======================\nSimplex1 as a chain encoded")
-    print(input_dict)
+    print(numpy_array_of_frac_to_str(input_dict["set"]))
     print("to")
-    print(f"{enc}")
+    #print(f"{enc}")
 
+    lin_comb_3 = enc["lin_comb_3"]
+    #print(f"Note that lin_comb_3 is")
+    pretty_print_lin_comb(lin_comb_3)
+    print("and the (non-offset) differences are")
+    [ print(numpy_array_of_frac_to_str(tmp:=b-a), " with ", np.sum(tmp)," ones in it") for a,b in list(pairwise( [a for _,a in lin_comb_3 ]))[:-1] ]
 
 
     print("###########################################")
