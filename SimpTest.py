@@ -28,12 +28,16 @@ def print_simplex_1_bit(set_array : np.array,
     lin_comb_3 = enc["lin_comb_3"]
     #print(f"Note that lin_comb_3 is")
     EncDec.pretty_print_lin_comb(lin_comb_3)
+    print("the first is")
+    print(EncDec.numpy_array_of_frac_to_str(tmp:=lin_comb_3[0][1]), " with ", np.sum(tmp), " ones in it")
     print("and the (non-offset) differences are")
     [ print(EncDec.numpy_array_of_frac_to_str(tmp:=b-a), " with ", np.sum(tmp)," ones in it") for a,b in list(pairwise( [a for _,a in lin_comb_3 ]))[:-1] ]
 
     print("----- Canonicalised lin enc: -----")
     can_lin_comb_3 = [ (coeff, tools.sort_np_array_rows_lexicographically(arr)) for coeff, arr in lin_comb_3 ]
     EncDec.pretty_print_lin_comb(can_lin_comb_3)
+    print("the first is")
+    print(EncDec.numpy_array_of_frac_to_str(tmp:=can_lin_comb_3[0][1]), " with ", np.sum(tmp), " ones in it")
     print("and the (non-offset) differences are")
     [ print(EncDec.numpy_array_of_frac_to_str(tmp:=b-a), " with ", np.sum(tmp)," ones in it") for a,b in list(pairwise( [a for _,a in can_lin_comb_3 ]))[:-1] ]
 
