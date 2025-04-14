@@ -61,17 +61,25 @@ if __name__ == "__main__":
     if (l := loc(sys.argv, "array")) is not None and l+1 < len(sys.argv): 
         arr = np.array(eval(sys.argv[l+1]))
     
+    
+    low=9
+    high=30
+
     n, k = arr.shape
 
     if (l := loc(sys.argv, "n")) is not None and l+1 < len(sys.argv): 
         n = int(sys.argv[l+1])
     if (l := loc(sys.argv, "k")) is not None and l+1 < len(sys.argv): 
         k = int(sys.argv[l+1])
+    if (l := loc(sys.argv, "low")) is not None and l+1 < len(sys.argv): 
+        low = int(sys.argv[l+1])
+    if (l := loc(sys.argv, "high")) is not None and l+1 < len(sys.argv): 
+        high = int(sys.argv[l+1])
 
     randomise_array = "random" in sys.argv
     if randomise_array:
          print (f"n is {n} and k is {k}")
-         arr = np.random.randint(low=-9, high=30, size=(n,k))
+         arr = np.random.randint(low=low, high=high, size=(n,k))
 
     print_simplex_1_bit(arr)
     
