@@ -6,10 +6,11 @@ from itertools import pairwise
 import sys
 import tools
 
-def print_simplex_1_bit(set_array : np.array,
+def print_first_part_of_simplex_1_encoding(set_array : np.array,
              preserve_scale_in_step_1 = False,
              preserve_scale_in_step_2 = False):
-    simplex_1_bit = EncDec.Chain([
+
+    first_part_of_simplex_1_encoding = EncDec.Chain([
         EncDec.ArrayToLinComb(input_array_name="set", output_lin_comb_name="lin_comb_0"),
         EncDec.BarycentricSubdivide("lin_comb_0", "lin_comb_1_first_diffs", "offset", preserve_scale=False),
         EncDec.BarycentricSubdivide("lin_comb_1_first_diffs", "lin_comb_2_second_diffs",
@@ -19,7 +20,7 @@ def print_simplex_1_bit(set_array : np.array,
 
     input_dict = { "set" : set_array, }
 
-    enc = simplex_1_bit.encode(input_dict, debug=False)
+    enc = first_part_of_simplex_1_encoding.encode(input_dict, debug=False)
     print(f"=======================\nSimplex1 as a chain encoded")
     print(EncDec.numpy_array_of_frac_to_str(input_dict["set"]))
     print("to")
@@ -51,8 +52,8 @@ def loc(the_list, query):
     return None
 
 if __name__ == "__main__":
-    #print_simplex_1_bit(np.asarray([[2,3],[4,7]]) )
-    #print_simplex_1_bit(np.array(eval("[[2,3],[4,7]]")) )
+    #print_first_part_of_simplex_1_encoding(np.asarray([[2,3],[4,7]]) )
+    #print_first_part_of_simplex_1_encoding(np.array(eval("[[2,3],[4,7]]")) )
 
     # Defaults:
     arr = np.array([[2,3,4], [4,7,1], [3,-2,1], [9,8,2]])
@@ -81,6 +82,6 @@ if __name__ == "__main__":
          print (f"n is {n} and k is {k}")
          arr = np.random.randint(low=low, high=high, size=(n,k))
 
-    print_simplex_1_bit(arr)
+    print_first_part_of_simplex_1_encoding(arr)
     
 
