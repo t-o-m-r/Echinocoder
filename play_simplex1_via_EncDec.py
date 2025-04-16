@@ -6,41 +6,34 @@ from itertools import pairwise
 import sys
 import tools
 
+
 def print_first_part_of_simplex_1_encoding(set_array : np.array,
              preserve_scale_in_step_1 = False,
              preserve_scale_in_step_2 = False):
 
-    first_part_of_simplex_1_encoding = EncDec.Chain([
-        EncDec.ArrayToLinComb(input_array_name="set", output_lin_comb_name="lin_comb_0"),
-        EncDec.BarycentricSubdivide("lin_comb_0", "lin_comb_1_first_diffs", "offset", preserve_scale=False),
-        EncDec.BarycentricSubdivide("lin_comb_1_first_diffs", "lin_comb_2_second_diffs",
-                             "lin_comb_2_second_diffs", pass_forward="offset", pass_backward="offset", preserve_scale=False),
-        EncDec.MergeLinCombs(["lin_comb_2_second_diffs", "offset"], "lin_comb_3"),
-    ])
 
-    input_dict = { "set" : set_array, }
+    lin_comb_0 = EncDec.array_to_lin_comb(set_array)
+    lin_comb_1_first_diffs, offset = EncDec.barycentric_subdivide(lin_comb_0, return_offset_separately=True, preserve_scale=preserve_scale_in_step_1)
+    lin_comb_2_second_diffs = EncDec.barycentric_subdivide(lin_comb_1_first_diffs, return_offset_separately=False, preserve_scale=preserve_scale_in_step_2)
+    lin_comb_3 = EncDec.LinComb( (lin_comb_2_second_diffs, offset) )
 
-    enc = first_part_of_simplex_1_encoding.encode(input_dict, debug=False)
     print(f"=======================\nSimplex1 as a chain encoded")
-    print(EncDec.numpy_array_of_frac_to_str(input_dict["set"]))
+    print(EncDec.numpy_array_of_frac_to_str(set_array))
     print("to")
-    #print(f"{enc}")
-
-    lin_comb_3 = enc["lin_comb_3"]
-    #print(f"Note that lin_comb_3 is")
     EncDec.pretty_print_lin_comb(lin_comb_3)
     print("the first is")
-    print(EncDec.numpy_array_of_frac_to_str(tmp:=lin_comb_3[0][1]), " with ", np.sum(tmp), " ones in it")
+    print(EncDec.numpy_array_of_frac_to_str(tmp:=lin_comb_3.basis_vecs[0]), " with ", np.sum(tmp), " ones in it")
     print("and the (non-offset) differences are")
-    [ print(EncDec.numpy_array_of_frac_to_str(tmp:=b-a), " with ", np.sum(tmp)," ones in it") for a,b in list(pairwise( [a for _,a in lin_comb_3 ]))[:-1] ]
+    [ print(EncDec.numpy_array_of_frac_to_str(tmp:=b-a), " with ", np.sum(tmp)," ones in it") for a,b in list(pairwise( lin_comb_3.basis_vecs ))[:-1] ]
 
     print("----- Canonicalised lin enc: -----")
-    can_lin_comb_3 = [ (coeff, tools.sort_np_array_rows_lexicographically(arr)) for coeff, arr in lin_comb_3 ]
+    can_lin_comb_3 = EncDec.LinComb([ EncDec.MonoLinComb(coeff, tools.sort_np_array_rows_lexicographically(arr)) for coeff, arr in zip(lin_comb_3.coeffs, lin_comb_3.basis_vecs) ])
+
     EncDec.pretty_print_lin_comb(can_lin_comb_3)
     print("the first is")
-    print(EncDec.numpy_array_of_frac_to_str(tmp:=can_lin_comb_3[0][1]), " with ", np.sum(tmp), " ones in it")
+    print(EncDec.numpy_array_of_frac_to_str(tmp:=can_lin_comb_3.basis_vecs[0]), " with ", np.sum(tmp), " ones in it")
     print("and the (non-offset) differences are")
-    [ print(EncDec.numpy_array_of_frac_to_str(tmp:=b-a), " with ", np.sum(tmp)," ones in it") for a,b in list(pairwise( [a for _,a in can_lin_comb_3 ]))[:-1] ]
+    [ print(EncDec.numpy_array_of_frac_to_str(tmp:=b-a), " with ", np.sum(tmp)," ones in it") for a,b in list(pairwise(  can_lin_comb_3.basis_vecs ))[:-1] ]
 
 
 

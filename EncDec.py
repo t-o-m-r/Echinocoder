@@ -7,10 +7,6 @@ import numpy as np
 
 from tools import numpy_array_of_frac_to_str
 
-def pretty_print_lin_comb(lin_comb):
-    for coeff, basis_elt in lin_comb:
-        print(float(coeff), numpy_array_of_frac_to_str(basis_elt))
-
 class MonoLinComb:
     def __init__(self, coeff, basis_vec):
         self.coeff = coeff
@@ -37,7 +33,7 @@ class LinComb:
         return len(self.coeffs)
 
     def __iadd__(self, stuff):
-        print(f"In iadd see stuff of type {stuff}")
+        #print(f"In iadd see stuff of type {stuff}")
         # Note that __add__ does not automatically consolidate. I.e. (3i+2j) + (5i) becomes (3i+2j+5i) not (8i+2j).
         # It is the user's responsibility to perform consolidation manually if they wish it to happen!!
         if isinstance(stuff, LinComb):
@@ -59,8 +55,9 @@ class LinComb:
         raise ValueError("LinComb.__iadd__ only knows how to add LimCombs and MonoLinCombs and iterables containing those.")
 
     def is_consolidated(self):
-        basis_vecs_as_tuptup = tuple(map(tuple, self.basis_vecs))
-        return len(set(basis_vecs_as_tuptup)) == len(basis_vecs_as_tuptup)
+        basis_vecs_as_tuptups = [ tuple(map(tuple, bv)) for bv in self.basis_vecs ]
+        print(f"turned {self.basis_vecs} into {basis_vecs_as_tuptups}")
+        return len(set(basis_vecs_as_tuptups)) == len(basis_vecs_as_tuptups)
 
     def __repr__(self):
         tmp = list(MonoLinComb(c,np.asarray(b)) for c,b in zip(self.coeffs, self.basis_vecs))
@@ -137,4 +134,8 @@ def barycentric_subdivide(lin_comb: LinComb, return_offset_separately=False, pre
         print(f"About to return \n{ans}")
 
     return ans
+
+def pretty_print_lin_comb(lin_comb: LinComb):
+    for coeff, basis_elt in zip(lin_comb.coeffs, lin_comb.basis_vecs):
+        print(float(coeff), numpy_array_of_frac_to_str(basis_elt))
 
