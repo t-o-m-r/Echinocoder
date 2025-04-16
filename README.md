@@ -64,7 +64,7 @@ In principle the method could be re-written to embed into just $2 n k + 1$ reals
 
 [example.py](example.py) is a simple example showing how some of the embedders could be used.
 
-Various unit tests can be run with [pytest](https://docs.pytest.org).  It runs functions begining test_ in files with names matching test_XXXX.py
+Various unit tests can be run with [pytest](https://docs.pytest.org).  pytest runs all functions begining test_ in files with names matching test_XXXX.py .   Note that running with "pytest -s" prevents pytest hiding stdout.
 
 ## References:
 
