@@ -35,7 +35,7 @@ class LinComb:
         tmp = list(zip(self.coeffs, self.basis_vecs))
         return str(f"{tmp}")
 
-def ArrayToLinComb(arr: np.array, debug=False):
+def array_to_lin_comb(arr: np.array, debug=False):
 
         lin_comb = LinComb()
         for index, coeff in np.ndenumerate(arr):

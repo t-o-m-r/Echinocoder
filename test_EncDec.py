@@ -2,7 +2,7 @@ from fractions import Fraction
 from itertools import pairwise
 import numpy as np
 
-from EncDec import ArrayToLinComb
+from EncDec import array_to_lin_comb
 from EncDec import BarycentricSubdivide
 from EncDec import Chain
 from EncDec import pretty_print_lin_comb
@@ -78,7 +78,7 @@ from tools import numpy_array_of_frac_to_str
 #    assert str(enc) == expected
 
 
-def test_ArrayToLinComb():
+def test_array_to_lin_comb():
     print("###########################################")
 
     arr = np.asarray([[ 4, 2],
@@ -86,7 +86,7 @@ def test_ArrayToLinComb():
                       [ 8, 9],
                       [ 2 ,7]])
 
-    enc = ArrayToLinComb(arr)
+    enc = array_to_lin_comb(arr)
 
     expected = """[(np.int64(4), array([[1, 0],
        [0, 0],
@@ -146,7 +146,7 @@ def test_ArrayToLinComb():
 #def test_simplex_1_initial_encoding_phase():
 #    print("###########################################")
 #    simplex1_different_bit = Chain([
-#        ArrayToLinComb(input_array_name="set", output_lin_comb_name="lin_comb_0"),
+#        array_to_lin_comb(input_array_name="set", output_lin_comb_name="lin_comb_0"),
 #        BarycentricSubdivide("lin_comb_0", "lin_comb_1_first_diffs", "offset", preserve_scale=False),
 #        BarycentricSubdivide("lin_comb_1_first_diffs", "lin_comb_2_second_diffs",
 #                             "lin_comb_2_second_diffs", pass_forward="offset", pass_backward="offset", preserve_scale=False),
