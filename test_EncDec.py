@@ -21,6 +21,7 @@ def test_PassThrough():
     assert dec == input
     assert enc == input
 
+def test_BarycentricSubdivide_no_split():
     print("###########################################")
 
     subdivide = BarycentricSubdivide("p","p", "q")
@@ -33,8 +34,32 @@ def test_PassThrough():
                   "metadata3": "moo3",
                   }
     enc = subdivide.encode(input_dict, debug=True)
+    print("no_split enc was")
+    print(enc)
+    expected = "{'p': [(11, array([Fraction(0, 1), Fraction(0, 1), Fraction(1, 1)], dtype=object)), (12, array([Fraction(1, 2), Fraction(0, 1), Fraction(1, 2)], dtype=object))], 'q': [(-21, array([Fraction(1, 3), Fraction(1, 3), Fraction(1, 3)], dtype=object))]}"
+    assert str(enc) == expected
 
 
+def test_BarycentricSubdivide_split():
+    print("###########################################")
+
+    subdivide = BarycentricSubdivide("p","p2", "q")
+
+    input_dict = {"p": [(-1, np.array([1, 0, 0])),
+                        (-7, np.array([0, 1, 0])),
+                        (10, np.array([0, 0, 1]))],
+                  "metadata1": "moo1",
+                  "metadata2": "moo2",
+                  "metadata3": "moo3",
+                  }
+    enc = subdivide.encode(input_dict, debug=True)
+    print("split enc was")
+    print(enc)
+    expected = "{'p2': [(11, array([Fraction(0, 1), Fraction(0, 1), Fraction(1, 1)], dtype=object)), (12, array([Fraction(1, 2), Fraction(0, 1), Fraction(1, 2)], dtype=object))], 'q': [(-21, array([Fraction(1, 3), Fraction(1, 3), Fraction(1, 3)], dtype=object))]}"
+    assert str(enc) == expected
+
+
+def test_ArrayToLinComb():
     print("###########################################")
 
     input_dict = { "arr" : np.asarray([[ 4, 2],
