@@ -133,7 +133,7 @@ def test_ArrayToLinComb():
     assert str(enc) == expected
 
 
-def test_Chain():
+def test_Chain_1():
     print("###########################################")
     simplex1_bit = Chain([
         BarycentricSubdivide("set", "first_diffs", "offset"),
@@ -155,7 +155,7 @@ def test_Chain():
     print(f"{enc}")
 
 
-
+def test_simplex_1_initial_encoding_phase():
     print("###########################################")
     simplex1_different_bit = Chain([
         ArrayToLinComb(input_array_name="set", output_lin_comb_name="lin_comb_0"),
