@@ -4,44 +4,47 @@ import numpy as np
 
 from EncDec import array_to_lin_comb
 from EncDec import barycentric_subdivide
+from EncDec import LinComb, MonoLinComb
 #from EncDec import Chain
 from EncDec import pretty_print_lin_comb
 from tools import numpy_array_of_frac_to_str
 
-#def test_BarycentricSubdivide_split_not_preserving_scale():
-#    print("###########################################")
-#
-#    subdivide = BarycentricSubdivide("pIn","pOut", "qOut", preserve_scale=False)
-#
-#    input_dict = {"pIn": [(-1, np.array([1, 0, 0])),
-#                        (-7, np.array([0, 1, 0])),
-#                        (10, np.array([0, 0, 1]))],
-#                  "metadata1": "moo1",
-#                  "metadata2": "moo2",
-#                  "metadata3": "moo3",
-#                  }
-#    enc = subdivide.encode(input_dict, debug=True)
-#    print(f"enc\n{enc}")
-#    expected = "{'pOut': [(11, array([0, 0, 1])), (6, array([1, 0, 1]))], 'qOut': [(-7, array([1, 1, 1]))]}"
-#    assert str(enc) == expected
-#
-#def test_BarycentricSubdivide_no_split_not_preserving_scale():
-#    print("###########################################")
-#
-#    subdivide = BarycentricSubdivide("pIn","pOut", "pOut", preserve_scale=False)
-#
-#    input_dict = {"pIn": [(-1, np.array([1, 0, 0])),
-#                        (-7, np.array([0, 1, 0])),
-#                        (10, np.array([0, 0, 1]))],
-#                  "metadata1": "moo1",
-#                  "metadata2": "moo2",
-#                  "metadata3": "moo3",
-#                  }
-#    enc = subdivide.encode(input_dict, debug=True)
-#    print(f"enc\n{enc}")
-#    expected = "{'pOut': [(11, array([0, 0, 1])), (6, array([1, 0, 1])), (-7, array([1, 1, 1]))]}"
-#    assert str(enc) == expected
-#
+def test_BarycentricSubdivide_split_not_preserving_scale():
+    print("###########################################")
+
+    pIn = LinComb([MonoLinComb(-1, np.array([1, 0, 0])),
+                   MonoLinComb(-7, np.array([0, 1, 0])),
+                   MonoLinComb(10, np.array([0, 0, 1]))])
+
+    pOut, qOut = barycentric_subdivide(pIn, return_offset_separately=True, preserve_scale=False, debug=True)
+
+    print(f"pOut\n{pOut}\nqOut{qOut}")
+
+    pOut_expected = LinComb([MonoLinComb(11, [0, 0, 1]),
+                             MonoLinComb(6, [1, 0, 1])])
+    qOut_expected = MonoLinComb(-7, [1, 1, 1])
+
+    assert pOut == pOut_expected
+    assert qOut == qOut_expected
+
+def test_BarycentricSubdivide_no_split_not_preserving_scale():
+    print("###########################################")
+
+    pIn = LinComb([MonoLinComb(-1, np.array([1, 0, 0])),
+                   MonoLinComb(-7, np.array([0, 1, 0])),
+                   MonoLinComb(10, np.array([0, 0, 1]))])
+
+    pOut = barycentric_subdivide(pIn, return_offset_separately=False, preserve_scale=False, debug=True)
+
+    print(f"pOut\n{pOut}")
+
+    pOut_expected = LinComb([MonoLinComb(11, [0, 0, 1]),
+                             MonoLinComb(6, [1, 0, 1]),
+                             MonoLinComb(-7, [1, 1, 1])])
+
+    assert pOut == pOut_expected
+    assert str(pOut) == str(pOut_expected)
+
 #def test_BarycentricSubdivide_no_split_preserve_scale():
 #    print("###########################################")
 #
@@ -77,6 +80,39 @@ from tools import numpy_array_of_frac_to_str
 #    expected = "{'pOut': [(11, array([Fraction(0, 1), Fraction(0, 1), Fraction(1, 1)], dtype=object)), (12, array([Fraction(1, 2), Fraction(0, 1), Fraction(1, 2)], dtype=object))], 'qOut': [(-21, array([Fraction(1, 3), Fraction(1, 3), Fraction(1, 3)], dtype=object))]}"
 #    assert str(enc) == expected
 
+def test_MonoLinComb():
+    a = MonoLinComb(4, [[1,2],[3,4]])
+    b = MonoLinComb(4, np.array([[1,2],[3,4]]))
+    c = MonoLinComb(4, np.array([[1,2],[3,5]]))
+    d = MonoLinComb(4, np.array([[1,2],[3,4],[5,6]]))
+
+    assert a == b
+    assert a != c
+    assert a != d
+    assert b != c
+    assert b != d
+    assert c != d
+
+def test_LinComb():
+    a = LinComb(MonoLinComb(4, [[1,2],[3,4]]))
+    b = LinComb(MonoLinComb(4, np.array([[1,2],[3,4]])))
+    c = LinComb(MonoLinComb(4, np.array([[1,2],[3,5]])))
+    d = LinComb(MonoLinComb(4, np.array([[1,2],[3,4],[5,6]])))
+
+    assert a == b
+    assert a != c
+    assert a != d
+    assert b != c
+    assert b != d
+    assert c != d
+
+    l1 = LinComb([MonoLinComb(11, np.array([0, 0, 1])),
+                  MonoLinComb(6, np.array([1, 0, 1]))])
+    l2 = LinComb([MonoLinComb(11, np.array([0, 0, 1])),
+                  MonoLinComb(6, np.array([1, 0, 1]))])
+
+    assert l1 == l2
+
 
 def test_array_to_lin_comb():
     print("###########################################")
@@ -88,37 +124,64 @@ def test_array_to_lin_comb():
 
     enc = array_to_lin_comb(arr)
 
-    expected = """[(np.int64(4), array([[1, 0],
-       [0, 0],
-       [0, 0],
-       [0, 0]])), (np.int64(2), array([[0, 1],
-       [0, 0],
-       [0, 0],
-       [0, 0]])), (np.int64(-3), array([[0, 0],
-       [1, 0],
-       [0, 0],
-       [0, 0]])), (np.int64(5), array([[0, 0],
-       [0, 1],
-       [0, 0],
-       [0, 0]])), (np.int64(8), array([[0, 0],
-       [0, 0],
-       [1, 0],
-       [0, 0]])), (np.int64(9), array([[0, 0],
-       [0, 0],
-       [0, 1],
-       [0, 0]])), (np.int64(2), array([[0, 0],
-       [0, 0],
-       [0, 0],
-       [1, 0]])), (np.int64(7), array([[0, 0],
-       [0, 0],
-       [0, 0],
-       [0, 1]]))]"""
-
+    expected = LinComb([MonoLinComb(4, [[1,0]
+  ,  [0,0]
+  ,  [0,0]
+  ,  [0,0]]), MonoLinComb(2, [[0,1]
+  ,  [0,0]
+  ,  [0,0]
+  ,  [0,0]]), MonoLinComb(-3, [[0,0]
+  ,  [1,0]
+  ,  [0,0]
+  ,  [0,0]]), MonoLinComb(5, [[0,0]
+  ,  [0,1]
+  ,  [0,0]
+  ,  [0,0]]), MonoLinComb(8, [[0,0]
+  ,  [0,0]
+  ,  [1,0]
+  ,  [0,0]]), MonoLinComb(9, [[0,0]
+  ,  [0,0]
+  ,  [0,1]
+  ,  [0,0]]), MonoLinComb(2, [[0,0]
+  ,  [0,0]
+  ,  [0,0]
+  ,  [1,0]]), MonoLinComb(7, [[0,0]
+  ,  [0,0]
+  ,  [0,0]
+  ,  [0,1]])])
+    not_expected = LinComb([MonoLinComb(4, [[1,0]
+  ,  [0,0]
+  ,  [0,0]
+  ,  [0,0]]), MonoLinComb(2, [[0,1]
+  ,  [0,0]
+  ,  [0,0]
+  ,  [0,0]]), MonoLinComb(-3, [[0,11110]
+  ,  [1,0]
+  ,  [0,0]
+  ,  [0,0]]), MonoLinComb(5, [[0,0]
+  ,  [0,1]
+  ,  [0,0]
+  ,  [0,0]]), MonoLinComb(8, [[0,0]
+  ,  [0,0]
+  ,  [1,0]
+  ,  [0,0]]), MonoLinComb(9, [[0,0]
+  ,  [0,0]
+  ,  [0,1]
+  ,  [0,0]]), MonoLinComb(2, [[0,0]
+  ,  [0,0]
+  ,  [0,0]
+  ,  [1,0]]), MonoLinComb(7, [[0,0]
+  ,  [0,0]
+  ,  [0,0]
+  ,  [0,1]])])
     print(f"=======================\nArray to lin comb made encoded")
     print(arr)
     print("to")
     print(f"{enc}")
-    assert str(enc) == expected
+    assert enc == expected
+    assert str(enc) == str(expected)
+    assert enc != not_expected
+    assert str(enc) != str(not_expected)
 
 
 #def test_Chain_1():
