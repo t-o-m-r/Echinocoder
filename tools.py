@@ -10,6 +10,37 @@ class LineNo:
 
 __line__ = LineNo()
 
+def numpy_array_of_frac_to_str(arr : np.array):
+    """
+    Numpy arrays of fractions print in a really ugly way. This method is designed to output a human-readable
+    array representation that looks more readable. Its output is only for human consumption, not archival, so
+    don't try to read it back in. If the array happens not to conain fractions, it should still cope ... it will just
+    print the array as usual.
+
+    Args:
+        arr: array to print
+
+    Returns:
+
+    """
+
+    # This next line is heuristic but good enough for now as it will distinguish float and integer from Fraction
+    # (which is all we need it to do).
+    # is_array_of_fractions = ( arr.dtype == "O" )
+
+    # if not is_array_of_fractions:
+    #  Fall back to normal str
+    #   return str(arr)
+
+    ans = "["
+    for row in arr:
+        ans += "["
+        for elt in row:
+            ans += str(elt) + ", "
+        ans += "],  "
+    ans += "]"
+    return ans
+
 def ascending_data(np_array_representing_set : np.ndarray) -> np.ndarray:
         # The input is assumed to be an np_array with n elements, each being a vector, and with each vector holding k components.
         # It represents a multiset of those n vectors. 
