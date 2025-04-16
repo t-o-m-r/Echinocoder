@@ -27,9 +27,9 @@ from tools import __line__, permute_columns_except_first
 
 def self_test_realprojectivespace_embedder(embedder):
     for inp, out in embedder.unit_test_input_output_pairs:
-        tost_realprojectivespace_embedder(inp, embedder=embedder, expected_embedding=out)
+        external_test_realprojectivespace_embedder(inp, embedder=embedder, expected_embedding=out)
 
-def tost_realprojectivespace_embedder(data, embedder=None, embedders=None, expected_embedding=None):
+def external_test_realprojectivespace_embedder(data, embedder=None, embedders=None, expected_embedding=None):
     print("ORIGINAL DATA is",data)
     data_copy = data.copy()
     if embedders is None:
