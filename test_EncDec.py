@@ -3,8 +3,8 @@ from itertools import pairwise
 import numpy as np
 
 from EncDec import array_to_lin_comb
-from EncDec import BarycentricSubdivide
-from EncDec import Chain
+from EncDec import barycentric_subdivide
+#from EncDec import Chain
 from EncDec import pretty_print_lin_comb
 from tools import numpy_array_of_frac_to_str
 
