@@ -64,15 +64,7 @@ In principle the method could be re-written to embed into just $2 n k + 1$ reals
 
 [example.py](example.py) is a simple example showing how some of the embedders could be used.
 
-[test.py](test.py) excercises some of the embedders. If they all work the script should end with a message saying something like 
-
-"----------------------------------------------------------------------
-Ran 1 test in 0.165s
-
-OK
-"
-
-[test_PKH_alg.py](test_PKH_alg.py) contains another set of unit tests, mainly intended to exercise the Simplicial Complex embedder.
+Various unit tests can be run with [pytest](https://docs.pytest.org).  It runs functions begining test_ in files with names matching test_XXXX.py
 
 ## References:
 
