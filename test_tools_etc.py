@@ -23,7 +23,6 @@ import   Cinf_numpy_polynomial_embedder_for_list_of_reals_as_multiset as embedde
 import              C0_sorting_embedder_for_list_of_reals_as_multiset as embedder_C0_li
 import data_sources
 import numpy as np
-import unittest
 from tools import __line__, permute_columns_except_first
 
 def self_test_realprojectivespace_embedder(embedder):
@@ -39,8 +38,8 @@ def tost_realprojectivespace_embedder(data, embedder=None, embedders=None, expec
         data_copy *= sign
         for embedder in embedders:
             embedding = embedder.embed(data_copy)
-            assert expected_embedding is not None and not np.array_equal(np.asarray(embedding),np.asarray(expected_embedding))
             print("ENCH",embedder.__name__,"generates",embedding,"of length",len(embedding),"when embedding",data_copy,"having n=",len(data_copy),". Expectation was "+str(expected_embedding))
+            assert expected_embedding is not None and np.array_equal(np.asarray(embedding),np.asarray(expected_embedding))
     print()
 
 def make_randoms_reproducable():
@@ -176,7 +175,7 @@ def tost_multiset_embedder(data, embedder=None, embedders=None, number_of_shuffl
         np.random.shuffle(shuffled_data) 
     print()
 
-def ootest_various_embedders():
+def test_various_embedders():
 
     # with lists as inputs:
     # self.assertEqual(ell( [(1,5),(2,42),(3,100)], 101),
