@@ -101,11 +101,39 @@ def test_ArrayToLinComb():
     array_to_lin_comb = ArrayToLinComb("arr", "lin_comb" )
 
     enc = array_to_lin_comb.encode(input_dict)
+    expected = """{'lin_comb': [(np.int64(4), array([[1, 0],
+       [0, 0],
+       [0, 0],
+       [0, 0]])), (np.int64(2), array([[0, 1],
+       [0, 0],
+       [0, 0],
+       [0, 0]])), (np.int64(-3), array([[0, 0],
+       [1, 0],
+       [0, 0],
+       [0, 0]])), (np.int64(5), array([[0, 0],
+       [0, 1],
+       [0, 0],
+       [0, 0]])), (np.int64(8), array([[0, 0],
+       [0, 0],
+       [1, 0],
+       [0, 0]])), (np.int64(9), array([[0, 0],
+       [0, 0],
+       [0, 1],
+       [0, 0]])), (np.int64(2), array([[0, 0],
+       [0, 0],
+       [0, 0],
+       [1, 0]])), (np.int64(7), array([[0, 0],
+       [0, 0],
+       [0, 0],
+       [0, 1]]))]}"""
     print(f"=======================\nArray to lin comb made encoded")
     print(input_dict)
     print("to")
     print(f"{enc}")
+    assert str(enc) == expected
 
+
+def test_Chain():
     print("###########################################")
     simplex1_bit = Chain([
         BarycentricSubdivide("set", "first_diffs", "offset"),
