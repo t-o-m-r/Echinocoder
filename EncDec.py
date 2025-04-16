@@ -17,7 +17,7 @@ class MonoLinComb:
         self.basis_vec = basis_vec
 
     def __repr__(self):
-        return f"MonoLinComb({self.coeff}, {self.basis_vec})"
+        return f"MonoLinComb({repr(self.coeff)}, {repr(self.basis_vec)})"
 
     def __eq__(self, other):
         return self.coeff == other.coeff and np.array_equal(self.basis_vec, other.basis_vec)
