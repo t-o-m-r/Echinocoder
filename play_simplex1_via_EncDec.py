@@ -50,6 +50,9 @@ if __name__ == "__main__":
 
     # Defaults:
     arr = np.array([[2,3,4], [4,7,1], [3,-2,1], [9,8,2]])
+    preserve_scale_in_step_1 = False
+    preserve_scale_in_step_2 = False
+
 
     # Override defaults:
     if (l := loc(sys.argv, "array")) is not None and l+1 < len(sys.argv): 
@@ -69,12 +72,15 @@ if __name__ == "__main__":
         low = int(sys.argv[l+1])
     if (l := loc(sys.argv, "high")) is not None and l+1 < len(sys.argv): 
         high = int(sys.argv[l+1])
-
+    if (l := loc(sys.argv, "scales")) is not None and l+2 < len(sys.argv):
+        preserve_scale_in_step_1 = bool(int(sys.argv[l+1]))
+        preserve_scale_in_step_2 = bool(int(sys.argv[l+2]))
+    
     randomise_array = "random" in sys.argv
     if randomise_array:
          print (f"n is {n} and k is {k}")
          arr = np.random.randint(low=low, high=high, size=(n,k))
 
-    print_first_part_of_simplex_1_encoding(arr)
+    print_first_part_of_simplex_1_encoding(arr, preserve_scale_in_step_1=preserve_scale_in_step_1, preserve_scale_in_step_2=preserve_scale_in_step_2)
     
 
