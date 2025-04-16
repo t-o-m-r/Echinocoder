@@ -9,121 +9,43 @@ def pretty_print_lin_comb(lin_comb):
     for coeff, basis_elt in lin_comb:
         print(float(coeff), numpy_array_of_frac_to_str(basis_elt))
 
-
-class EncDec:
-
-    def __init__(self, pass_forward, pass_backward):
-        self.pass_forward = pass_forward
-        self.pass_backward = pass_backward
-
-    def get_default_output_dict(self, input_dict, debug=False):
-        return EncDec.get_default_dict(input_dict, self.pass_forward, debug)
-
-    def get_default_input_dict(self, output_dict, debug=False):
-        return EncDec.get_default_dict(output_dict, self.pass_backward, debug)
-
-
-    @staticmethod
-    def get_default_dict(some_dict, some_pass_through, debug=False):
-
-        if some_pass_through is False or some_pass_through is None or not some_pass_through:
-            ret_dict = dict()
-            if debug:
-                print(f"some_pass_through was False or None")
-        elif some_pass_through is True:
-            ret_dict = some_dict
-            if debug:
-                print(f"some_pass_through was True")
-        else:
-            # Assime some_pass_through is a list
-            if debug:
-                print(f"some_pass_through is assumed to be a list")
-            ret_dict = {k: v for k, v in some_dict.items() if k in some_pass_through}
-
-        if debug:
-            print(f"ret_dict initial value is\n{ret_dict}")
-
-        return ret_dict
-
-
-    def encode(self, input_dict):
-        """
-        Encoder-Decoders should implement.
-        input_dict is a dictionary of key,value pairs.
-        output_dict should be a dictionary of key,value pairs.
-        encode maps input -> output
-        """
-        raise NotImplementedError()
-
-    def decode(self, output_dict):
-        """
-        Encoder-Decoders should implement.
-        input_dict is a dictionary of key,value pairs.
-        output_dict should be a dictionary of key,value pairs.
-        decode maps output -> input
-        """
-        raise NotImplementedError()
-
-class PassThrough(EncDec):
-
+class LinComb:
     def __init__(self):
-        super().__init__(pass_forward=False, pass_backward=False)
+        self.coeffs=[]
+        self.basis_vecs=[]
 
-    def encode(self, input_dict):
-        return input_dict
+    def __iadd__(self, stuff):
+        print(f"In iadd see stuff of type {stuff}")
+        # Note that __add__ does not consolidate. I.e. (3i+2j) + (5i) becomes (3i+2j+5i) not (8i+2j)
+        if isinstance(stuff, LinComb):
+            self.coeffs.extend(stuff.coeffs)
+            self.basis_vecs.extend(stuff.basis_vecs)
+            return self
 
-    def decode(self, output_dict):
-        return output_dict
+        if isinstance(stuff, tuple) and len(stuff)==2:
+            # Assume this:
+            coeff, basis_vec = stuff
+            self.coeffs.append(coeff)
+            self.basis_vecs.append(basis_vec)
+            return self
 
-class MergeLinCombs(EncDec):
-    def __init__(self, input_lin_comb_names, output_lin_comb_name, pass_forward=None, pass_backward=None):
-        """
-        Merges linear combinations in the input dictionary and writes them to the output dictionary.
-        E.g. could combing  input["diff1"]=[(2,"i"), (5,"j")] and input["offset"] = [(3,"k")] into
-        output["out"] = [(2,"i"), (5,"j"), (3,"k")].
+        raise ValueError("LinComb.__add__ only knows how to add LimCombs and coeff,basis_vec pairs.")
 
-        Args:
-            input_lin_comb_names: a list of lin_comb names, e.g. ["diff1", "offset"].
-            output_lin_comb_name: the name of the output lin comb, e.g. "out".
-        """
-        super().__init__(pass_forward, pass_backward)
-        self.input_lin_comb_names = input_lin_comb_names
-        self.output_lin_comb_name = output_lin_comb_name
+    def __str__(self):
+        tmp = list(zip(self.coeffs, self.basis_vecs))
+        return str(f"{tmp}")
 
-    def encode(self, input_dict, debug=False):
-        out_dict = self.get_default_output_dict(input_dict, debug)
-        out_lin_comb = []
-        for lin_comb_name in self.input_lin_comb_names:
-            lin_comb = input_dict[lin_comb_name]
-            out_lin_comb.extend(lin_comb)
-        out_dict[self.output_lin_comb_name] = out_lin_comb
-        return out_dict
+def ArrayToLinComb(arr: np.array, debug=False):
 
+        lin_comb = LinComb()
+        for index, coeff in np.ndenumerate(arr):
+            basis_vec = np.zeros_like(arr)
+            basis_vec[index] = 1
+            lin_comb += coeff, basis_vec
 
-class ArrayToLinComb(EncDec):
-    def __init__(self, input_array_name, output_lin_comb_name, pass_forward=None, pass_backward=None):
-        super().__init__(pass_forward, pass_backward)
-        self.input_array_name = input_array_name
-        self.output_lin_comb_name = output_lin_comb_name
+        return lin_comb
 
-    def encode(self, input_dict, debug=False):
-        if self.input_array_name not in input_dict:
-            raise ValueError(f"Expected {self.input_array_name} in {input_dict}.")
-
-        output_dict = self.get_default_output_dict(input_dict, debug)
-        arr = np.asarray(input_dict[self.input_array_name])
-        result = []
-        for index, value in np.ndenumerate(arr):
-            basis = np.zeros_like(arr)
-            basis[index] = 1
-            result.append((value, basis))
-
-        output_dict[self.output_lin_comb_name] = result
-        if debug:
-            print(f"About to return {output_dict}")
-        return output_dict
-
-class Chain(EncDec):
+class Chain:
     def __init__(self, encoder_decoder_list):
         self.encoder_decoder_list = encoder_decoder_list
 
@@ -140,7 +62,7 @@ class Chain(EncDec):
         return output_dict
 
 
-class BarycentricSubdivide(EncDec):
+class BarycentricSubdivide:
     """
     Encoding:
         * looks for a dictionary entry named self.input_name which is assumed to be a point in barycentric coordinates,
