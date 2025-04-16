@@ -165,7 +165,7 @@ class BarycentricSubdivide(EncDec):
         """
 
         Args:
-            input_name: name of lin-comb to encode to on
+            input_name: name of lin-comb to encode.
             diff_output_name: name of lin-comb into which to encode everything EXCEPT the constant offset term.
                                This lin-comb has only non-negative coefficients.
             offset_output_name: name of the lin-comb to encode the constant offset term.
@@ -174,6 +174,7 @@ class BarycentricSubdivide(EncDec):
                           If True, then pass everything through.
                           If False, then pass nothing through.
                           If list, then pass through dict items whose names are in the list
+
         """
         
         super().__init__(pass_forward, pass_backward)
