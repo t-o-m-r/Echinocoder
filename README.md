@@ -64,7 +64,8 @@ In principle the method could be re-written to embed into just $2 n k + 1$ reals
 
 [example.py](example.py) is a simple example script showing how some of the embedders could be used. These examples use the old-style monolithic calculators listed in the table above.
 
-[nice_examples.sh](nice_examples.sh) is a short script which exercises [play_simplex_encoders_via_EncDec.py](play_simplex_encoders_via_EncDec.py) in a few different ways. It uses the new-style [EncDec.py](EncDec.py)-based calculators -- however they only extend to Simplex1 and Simplex 2.
+[nice_examples.sh](nice_examples.sh) is a short script which exercises [play_simplex_encoders_via_EncDec.py](play_simplex_encoders_via_EncDec.py) in a few different ways. It uses the new-style [EncDec.py](EncDec.py)-based calculators -- however they only extend to Simplex1 and Simplex 2. Currently the
+[nice_examples.sh](nice_examples.sh) script only does the pre-processing and canonicalisation stages that would precede the actual embedding. That is bbecause they are the important stages that are currently being studied.
 
 ## Testing
 
