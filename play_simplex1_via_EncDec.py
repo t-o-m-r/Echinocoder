@@ -32,7 +32,7 @@ def print_first_part_of_simplex_1_encoding(set_array : np.array,
 
     Re-write lin_comb_0 as a sum of the offset (which is the minimum coefficient times [[1,1],[1,1]] and some
     (so called) differences.  The latter are a set of non-negative coefficients times other basis vectors only 
-    containing zeros and ones. Conceptually this step is turning:
+    containing zeros and ones.  Conceptually this step is turning:
 
        lin_comb_0 = 2 * [[1,0],[0,0]] + 8 * [[0,1],[0,0]] + 4 * [[0,0],[1,0]] + 5 * [[0,0],[0,1]]
 
@@ -50,6 +50,9 @@ def print_first_part_of_simplex_1_encoding(set_array : np.array,
 
         offset = 2 * [[1,1],[1,1]]
 
+    The above example assumed that preserve_scale=False is supplied to barycentric_subdivide, and that thus
+    the one-norm of the basis vecs in the linear combination is growing as you go down the list, rather than
+    constant as it would be if preserve_scale=True had been used instead.
     """
     lin_comb_1_first_diffs, offset = EncDec.barycentric_subdivide(lin_comb_0, return_offset_separately=True, preserve_scale=preserve_scale_in_step_1)
 
