@@ -11,9 +11,49 @@ def print_first_part_of_simplex_1_encoding(set_array : np.array,
              preserve_scale_in_step_1 = False,
              preserve_scale_in_step_2 = False):
 
+    """
+    Step 1: 
 
+    Turn the array (which represents a set) into a linear combination of coefficients and Eji basis elements.
+    Conceptually this is turning:
+
+       set_array = [[2,8],[4,5]]
+
+    into
+
+       lin_comb_0 = 2 * [[1,0],[0,0]] + 8 * [[0,1],[0,0]] + 4 * [[0,0],[1,0]] + 5 * [[0,0],[0,1]]
+
+    """
     lin_comb_0 = EncDec.array_to_lin_comb(set_array)
+
+
+    """
+    Step 2:
+
+    Re-write lin_comb_0 as a sum of the offset (which is the minimum coefficient times [[1,1],[1,1]] and some
+    (so called) differences.  The latter are a set of non-negative coefficients times other basis vectors only 
+    containing zeros and ones. Conceptually this step is turning:
+
+       lin_comb_0 = 2 * [[1,0],[0,0]] + 8 * [[0,1],[0,0]] + 4 * [[0,0],[1,0]] + 5 * [[0,0],[0,1]]
+
+    into
+
+       lin_comb_1 + offset
+
+    where the first differences are:
+    
+        lin_comb_1 = (8-5) * [[0,1],[0,0]]
+                   + (5-4) * [[0,1],[0,1]]  
+                   + (4-2) * [[0,1],[1,1]] 
+
+    and where the offset is:
+
+        offset = 2 * [[1,1],[1,1]]
+
+    """
     lin_comb_1_first_diffs, offset = EncDec.barycentric_subdivide(lin_comb_0, return_offset_separately=True, preserve_scale=preserve_scale_in_step_1)
+
+
     lin_comb_2_second_diffs = EncDec.barycentric_subdivide(lin_comb_1_first_diffs, return_offset_separately=False, preserve_scale=preserve_scale_in_step_2)
     lin_comb_3 = EncDec.LinComb( (lin_comb_2_second_diffs, offset) )
 
