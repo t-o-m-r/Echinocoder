@@ -11,66 +11,11 @@ def print_first_part_of_simplex_1_encoding(set_array : np.array,
              preserve_scale_in_step_1 = False,
              preserve_scale_in_step_2 = False):
 
-    """
-    Step 1: 
-
-    Turn the array (which represents a set) into a linear combination of coefficients and Eji basis elements.
-    Conceptually this is turning:
-
-       set_array = [[2,8],[4,5]]
-
-    into
-
-       lin_comb_0 = 2 * [[1,0],[0,0]] + 8 * [[0,1],[0,0]] + 4 * [[0,0],[1,0]] + 5 * [[0,0],[0,1]]
-
-    """
-    lin_comb_0 = EncDec.array_to_lin_comb(set_array)
-
-
-    """
-    Step 2:
-
-    Re-write lin_comb_0 as a sum of the offset (which is the minimum coefficient times [[1,1],[1,1]] and some
-    (so called) differences.  The latter are a set of non-negative coefficients times other basis vectors only 
-    containing zeros and ones.  Conceptually this step is turning:
-
-       lin_comb_0 = 2 * [[1,0],[0,0]] + 8 * [[0,1],[0,0]] + 4 * [[0,0],[1,0]] + 5 * [[0,0],[0,1]]
-
-    into
-
-       lin_comb_1 + offset
-
-    where the first differences are:
-    
-        lin_comb_1 = (8-5) * [[0,1],[0,0]]
-                   + (5-4) * [[0,1],[0,1]]  
-                   + (4-2) * [[0,1],[1,1]] 
-
-    and where the offset is:
-
-        offset = 2 * [[1,1],[1,1]]
-
-    The above example assumed that preserve_scale=False is supplied to barycentric_subdivide, and that thus
-    the one-norm of the basis vecs in the linear combination is growing as you go down the list, rather than
-    constant as it would be if preserve_scale=True had been used instead.
-    """
-    lin_comb_1_first_diffs, offset = EncDec.barycentric_subdivide(lin_comb_0, return_offset_separately=True, preserve_scale=preserve_scale_in_step_1, use_assertion_self_test=True)
-
-    """
-    Step 3:
-
-    Now we do a barycentric subdivision of lin_comb_1, storing the answer in lin_comb_2.  
-    The purpose of this step is to make the resulting basis vectors sufficiently complicated that the
-    process of canonicalise them will allow the set of all vertices to retain enough information that the
-    canonicalisation process can be undone in all the materially important ways - according to PKH claim..
-    [Provably the canonicalisation process would delete information if it were applied to lin_comb_1 directly.] 
-
-    In principle this subdivision should be done with preserve_scale=True (as the vertices of mid-points of 
-    simplex edges are things like (v1+v2)/2 not (v1+v2).  However, since this introduces a lot of fractions 
-    into the output, a lot of debugging is done with preserve_scale=False.
-    """
-    lin_comb_2_second_diffs = EncDec.barycentric_subdivide(lin_comb_1_first_diffs, return_offset_separately=False, preserve_scale=preserve_scale_in_step_2, use_assertion_self_test=True)
-
+    lin_comb_2_second_diffs, offset = EncDec.simplex_1_preprocess_steps(set_array,
+                                                                        preserve_scale_in_step_1 = preserve_scale_in_step_1,
+                                                                        preserve_scale_in_step_2 = preserve_scale_in_step_2,
+                                                                        canonicalise = False,
+                                                                        use_assertions = True)
 
     lin_comb_3 = EncDec.LinComb( (lin_comb_2_second_diffs, offset) )
 
@@ -79,18 +24,18 @@ def print_first_part_of_simplex_1_encoding(set_array : np.array,
     print("to")
     EncDec.pretty_print_lin_comb(lin_comb_3)
     print("the first is")
-    print(EncDec.numpy_array_of_frac_to_str(tmp:=lin_comb_3.basis_vecs[0]), " with ", np.sum(tmp), " ones in it")
+    print(EncDec.numpy_array_of_frac_to_str(tmp:=lin_comb_3.basis_vecs[0]), " with basis one-norm ", np.sum(tmp))
     print("and the (non-offset) differences are")
-    [ print(EncDec.numpy_array_of_frac_to_str(tmp:=b-a), " with ", np.sum(tmp)," ones in it") for a,b in list(pairwise( lin_comb_3.basis_vecs ))[:-1] ]
+    [ print(EncDec.numpy_array_of_frac_to_str(tmp:=b-a), " with basis one-norm ", np.sum(tmp)) for a,b in list(pairwise( lin_comb_3.basis_vecs ))[:-1] ]
 
     print("----- Canonicalised lin enc: -----")
     can_lin_comb_3 = EncDec.LinComb([ EncDec.MonoLinComb(coeff, tools.sort_np_array_rows_lexicographically(arr)) for coeff, arr in zip(lin_comb_3.coeffs, lin_comb_3.basis_vecs) ])
 
     EncDec.pretty_print_lin_comb(can_lin_comb_3)
     print("the first is")
-    print(EncDec.numpy_array_of_frac_to_str(tmp:=can_lin_comb_3.basis_vecs[0]), " with ", np.sum(tmp), " ones in it")
+    print(EncDec.numpy_array_of_frac_to_str(tmp:=can_lin_comb_3.basis_vecs[0]), " with basis one-norm", np.sum(tmp))
     print("and the (non-offset) differences are")
-    [ print(EncDec.numpy_array_of_frac_to_str(tmp:=b-a), " with ", np.sum(tmp)," ones in it") for a,b in list(pairwise(  can_lin_comb_3.basis_vecs ))[:-1] ]
+    [ print(EncDec.numpy_array_of_frac_to_str(tmp:=b-a), " with basis one-norm", np.sum(tmp)) for a,b in list(pairwise(  can_lin_comb_3.basis_vecs ))[:-1] ]
 
 
 
