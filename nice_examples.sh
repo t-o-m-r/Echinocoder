@@ -6,6 +6,8 @@
 
 #./play_simplex_encoders_via_EncDec.py array "[[709, 537, 355, ],  [725, 534, 223, ],  ]"
 
+./play_simplex_encoders_via_EncDec.py n 4 k 4 random method 2 low -10
+
 ./play_simplex_encoders_via_EncDec.py array "[[5,4,2 ], [6,3,1] ]" method 1
 
 ./play_simplex_encoders_via_EncDec.py array "[[5,4,2 ], [6,3,1] ]" method 2
