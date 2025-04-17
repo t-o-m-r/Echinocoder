@@ -25,12 +25,23 @@ class LinComb:
         if initialiser is not None:
             self += initialiser
 
-    def mlcs(self):
+    def mlcs(self): # MLCS = Mono Lin CombinationS
         return (MonoLinComb(c,b) for c,b in zip(self.coeffs, self.basis_vecs))
 
     def __len__(self):
         assert len(self.coeffs) == len(self.basis_vecs)
         return len(self.coeffs)
+
+    def to_numpy_array(self):
+        ans = None
+        first = True
+        for c,b in zip(self.coeffs, self.basis_vecs):
+            if first == True:
+                ans = c*np.asarray(b)
+                first = False
+            else:
+                ans += c*np.asarray(b)
+        return ans
 
     def __iadd__(self, stuff):
         #print(f"In iadd see stuff of type {stuff}")
@@ -55,7 +66,9 @@ class LinComb:
         raise ValueError("LinComb.__iadd__ only knows how to add LimCombs and MonoLinCombs and iterables containing those.")
 
     def is_consolidated(self):
-        basis_vecs_as_tuptups = [ tuple(map(tuple, bv)) for bv in self.basis_vecs ]
+        print(f"Being asked for consolidation state of {self.basis_vecs}")
+        # Need to convert 2D arrays to tup(tup()) and 1D arrays to tup() so that they are hashable:
+        basis_vecs_as_tuptups = [ (tuple(map(tuple, bv)) if bv.ndim == 2 else tuple(bv)) for bv in self.basis_vecs ]
         print(f"turned {self.basis_vecs} into {basis_vecs_as_tuptups}")
         return len(set(basis_vecs_as_tuptups)) == len(basis_vecs_as_tuptups)
 

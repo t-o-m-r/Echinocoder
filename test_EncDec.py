@@ -184,6 +184,9 @@ def test_array_to_lin_comb():
     assert enc == expected
     assert enc != not_expected
 
+    reconstructed_array = enc.to_numpy_array()
+    assert np.array_equal(reconstructed_array, arr)
+
 
 #def test_Chain_1():
 #    print("###########################################")
