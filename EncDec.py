@@ -143,8 +143,7 @@ def barycentric_subdivide(lin_comb: LinComb, return_offset_separately=False, pre
     if return_offset_separately:
         ans = diff_lin_comb, offset_mono_lin_comb
     else:
-        ans = diff_lin_comb
-        ans += offset_mono_lin_comb
+        ans = diff_lin_comb + offset_mono_lin_comb
 
     if debug:
         print(f"About to return \n{ans}")
