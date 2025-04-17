@@ -81,7 +81,6 @@ class LinComb:
 
     def __eq__(self, other):
         if len(self.coeffs) != len(other.coeffs):
-            print("Found differing length")
             return false
 
         assert len(self.coeffs) == len(self.basis_vecs)
@@ -90,7 +89,6 @@ class LinComb:
         # Note that the order is required to match here, so eq means "same lin com in same order".
         for i,j in zip(self.mlcs(), other.mlcs()):
             if i != j:
-               print("Found differing mlc")
                return False
 
         return True
@@ -144,6 +142,13 @@ def barycentric_subdivide(lin_comb: LinComb, return_offset_separately=False, pre
         ans = diff_lin_comb, offset_mono_lin_comb
     else:
         ans = diff_lin_comb + offset_mono_lin_comb
+
+    """
+    No need to do the following, but conceptually useful as documentation as it shows us one of the things
+    that this subroute intends to achieve:
+    """
+    assert np.allclose( lin_comb.to_numpy_array().astype(float), 
+                        (diff_lin_comb + offset_mono_lin_comb).to_numpy_array().astype(float))
 
     if debug:
         print(f"About to return \n{ans}")
