@@ -245,7 +245,7 @@ def simplex_1_preprocess_steps(set_array : np.array,
 
     Canonicalise the basis vectors.
 
-    We hope this step is a bijection (given the domain) --- PKH claims it is --- but am suspicious. Claim is being tested!
+    We hope this step is a bijection (given the domain).  PKH claims it is, but I am suspicious. Claim is being tested!
     """
 
     lin_comb_3_canonical = LinComb(( MonoLinComb(coeff, tools.sort_np_array_rows_lexicographically(basis_vec)) for coeff, basis_vec in zip(lin_comb_2_second_diffs.coeffs, lin_comb_2_second_diffs.basis_vecs) ))
