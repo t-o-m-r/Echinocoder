@@ -27,6 +27,11 @@ def test_BarycentricSubdivide_split_not_preserving_scale():
     assert pOut == pOut_expected
     assert qOut == qOut_expected
 
+    in_array = pIn.to_numpy_array()
+    out_array = (pOut+qOut).to_numpy_array() 
+
+    assert np.array_equal(in_array, out_array)
+
 def test_BarycentricSubdivide_no_split_not_preserving_scale():
     print("###########################################")
 

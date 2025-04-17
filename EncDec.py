@@ -43,6 +43,9 @@ class LinComb:
                 ans += c*np.asarray(b)
         return ans
 
+    def __add__(self, stuff):
+        return LinComb((self, stuff))
+
     def __iadd__(self, stuff):
         #print(f"In iadd see stuff of type {stuff}")
         # Note that __add__ does not automatically consolidate. I.e. (3i+2j) + (5i) becomes (3i+2j+5i) not (8i+2j).
