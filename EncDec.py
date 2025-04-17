@@ -158,10 +158,6 @@ def barycentric_subdivide(lin_comb: LinComb, return_offset_separately=False, pre
 
     return ans
 
-def pretty_print_lin_comb(lin_comb: LinComb):
-    for coeff, basis_elt in zip(lin_comb.coeffs, lin_comb.basis_vecs):
-        print(float(coeff), numpy_array_of_frac_to_str(basis_elt), " one-norm: ", np.sum(basis_elt))
-
 def simplex_1_preprocess_steps(set_array : np.array, 
                                preserve_scale_in_step_1 = False,
                                preserve_scale_in_step_2 = True,

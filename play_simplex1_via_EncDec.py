@@ -6,6 +6,9 @@ from itertools import pairwise
 import sys
 import tools
 
+def pretty_print_lin_comb(lin_comb: EncDec.LinComb):
+    for coeff, basis_elt in zip(lin_comb.coeffs, lin_comb.basis_vecs):
+        print(float(coeff), tools.numpy_array_of_frac_to_str(basis_elt), " one-norm: ", np.sum(basis_elt))
 
 def print_first_part_of_simplex_1_encoding(set_array : np.array,
                                            preserve_scale_in_step_1 = False,
@@ -22,7 +25,7 @@ def print_first_part_of_simplex_1_encoding(set_array : np.array,
     print(f"=======================\nSimplex1 as a chain encoded")
     print(EncDec.numpy_array_of_frac_to_str(set_array))
     print("to")
-    EncDec.pretty_print_lin_comb(lin_comb_3)
+    pretty_print_lin_comb(lin_comb_3)
     print("the first is")
     print(EncDec.numpy_array_of_frac_to_str(tmp:=lin_comb_3.basis_vecs[0]), " with basis one-norm ", np.sum(tmp))
     print("and the (non-offset) differences are")
@@ -38,7 +41,7 @@ def print_first_part_of_simplex_1_encoding(set_array : np.array,
 
     can_lin_comb_3 = can_lin_comb_2_second_diffs + offset2
     
-    EncDec.pretty_print_lin_comb(can_lin_comb_3)
+    pretty_print_lin_comb(can_lin_comb_3)
     print("the first is")
     print(EncDec.numpy_array_of_frac_to_str(tmp:=can_lin_comb_3.basis_vecs[0]), " with basis one-norm", np.sum(tmp))
     print("and the (non-offset) differences are")
