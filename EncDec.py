@@ -322,20 +322,21 @@ def simplex_2_preprocess_steps(set_array : np.array,
     constant as it would be if preserve_scale=True had been used instead.
     """
     
-    lin_comb_1 = [None] * k
+    lin_comb_1_first_diffs = [None] * k
     offset = [None] *k
 
     assert len(lin_comb_0) == k
     for i in range(k):
-        lin_comb_1[i], offset[i] = barycentric_subdivide(lin_comb_0[i], return_offset_separately=True, preserve_scale=preserve_scale_in_step_1, use_assertion_self_test=True)
+        lin_comb_1_first_diffs[i], offset[i] = barycentric_subdivide(lin_comb_0[i], return_offset_separately=True, preserve_scale=preserve_scale_in_step_1, use_assertion_self_test=True)
         if debug:
-            print(f"lin_comb_1[{i}] was {lin_comb_1[i]}")
+            print(f"lin_comb_1[{i}] was {lin_comb_1_first_diffs[i]}")
             print(f"offset[{i}] was {offset[i]}")
             print()
 
-        
     if use_assertions:
-        assert np.allclose(set_array.astype(float), (lin_comb_1_first_diffs+offset).to_numpy_array().astype(float))
+        assert np.allclose(set_array.astype(float), sum([  (lin_comb_1_first_diffs[i]+offset[i]).to_numpy_array().astype(float) for i in range(k)   ]))
+        if debug:
+            print("Happy")
 
     """
     Step 3:
