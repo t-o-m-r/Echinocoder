@@ -4,6 +4,7 @@ from collections.abc import Iterable
 from fractions import Fraction
 from itertools import pairwise
 import numpy as np
+import tools
 
 from tools import numpy_array_of_frac_to_str
 from tuple_ize import tuple_ize
@@ -161,15 +162,6 @@ def pretty_print_lin_comb(lin_comb: LinComb):
     for coeff, basis_elt in zip(lin_comb.coeffs, lin_comb.basis_vecs):
         print(float(coeff), numpy_array_of_frac_to_str(basis_elt), " one-norm: ", np.sum(basis_elt))
 
-#!/usr/bin/env python
-
-import EncDec
-import numpy as np
-from itertools import pairwise
-import sys
-import tools
-
-
 def simplex_1_preprocess_steps(set_array : np.array, 
                                preserve_scale_in_step_1 = False,
                                preserve_scale_in_step_2 = True,
@@ -190,7 +182,7 @@ def simplex_1_preprocess_steps(set_array : np.array,
 
     """
 
-    lin_comb_0 = EncDec.array_to_lin_comb(set_array)
+    lin_comb_0 = array_to_lin_comb(set_array)
 
     if use_assertions:
         assert np.allclose(set_array.astype(float), lin_comb_0.to_numpy_array().astype(float))
@@ -224,7 +216,7 @@ def simplex_1_preprocess_steps(set_array : np.array,
     constant as it would be if preserve_scale=True had been used instead.
     """
 
-    lin_comb_1_first_diffs, offset = EncDec.barycentric_subdivide(lin_comb_0, return_offset_separately=True, preserve_scale=preserve_scale_in_step_1, use_assertion_self_test=True)
+    lin_comb_1_first_diffs, offset = barycentric_subdivide(lin_comb_0, return_offset_separately=True, preserve_scale=preserve_scale_in_step_1, use_assertion_self_test=True)
 
     if use_assertions:
         assert np.allclose(set_array.astype(float), (lin_comb_1_first_diffs+offset).to_numpy_array().astype(float))
@@ -243,7 +235,7 @@ def simplex_1_preprocess_steps(set_array : np.array,
     into the output, a lot of debugging is done with preserve_scale=False.
     """
 
-    lin_comb_2_second_diffs = EncDec.barycentric_subdivide(lin_comb_1_first_diffs, return_offset_separately=False, preserve_scale=preserve_scale_in_step_2, use_assertion_self_test=True)
+    lin_comb_2_second_diffs = barycentric_subdivide(lin_comb_1_first_diffs, return_offset_separately=False, preserve_scale=preserve_scale_in_step_2, use_assertion_self_test=True)
 
     if use_assertions:
         assert np.allclose(set_array.astype(float), (lin_comb_2_second_diffs + offset).to_numpy_array().astype(float))
@@ -251,7 +243,18 @@ def simplex_1_preprocess_steps(set_array : np.array,
     if not canonicalise:
         return lin_comb_2_second_diffs, offset
 
-    raise NotImplementedError("Canonicalisation not yet implemented here")
+
+    """
+    Step 4:
+
+    Canonicalise the basis vectors.
+
+    We hope this step is a bijection (given the domain) --- PKH claims it is --- but am suspicious. Claim is being tested!
+    """
+
+    lin_comb_3_canonical = LinComb(( MonoLinComb(coeff, tools.sort_np_array_rows_lexicographically(basis_vec)) for coeff, basis_vec in zip(lin_comb_2_second_diffs.coeffs, lin_comb_2_second_diffs.basis_vecs) ))
+
+    return lin_comb_3_canonical, offset
 
 
 

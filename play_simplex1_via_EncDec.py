@@ -8,8 +8,8 @@ import tools
 
 
 def print_first_part_of_simplex_1_encoding(set_array : np.array,
-             preserve_scale_in_step_1 = False,
-             preserve_scale_in_step_2 = False):
+                                           preserve_scale_in_step_1 = False,
+                                           preserve_scale_in_step_2 = False):
 
     lin_comb_2_second_diffs, offset = EncDec.simplex_1_preprocess_steps(set_array,
                                                                         preserve_scale_in_step_1 = preserve_scale_in_step_1,
@@ -17,7 +17,7 @@ def print_first_part_of_simplex_1_encoding(set_array : np.array,
                                                                         canonicalise = False,
                                                                         use_assertions = True)
 
-    lin_comb_3 = EncDec.LinComb( (lin_comb_2_second_diffs, offset) )
+    lin_comb_3 = lin_comb_2_second_diffs + offset
 
     print(f"=======================\nSimplex1 as a chain encoded")
     print(EncDec.numpy_array_of_frac_to_str(set_array))
@@ -29,8 +29,15 @@ def print_first_part_of_simplex_1_encoding(set_array : np.array,
     [ print(EncDec.numpy_array_of_frac_to_str(tmp:=b-a), " with basis one-norm ", np.sum(tmp)) for a,b in list(pairwise( lin_comb_3.basis_vecs ))[:-1] ]
 
     print("----- Canonicalised lin enc: -----")
-    can_lin_comb_3 = EncDec.LinComb([ EncDec.MonoLinComb(coeff, tools.sort_np_array_rows_lexicographically(arr)) for coeff, arr in zip(lin_comb_3.coeffs, lin_comb_3.basis_vecs) ])
+    can_lin_comb_2_second_diffs, offset2 = EncDec.simplex_1_preprocess_steps(set_array,
+                                                                             preserve_scale_in_step_1 = preserve_scale_in_step_1,
+                                                                             preserve_scale_in_step_2 = preserve_scale_in_step_2,
+                                                                             canonicalise = True,
+                                                                             use_assertions = True)
+    assert offset == offset2
 
+    can_lin_comb_3 = can_lin_comb_2_second_diffs + offset2
+    
     EncDec.pretty_print_lin_comb(can_lin_comb_3)
     print("the first is")
     print(EncDec.numpy_array_of_frac_to_str(tmp:=can_lin_comb_3.basis_vecs[0]), " with basis one-norm", np.sum(tmp))
