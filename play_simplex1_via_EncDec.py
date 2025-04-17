@@ -22,19 +22,23 @@ def print_first_part_of_simplex_encoding(set_array : np.array,
                                                       preserve_scale_in_step_2 = preserve_scale_in_step_2,
                                                       canonicalise = canonicalise,
                                                       use_assertions = True,
-                                                      debug = True)
+                                                      debug = debug)
 
     lin_comb_3 = lin_comb_2_second_diffs + offsets
 
     print(f"=======================\n{simplex_method} encoded")
     print(EncDec.numpy_array_of_frac_to_str(set_array))
-    print(f"{'with' if canonicalise else 'without'} canonicalisation to")
-    pretty_print_lin_comb(lin_comb_3)
+    print(f"{'with' if canonicalise else 'without'} canonicalisation to second diff(s) ")
+    pretty_print_lin_comb(lin_comb_2_second_diffs)
+    print("and offset(s)")
+    pretty_print_lin_comb(EncDec.LinComb(offsets))
     print("========================")
-    print("The first basis vector in the above is")
-    print(EncDec.numpy_array_of_frac_to_str(tmp:=lin_comb_3.basis_vecs[0]), " with basis one-norm ", np.sum(tmp))
-    print("and the differences between the subsequent (non-offset) basis vectors are:")
-    [ print(EncDec.numpy_array_of_frac_to_str(tmp:=b-a), " with basis one-norm ", np.sum(tmp)) for a,b in list(pairwise( lin_comb_3.basis_vecs ))[:-len(offsets)] ]
+    if len(lin_comb_2_second_diffs)>=1:
+        print("The first diff basis vector in the above is")
+        print(EncDec.numpy_array_of_frac_to_str(tmp:=lin_comb_2_second_diffs.basis_vecs[0]), " with one-norm ", np.sum(tmp))
+    if len(lin_comb_2_second_diffs)>=2:
+        print("and the differences between the subsequent (non-offset) basis vectors are:")
+        [ print(EncDec.numpy_array_of_frac_to_str(tmp:=b-a), " with one-norm ", np.sum(tmp)) for a,b in list(pairwise( lin_comb_2_second_diffs.basis_vecs )) ]
 
 
 
