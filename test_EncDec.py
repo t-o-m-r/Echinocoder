@@ -16,7 +16,7 @@ def test_BarycentricSubdivide_split_not_preserving_scale():
                    MonoLinComb(-7, np.array([0, 1, 0])),
                    MonoLinComb(10, np.array([0, 0, 1]))])
 
-    pOut, qOut = barycentric_subdivide(pIn, return_offset_separately=True, preserve_scale=False, debug=True)
+    pOut, qOut = barycentric_subdivide(pIn, return_offset_separately=True, preserve_scale=False, debug=True, use_assertion_self_test=True)
 
     print(f"pOut\n{pOut}\nqOut{qOut}")
 
@@ -39,7 +39,7 @@ def test_BarycentricSubdivide_no_split_not_preserving_scale():
                    MonoLinComb(-7, np.array([0, 1, 0])),
                    MonoLinComb(10, np.array([0, 0, 1]))])
 
-    pOut = barycentric_subdivide(pIn, return_offset_separately=False, preserve_scale=False, debug=True)
+    pOut = barycentric_subdivide(pIn, return_offset_separately=False, preserve_scale=False, debug=True, use_assertion_self_test=True)
 
     print(f"pOut\n{pOut}")
 
@@ -57,7 +57,7 @@ def test_BarycentricSubdivide_split_preserve_scale():
                    MonoLinComb(-7, np.array([0, 1, 0])),
                    MonoLinComb(10, np.array([0, 0, 1]))])
 
-    pOut, qOut = barycentric_subdivide(pIn, return_offset_separately=True, preserve_scale=True, debug=True)
+    pOut, qOut = barycentric_subdivide(pIn, return_offset_separately=True, preserve_scale=True, debug=True, use_assertion_self_test=True)
     print(f"pOut\n{pOut}\nqOut\n{qOut}")
     pOut_expected = LinComb([MonoLinComb(11, np.array([Fraction(0, 1), Fraction(0, 1), Fraction(1, 1)], dtype=object)), 
                              MonoLinComb(12, np.array([Fraction(1, 2), Fraction(0, 1), Fraction(1, 2)], dtype=object))])
@@ -74,7 +74,7 @@ def test_BarycentricSubdivide_no_split_preserve_scale():
                    MonoLinComb(-7, np.array([0, 1, 0])),
                    MonoLinComb(10, np.array([0, 0, 1]))])
 
-    pOut  = barycentric_subdivide(pIn, return_offset_separately=False, preserve_scale=True, debug=True)
+    pOut  = barycentric_subdivide(pIn, return_offset_separately=False, preserve_scale=True, debug=True, use_assertion_self_test=True)
     print(f"pOut\n{pOut}")
     pOut_expected = LinComb([MonoLinComb(11, np.array([Fraction(0, 1), Fraction(0, 1), Fraction(1, 1)], dtype=object)), 
                              MonoLinComb(12, np.array([Fraction(1, 2), Fraction(0, 1), Fraction(1, 2)], dtype=object)), 

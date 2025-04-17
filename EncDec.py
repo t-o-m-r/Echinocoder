@@ -101,7 +101,7 @@ def array_to_lin_comb(arr: np.array, debug=False):
             lin_comb += MonoLinComb(coeff, basis_vec)
         return lin_comb
 
-def barycentric_subdivide(lin_comb: LinComb, return_offset_separately=False, preserve_scale=True, debug=False):
+def barycentric_subdivide(lin_comb: LinComb, return_offset_separately=False, preserve_scale=True, debug=False, use_assertion_self_test=False):
     """
         * If preserve_scale is True (default) then the sum of the coeffiencients is preserved. Equivalently, the one
           norm of each basis vector iw preserved at 1 if already at 1.
@@ -147,8 +147,8 @@ def barycentric_subdivide(lin_comb: LinComb, return_offset_separately=False, pre
     No need to do the following, but conceptually useful as documentation as it shows us one of the things
     that this subroute intends to achieve:
     """
-    assert np.allclose( lin_comb.to_numpy_array().astype(float), 
-                        (diff_lin_comb + offset_mono_lin_comb).to_numpy_array().astype(float))
+    if use_assertion_self_test:
+        assert np.allclose( lin_comb.to_numpy_array().astype(float), (diff_lin_comb + offset_mono_lin_comb).to_numpy_array().astype(float))
 
     if debug:
         print(f"About to return \n{ans}")

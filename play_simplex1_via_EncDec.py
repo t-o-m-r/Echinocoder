@@ -54,10 +54,24 @@ def print_first_part_of_simplex_1_encoding(set_array : np.array,
     the one-norm of the basis vecs in the linear combination is growing as you go down the list, rather than
     constant as it would be if preserve_scale=True had been used instead.
     """
-    lin_comb_1_first_diffs, offset = EncDec.barycentric_subdivide(lin_comb_0, return_offset_separately=True, preserve_scale=preserve_scale_in_step_1)
+    lin_comb_1_first_diffs, offset = EncDec.barycentric_subdivide(lin_comb_0, return_offset_separately=True, preserve_scale=preserve_scale_in_step_1, use_assertion_self_test=True)
+
+    """
+    Step 3:
+
+    Now we do a barycentric subdivision of lin_comb_1, storing the answer in lin_comb_2.  
+    The purpose of this step is to make the resulting basis vectors sufficiently complicated that the
+    process of canonicalise them will allow the set of all vertices to retain enough information that the
+    canonicalisation process can be undone in all the materially important ways - according to PKH claim..
+    [Provably the canonicalisation process would delete information if it were applied to lin_comb_1 directly.] 
+
+    In principle this subdivision should be done with preserve_scale=True (as the vertices of mid-points of 
+    simplex edges are things like (v1+v2)/2 not (v1+v2).  However, since this introduces a lot of fractions 
+    into the output, a lot of debugging is done with preserve_scale=False.
+    """
+    lin_comb_2_second_diffs = EncDec.barycentric_subdivide(lin_comb_1_first_diffs, return_offset_separately=False, preserve_scale=preserve_scale_in_step_2, use_assertion_self_test=True)
 
 
-    lin_comb_2_second_diffs = EncDec.barycentric_subdivide(lin_comb_1_first_diffs, return_offset_separately=False, preserve_scale=preserve_scale_in_step_2)
     lin_comb_3 = EncDec.LinComb( (lin_comb_2_second_diffs, offset) )
 
     print(f"=======================\nSimplex1 as a chain encoded")
