@@ -177,7 +177,7 @@ def simplex_1_preprocess_steps(set_array : np.array,
     Step 1: 
 
     Turn the array (which represents a set) into a linear combination of coefficients and Eji basis elements.
-    Conceptually this is turning:
+    Conceptually this step is turning:
 
        set_array = [[2,8],[4,5]]
 
@@ -278,7 +278,7 @@ def simplex_2_preprocess_steps(set_array : np.array,
     Step 1: 
 
     Turn the array (which represents a set) into a linear combination of coefficients and Eji basis elements, separated by component.
-    Conceptually this is turning:
+    Conceptually this step is turning:
 
        set_array = [[2,8],[4,5]]
 
@@ -302,7 +302,6 @@ def simplex_2_preprocess_steps(set_array : np.array,
     perm-invariant element like (say) [[1,0],[1,0]] and some (so called) differences.  
     The latter are a set of non-negative coefficients times other basis vectors only 
     containing zeros and ones.  Conceptually this step is turning:
-
 
        lin_comb_0[0] = 2 * [[1,0],[0,0]] + 4 * [[0,0],[1,0]]  # "x"-components, and
        lin_comb_0[1] = 8 * [[0,1],[0,0]] + 5 * [[0,0],[0,1]]  # "y"-components
