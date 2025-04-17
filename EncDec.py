@@ -326,6 +326,9 @@ def simplex_2_preprocess_steps(set_array : np.array,
     offset = [None] *k
 
     assert len(lin_comb_0) == k
+    assert len(lin_comb_1_first_diffs) == k
+    assert len(offset) == k
+
     for i in range(k):
         lin_comb_1_first_diffs[i], offset[i] = barycentric_subdivide(lin_comb_0[i], return_offset_separately=True, preserve_scale=preserve_scale_in_step_1, use_assertion_self_test=True)
         if debug:
@@ -334,9 +337,9 @@ def simplex_2_preprocess_steps(set_array : np.array,
             print()
 
     if use_assertions:
-        assert np.allclose(set_array.astype(float), sum([  (lin_comb_1_first_diffs[i]+offset[i]).to_numpy_array().astype(float) for i in range(k)   ]))
+        assert np.allclose(set_array.astype(float), sum([(lin_comb_1_first_diffs[i]+offset[i]).to_numpy_array().astype(float) for i in range(k)]))
         if debug:
-            print("Happy")
+            print("Happy after step 1")
 
     """
     Step 3:
@@ -352,10 +355,18 @@ def simplex_2_preprocess_steps(set_array : np.array,
     into the output, a lot of debugging is done with preserve_scale=False.
     """
 
-    lin_comb_2_second_diffs = barycentric_subdivide(lin_comb_1_first_diffs, return_offset_separately=False, preserve_scale=preserve_scale_in_step_2, use_assertion_self_test=True)
+    lin_comb_2_second_diffs = [None] * k
+
+    assert len(lin_comb_1_first_diffs) == k
+    assert len(lin_comb_2_second_diffs) == k
+
+    for i in range(k):
+        lin_comb_2_second_diffs[i] = barycentric_subdivide(lin_comb_1_first_diffs[i], return_offset_separately=False, preserve_scale=preserve_scale_in_step_2, use_assertion_self_test=True)
 
     if use_assertions:
-        assert np.allclose(set_array.astype(float), (lin_comb_2_second_diffs + offset).to_numpy_array().astype(float))
+        assert np.allclose(set_array.astype(float), sum([(lin_comb_2_second_diffs[i]+offset[i]).to_numpy_array().astype(float) for i in range(k)]))
+        if debug:
+            print("Happy after step 2")
 
     if not canonicalise:
         return lin_comb_2_second_diffs, offset
