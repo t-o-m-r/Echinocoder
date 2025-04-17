@@ -5,6 +5,7 @@ from fractions import Fraction
 from itertools import pairwise
 import numpy as np
 import tools
+from ndenumerate_slice import ndenumerate_fixed_axes_slice
 
 from tools import numpy_array_of_frac_to_str
 from tuple_ize import tuple_ize
@@ -96,9 +97,16 @@ class LinComb:
 
         return True
 
-def array_to_lin_comb(arr: np.array, debug=False):
+def array_to_lin_comb(arr: np.array, fixed_axes=None, debug=False):
         lin_comb = LinComb()
-        for index, coeff in np.ndenumerate(arr):
+        if fixed_axes is None:
+            locations = np.ndenumerate(arr)
+        else:
+            locations = ndenumerate_fixed_axes_slice(arr, fixed_axes=fixed_axes)
+
+        for index, coeff in locations:
+            #if debug:
+            #    print(f"Considering pos {index} and coeff {coeff}.")
             basis_vec = np.zeros_like(arr)
             basis_vec[index] = 1
             lin_comb += MonoLinComb(coeff, basis_vec)
@@ -159,10 +167,11 @@ def barycentric_subdivide(lin_comb: LinComb, return_offset_separately=False, pre
     return ans
 
 def simplex_1_preprocess_steps(set_array : np.array, 
-                               preserve_scale_in_step_1 = False,
-                               preserve_scale_in_step_2 = True,
-                               canonicalise = False,
-                               use_assertions=False):
+                               preserve_scale_in_step_1=False,
+                               preserve_scale_in_step_2=True,
+                               canonicalise=False,
+                               use_assertions=False,
+                               debug=False):
 
     """
     Step 1: 
@@ -187,8 +196,9 @@ def simplex_1_preprocess_steps(set_array : np.array,
     """
     Step 2:
 
-    Re-write lin_comb_0 as a sum of the offset (which is the minimum coefficient times [[1,1],[1,1]] and some
-    (so called) differences.  The latter are a set of non-negative coefficients times other basis vectors only 
+    Re-write lin_comb_0 as a sum of the offset (which is the minimum coefficient times some perm-invariant 
+    basis element like (say)[[1,1],[1,1]] and some (so called) differences.  
+    The latter are a set of non-negative coefficients times other basis vectors only 
     containing zeros and ones.  Conceptually this step is turning:
 
        lin_comb_0 = 2 * [[1,0],[0,0]] + 8 * [[0,1],[0,0]] + 4 * [[0,0],[1,0]] + 5 * [[0,0],[0,1]]
@@ -214,6 +224,116 @@ def simplex_1_preprocess_steps(set_array : np.array,
 
     lin_comb_1_first_diffs, offset = barycentric_subdivide(lin_comb_0, return_offset_separately=True, preserve_scale=preserve_scale_in_step_1, use_assertion_self_test=True)
 
+    if use_assertions:
+        assert np.allclose(set_array.astype(float), (lin_comb_1_first_diffs+offset).to_numpy_array().astype(float))
+
+    """
+    Step 3:
+
+    Now we do a barycentric subdivision of lin_comb_1, storing the answer in lin_comb_2.  
+    The purpose of this step is to make the resulting basis vectors sufficiently complicated that the
+    process of canonicalise them will allow the set of all vertices to retain enough information that the
+    canonicalisation process can be undone in all the materially important ways - according to PKH claim..
+    [Provably the canonicalisation process would delete information if it were applied to lin_comb_1 directly.] 
+
+    In principle this subdivision should be done with preserve_scale=True (as the vertices of mid-points of 
+    simplex edges are things like (v1+v2)/2 not (v1+v2).  However, since this introduces a lot of fractions 
+    into the output, a lot of debugging is done with preserve_scale=False.
+    """
+
+    lin_comb_2_second_diffs = barycentric_subdivide(lin_comb_1_first_diffs, return_offset_separately=False, preserve_scale=preserve_scale_in_step_2, use_assertion_self_test=True)
+
+    if use_assertions:
+        assert np.allclose(set_array.astype(float), (lin_comb_2_second_diffs + offset).to_numpy_array().astype(float))
+
+    if not canonicalise:
+        return lin_comb_2_second_diffs, offset
+
+
+    """
+    Step 4:
+
+    Canonicalise the basis vectors.
+
+    We hope this step is a bijection (given the domain).  PKH claims it is, but I am suspicious. Claim is being tested!
+    """
+
+    lin_comb_3_canonical = LinComb(( MonoLinComb(coeff, tools.sort_np_array_rows_lexicographically(basis_vec)) for coeff, basis_vec in zip(lin_comb_2_second_diffs.coeffs, lin_comb_2_second_diffs.basis_vecs) ))
+
+    return lin_comb_3_canonical, offset
+
+def simplex_2_preprocess_steps(set_array : np.array, 
+                               preserve_scale_in_step_1=False,
+                               preserve_scale_in_step_2=True,
+                               canonicalise=False,
+                               use_assertions=False,
+                               debug=False):
+
+    if debug:
+        print(f"simplex_2_preprocess_steps was asked to encode {set_array}")
+
+    n,k = set_array.shape
+
+    """
+    Step 1: 
+
+    Turn the array (which represents a set) into a linear combination of coefficients and Eji basis elements, separated by component.
+    Conceptually this is turning:
+
+       set_array = [[2,8],[4,5]]
+
+    into
+
+       lin_comb_0[0] = 2 * [[1,0],[0,0]] + 4 * [[0,0],[1,0]]  # "x"-components
+       lin_comb_0[1] = 8 * [[0,1],[0,0]] + 5 * [[0,0],[0,1]]  # "y"-components
+
+    """
+
+    lin_comb_0 = [ array_to_lin_comb(set_array, fixed_axes = {1:cpt_index}) for cpt_index in range(k) ]
+    if debug:
+        print(f"lin_comb_0 was {lin_comb_0}")
+    if use_assertions:
+        assert np.allclose(set_array.astype(float), LinComb(lin_comb_0).to_numpy_array().astype(float))
+
+    """
+    Step 2:
+
+    Re-write each element of lin_comb_0 as a sum of an offset (which is the minimum coefficient times a 
+    perm-invariant element like (say) [[1,0],[1,0]] and some (so called) differences.  
+    The latter are a set of non-negative coefficients times other basis vectors only 
+    containing zeros and ones.  Conceptually this step is turning:
+
+
+       lin_comb_0[0] = 2 * [[1,0],[0,0]] + 4 * [[0,0],[1,0]]  # "x"-components, and
+       lin_comb_0[1] = 8 * [[0,1],[0,0]] + 5 * [[0,0],[0,1]]  # "y"-components
+
+    into
+
+       lin_comb_1[0] + offset[0] # and
+       lin_comb_1[1] + offset[1] 
+
+    where the first differences are:
+    
+        lin_comb_1[0] = (4-2) * [[1,0],[0,0]],    offset[0] = 2 * [[1,0], [1,0]]   # and
+        lin_comb_1[1] = (8-5) * [[0,1],[0,0]],    offset[1] = 2 * [[0,1], [0,1]] 
+
+    The above example assumed that preserve_scale=False is supplied to barycentric_subdivide, and that thus
+    the one-norm of the basis vecs in the linear combination is growing as you go down the list, rather than
+    constant as it would be if preserve_scale=True had been used instead.
+    """
+    
+    lin_comb_1 = [None] * k
+    offset = [None] *k
+
+    assert len(lin_comb_0) == k
+    for i in range(k):
+        lin_comb_1[i], offset[i] = barycentric_subdivide(lin_comb_0[i], return_offset_separately=True, preserve_scale=preserve_scale_in_step_1, use_assertion_self_test=True)
+        if debug:
+            print(f"lin_comb_1[{i}] was {lin_comb_1[i]}")
+            print(f"offset[{i}] was {offset[i]}")
+            print()
+
+        
     if use_assertions:
         assert np.allclose(set_array.astype(float), (lin_comb_1_first_diffs+offset).to_numpy_array().astype(float))
 

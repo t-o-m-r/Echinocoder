@@ -14,11 +14,12 @@ def print_first_part_of_simplex_1_encoding(set_array : np.array,
                                            preserve_scale_in_step_1 = False,
                                            preserve_scale_in_step_2 = False):
 
-    lin_comb_2_second_diffs, offset = EncDec.simplex_1_preprocess_steps(set_array,
+    lin_comb_2_second_diffs, offset = EncDec.simplex_2_preprocess_steps(set_array,
                                                                         preserve_scale_in_step_1 = preserve_scale_in_step_1,
                                                                         preserve_scale_in_step_2 = preserve_scale_in_step_2,
                                                                         canonicalise = False,
-                                                                        use_assertions = True)
+                                                                        use_assertions = True,
+                                                                        debug = True)
 
     lin_comb_3 = lin_comb_2_second_diffs + offset
 
@@ -57,19 +58,15 @@ def loc(the_list, query):
     return None
 
 if __name__ == "__main__":
-    #print_first_part_of_simplex_1_encoding(np.asarray([[2,3],[4,7]]) )
-    #print_first_part_of_simplex_1_encoding(np.array(eval("[[2,3],[4,7]]")) )
 
     # Defaults:
     arr = np.array([[2,3,4], [4,7,1], [3,-2,1], [9,8,2]])
     preserve_scale_in_step_1 = False
     preserve_scale_in_step_2 = False
 
-
     # Override defaults:
     if (l := loc(sys.argv, "array")) is not None and l+1 < len(sys.argv): 
         arr = np.array(eval(sys.argv[l+1]))
-    
     
     low=9
     high=30
