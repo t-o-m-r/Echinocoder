@@ -6,6 +6,7 @@ from itertools import pairwise
 import numpy as np
 
 from tools import numpy_array_of_frac_to_str
+from tuple_ize import tuple_ize
 
 class MonoLinComb:
     def __init__(self, coeff, basis_vec):
@@ -70,8 +71,8 @@ class LinComb:
 
     def is_consolidated(self):
         print(f"Being asked for consolidation state of {self.basis_vecs}")
-        # Need to convert 2D arrays to tup(tup()) and 1D arrays to tup() so that they are hashable:
-        basis_vecs_as_tuptups = [ (tuple(map(tuple, bv)) if bv.ndim == 2 else tuple(bv)) for bv in self.basis_vecs ]
+        # Need to convert 2D numpy arrays to tup(tup()) and 1D numpy arrays to tup() so that they are hashable:
+        basis_vecs_as_tuptups = [ tuple_ize(bv) for bv in self.basis_vecs ]
         print(f"turned {self.basis_vecs} into {basis_vecs_as_tuptups}")
         return len(set(basis_vecs_as_tuptups)) == len(basis_vecs_as_tuptups)
 
