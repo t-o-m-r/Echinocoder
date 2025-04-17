@@ -8,7 +8,7 @@ import tools
 
 def pretty_print_lin_comb(lin_comb: EncDec.LinComb):
     for coeff, basis_elt in zip(lin_comb.coeffs, lin_comb.basis_vecs):
-        print(" + ", float(coeff), "*", tools.numpy_array_of_frac_to_str(basis_elt), f" (one-norm {np.sum(basis_elt)})")
+        print(" + ", float(coeff), "*", tools.numpy_array_of_frac_to_str(basis_elt), f" (index sum {np.sum(basis_elt)})")
 
 def print_first_part_of_simplex_encoding(set_array : np.array,
                                          simplex_method = EncDec.simplex_1_preprocess_steps,

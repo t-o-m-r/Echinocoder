@@ -2,8 +2,7 @@
 
 # See further down for expected output of these examples.
 
-# Work on a random n=4, k=4 set uaing Simplex1 (a default) and overruding the lower 
-bound for array entries (which are normally in [0,99]).
+# Work on a random n=4, k=4 set uaing Simplex1 (a default) and overruding the lower bound for array entries (which are normally in [0,99]).
 ./play_simplex_encoders_via_EncDec.py n 4 k 4 random method 2 low -10
 
 # Use Simplex_1 method:
