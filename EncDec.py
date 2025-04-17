@@ -21,6 +21,9 @@ class MonoLinComb:
     def __eq__(self, other):
         return self.coeff == other.coeff and np.array_equal(self.basis_vec, other.basis_vec)
 
+    def __len__(self):
+        return 1 # We are a mono (mono=1) lin comb after all.
+
 class LinComb:
     def __init__(self, initialiser=None):
         self.coeffs = []
@@ -308,13 +311,12 @@ def simplex_2_preprocess_steps(set_array : np.array,
 
     into
 
-       lin_comb_1[0] + offset[0] # and
-       lin_comb_1[1] + offset[1] 
+       lin_comb_1 + offset
 
     where the first differences are:
     
-        lin_comb_1[0] = (4-2) * [[1,0],[0,0]],    offset[0] = 2 * [[1,0], [1,0]]   # and
-        lin_comb_1[1] = (8-5) * [[0,1],[0,0]],    offset[1] = 2 * [[0,1], [0,1]] 
+        lin_comb_1  = (4-2) * [[1,0],[0,0]];    offset  = 2 * [[1,0], [1,0]]   # and
+        lin_comb_1 += (8-5) * [[0,1],[0,0]];    offset += 2 * [[0,1], [0,1]] 
 
     The above example assumed that preserve_scale=False is supplied to barycentric_subdivide, and that thus
     the one-norm of the basis vecs in the linear combination is growing as you go down the list, rather than
@@ -322,23 +324,32 @@ def simplex_2_preprocess_steps(set_array : np.array,
     """
     
     lin_comb_1_first_diffs = [None] * k
-    offset = [None] *k
+    offsets = [None] *k
 
     assert len(lin_comb_0) == k
     assert len(lin_comb_1_first_diffs) == k
-    assert len(offset) == k
+    assert len(offsets) == k
 
     for i in range(k):
-        lin_comb_1_first_diffs[i], offset[i] = barycentric_subdivide(lin_comb_0[i], return_offset_separately=True, preserve_scale=preserve_scale_in_step_1, use_assertion_self_test=True)
+        lin_comb_1_first_diffs[i], offsets[i] = barycentric_subdivide(lin_comb_0[i], return_offset_separately=True, preserve_scale=preserve_scale_in_step_1, use_assertion_self_test=True)
         if debug:
             print(f"lin_comb_1[{i}] was {lin_comb_1_first_diffs[i]}")
-            print(f"offset[{i}] was {offset[i]}")
+            print(f"offsets[{i}] was {offsets[i]}")
             print()
 
+    # Here is the merge phase:
+    lin_comb_1_first_diffs = LinComb(lin_comb_1_first_diffs)
+    offsets = LinComb(offsets)
+
+    if debug:
+        print(f"After the merge phase lin_comb_1 was {lin_comb_1_first_diffs}")
+        print(f"offsets was {offsets}")
+        print()
+
     if use_assertions:
-        assert np.allclose(set_array.astype(float), sum([(lin_comb_1_first_diffs[i]+offset[i]).to_numpy_array().astype(float) for i in range(k)]))
+        assert np.allclose(set_array.astype(float), (lin_comb_1_first_diffs+offsets).to_numpy_array().astype(float))
         if debug:
-            print("Happy after step 1")
+            print("Happy after step 2")
 
     """
     Step 3:
@@ -354,21 +365,15 @@ def simplex_2_preprocess_steps(set_array : np.array,
     into the output, a lot of debugging is done with preserve_scale=False.
     """
 
-    lin_comb_2_second_diffs = [None] * k
-
-    assert len(lin_comb_1_first_diffs) == k
-    assert len(lin_comb_2_second_diffs) == k
-
-    for i in range(k):
-        lin_comb_2_second_diffs[i] = barycentric_subdivide(lin_comb_1_first_diffs[i], return_offset_separately=False, preserve_scale=preserve_scale_in_step_2, use_assertion_self_test=True)
+    lin_comb_2_second_diffs = barycentric_subdivide(lin_comb_1_first_diffs, return_offset_separately=False, preserve_scale=preserve_scale_in_step_2, use_assertion_self_test=True)
 
     if use_assertions:
-        assert np.allclose(set_array.astype(float), sum([(lin_comb_2_second_diffs[i]+offset[i]).to_numpy_array().astype(float) for i in range(k)]))
+        assert np.allclose(set_array.astype(float), (lin_comb_2_second_diffs + offsets).to_numpy_array().astype(float))
         if debug:
-            print("Happy after step 2")
+            print("Happy after step 3")
 
     if not canonicalise:
-        return lin_comb_2_second_diffs, offset
+        return lin_comb_2_second_diffs, offsets
 
 
     """
@@ -381,7 +386,7 @@ def simplex_2_preprocess_steps(set_array : np.array,
 
     lin_comb_3_canonical = LinComb(( MonoLinComb(coeff, tools.sort_np_array_rows_lexicographically(basis_vec)) for coeff, basis_vec in zip(lin_comb_2_second_diffs.coeffs, lin_comb_2_second_diffs.basis_vecs) ))
 
-    return lin_comb_3_canonical, offset
+    return lin_comb_3_canonical, offsets
 
 
 
