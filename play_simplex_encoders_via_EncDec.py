@@ -90,7 +90,7 @@ if __name__ == "__main__":
     
     randomise_array = "random" in sys.argv
     if randomise_array:
-         print (f"n is {n} and k is {k}")
+         #print (f"n is {n} and k is {k}")
          arr = np.random.randint(low=low, high=high, size=(n,k))
    
     print()
