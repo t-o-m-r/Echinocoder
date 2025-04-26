@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Note: https://en.wikipedia.org/wiki/Regular_polytope may be related
 
 import math
@@ -53,7 +55,10 @@ direcs = direcs_in_circle(8, r=3) # Has some 14-ers! :)
 
 direcs_really_messy = direcs_in_circle(8, r=3) # Has some 14-ers! :)
 direcs = [(1,0),(0,1),(1,2),(1,2)]
-direcs =  [(4,0), (4, 2), (3,3), (2,4), (0,4), (-2,4), (-3,3)] # Has double blobs
+direcs =  [(4,0), (4, 2), (3,3), (2,4), (0,4), (-2,4), (-3,3)] # Has double blobs - and used for maths stack exchange
+
+
+#direcs = [(0,1), (1,0), (-2,3)]
 
 width = 500
 height = 500
