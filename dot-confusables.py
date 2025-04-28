@@ -36,5 +36,6 @@ would be represented by
     v_{param 5} = [  0,  0,  0,  0,  0, ... ]
     \vdots
 
+which we could put into a matrix V_{ij}, with index i being the parameter, and index j being the occurrence count of vec q_j.
 
 """
