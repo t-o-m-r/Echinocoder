@@ -38,4 +38,6 @@ would be represented by
 
 which we could put into a matrix V_{ij}, with index i being the parameter, and index j being the occurrence count of vec q_j.
 
+With such a format in mind, we could identify whether two different lineaer combinations could be made equal if (between them) they have k+1 non-zero rows  UNFINISHED __ THIS LAST SENTENCE IS WRONG ... FIX
+
 """
