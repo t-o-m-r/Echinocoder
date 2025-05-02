@@ -470,7 +470,23 @@ def simplex_2_preprocess_steps(set_array : np.array,
 
     Canonicalise the basis vectors.
 
-    We hope this step is a bijection (given the domain).  PKH claims it is, but I am suspicious. Claim is being tested!
+    We believe this step is a bijection (given the domain) --- but this has not been proved.
+
+    For the exmple above it changes
+
+        lin_comb_2_second_diffs = 1 * [[0, 1], [0, 0], [0, 0]] +
+                                  1 * [[0, 2], [0, 1], [0, 0]] +
+                                  0 * [[0, 2], [1, 1], [0, 0]] +
+                                  1 * [[0, 2], [2, 1], [1, 0]]
+    to
+
+        lin_comb_3_canonical =  1 * [[0, 0], [0, 0], [0,1]] +     # ( because [0,0] = [0,0] < [0,1] )
+                                1 * [[0, 0], [0, 1], [0,2]] +     # ( because [0,0] < [0,1] < [0,2] )
+                                0 * [[0, 0], [0, 2], [1,1]] +     # ( because [0,0] < [0,2] < [1,1] )
+                                1 * [[0, 2], [1, 0], [2,1]]       # ( because [0,2] < [1,0] < [2,1] )
+
+    and the offsets are not changed as they are already canonical by construction.
+
     """
 
     lin_comb_3_canonical = LinComb(( MonoLinComb(coeff, tools.sort_np_array_rows_lexicographically(basis_vec)) for coeff, basis_vec in zip(lin_comb_2_second_diffs.coeffs, lin_comb_2_second_diffs.basis_vecs) ))
