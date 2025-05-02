@@ -435,10 +435,10 @@ def simplex_2_preprocess_steps(set_array : np.array,
 
     into
 
-        lin_comb_2_second_diffs = (3-2) * [[0, 1], [0, 0], [0, 0]]
-                                  (2-1) * [[0, 2], [0, 1], [0, 0]]
-                                  (1-1) * [[0, 2], [1, 1], [0, 0]]
-                                  (1-0) * [[0, 2], [2, 1], [1, 0]]
+        lin_comb_2_second_diffs = (3-2) * [[0,1],[0,0],[0,0]]
+                                  (2-1) * [[0,2],[0,1],[0,0]]
+                                  (1-1) * [[0,2],[1,1],[0,0]]
+                                  (1-0) * [[0,2],[2,1],[1,0]]
 
     without affecting the offsets:
 
@@ -473,16 +473,16 @@ def simplex_2_preprocess_steps(set_array : np.array,
 
     For the exmple above it changes
 
-        lin_comb_2_second_diffs = 1 * [[0, 1], [0, 0], [0, 0]] +
-                                  1 * [[0, 2], [0, 1], [0, 0]] +
-                                  0 * [[0, 2], [1, 1], [0, 0]] +
-                                  1 * [[0, 2], [2, 1], [1, 0]]
+        lin_comb_2_second_diffs = 1 * [[0,1],[0,0],[0,0]] +
+                                  1 * [[0,2],[0,1],[0,0]] +
+                                  0 * [[0,2],[1,1],[0,0]] +
+                                  1 * [[0,2],[2,1],[1,0]]
     to
 
-        lin_comb_3_canonical =  1 * [[0, 0], [0, 0], [0,1]] +     # ( because [0,0] = [0,0] < [0,1] )
-                                1 * [[0, 0], [0, 1], [0,2]] +     # ( because [0,0] < [0,1] < [0,2] )
-                                0 * [[0, 0], [0, 2], [1,1]] +     # ( because [0,0] < [0,2] < [1,1] )
-                                1 * [[0, 2], [1, 0], [2,1]]       # ( because [0,2] < [1,0] < [2,1] )
+        lin_comb_3_canonical =  1 * [[0,0],[0,0],[0,1]] +     # ( because [0,0] = [0,0] < [0,1] )
+                                1 * [[0,0],[0,1],[0,2]] +     # ( because [0,0] < [0,1] < [0,2] )
+                                0 * [[0,0],[0,2],[1,1]] +     # ( because [0,0] < [0,2] < [1,1] )
+                                1 * [[0,2],[1,0],[2,1]]       # ( because [0,2] < [1,0] < [2,1] )
 
     and the offsets are not changed as they are already canonical by construction.
 
