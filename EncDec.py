@@ -335,12 +335,12 @@ def simplex_2_preprocess_steps(set_array : np.array,
     Turn the array (which represents a set) into a linear combination of coefficients and Eji basis elements, separated by component.
     Conceptually this step is turning:
 
-       set_array = [[2,8],[4,5]]
+       set_array = [[2,8],[4,5],[3,3]]
 
     into
 
-       lin_comb_0[0] = 2 * [[1,0],[0,0]] + 4 * [[0,0],[1,0]]  # "x"-components
-       lin_comb_0[1] = 8 * [[0,1],[0,0]] + 5 * [[0,0],[0,1]]  # "y"-components
+       lin_comb_0[0] = 2 * [[1,0],[0,0],[0,0]] + 4 * [[0,0],[1,0],[0,0]] + 3 * [[0,0],[0,0],[1,0]]  # "x"-components
+       lin_comb_0[1] = 8 * [[0,1],[0,0],[0,0]] + 5 * [[0,0],[0,1],[0,0]] + 3 * [[0,0],[0,0],[0,1]]  # "y"-components
 
     """
 
@@ -358,17 +358,22 @@ def simplex_2_preprocess_steps(set_array : np.array,
     The latter are a set of non-negative coefficients times other basis vectors only 
     containing zeros and ones.  Conceptually this step is turning:
 
-       lin_comb_0[0] = 2 * [[1,0],[0,0]] + 4 * [[0,0],[1,0]]  # "x"-components, and
-       lin_comb_0[1] = 8 * [[0,1],[0,0]] + 5 * [[0,0],[0,1]]  # "y"-components
+       lin_comb_0[0] = 2 * [[1,0],[0,0],[0,0]] + 4 * [[0,0],[1,0],[0,0]] + 3 * [[0,0],[0,0],[1,0]]  # "x"-components
+       lin_comb_0[1] = 8 * [[0,1],[0,0],[0,0]] + 5 * [[0,0],[0,1],[0,0]] + 3 * [[0,0],[0,0],[0,1]]  # "y"-components
 
     into
 
        lin_comb_1 + offset
 
-    where the first differences are:
+    where the first differences and offsets are:
     
-        lin_comb_1  = (4-2) * [[1,0],[0,0]];    offset  = 2 * [[1,0], [1,0]]   # and
-        lin_comb_1 += (8-5) * [[0,1],[0,0]];    offset += 2 * [[0,1], [0,1]] 
+        lin_comb_1[0]  = (4-3) * [[0,0],[1,0],[0,0]] + (3-2) * [[0,0],[1,0],[1,0]];   offsets[0]  = 2 * [[1,0],[1,0],[1,0]]   # and
+        lin_comb_1[1]  = (8-5) * [[0,1],[0,0],[0,0]] + (5-3) * [[0,1],[0,1],[0,0]];   offsets[1]  = 3 * [[0,1],[0,1],[0,1]] 
+
+    which are flattened into
+
+        lin_comb_1  = (4-3) * [[0,0],[1,0],[0,0]] + (3-2) * [[0,0],[1,0],[1,0]];    offsets  = 2 * [[1,0],[1,0],[1,0]]   # and
+        lin_comb_1 += (8-5) * [[0,1],[0,0],[0,0]] + (5-3) * [[0,1],[0,1],[0,0]];    offsets += 3 * [[0,1],[0,1],[0,1]] 
 
     The above example assumed that preserve_scale=False is supplied to barycentric_subdivide, and that thus
     the one-norm of the basis vecs in the linear combination is growing as you go down the list, rather than
@@ -415,7 +420,28 @@ def simplex_2_preprocess_steps(set_array : np.array,
     In principle this subdivision should be done with preserve_scale=True (as the vertices of mid-points of 
     simplex edges are things like (v1+v2)/2 not (v1+v2).  However, since this introduces a lot of fractions 
     into the output, a lot of debugging is done with preserve_scale=False.
+
+    For our example input set above, this call turns:
+
+        lin_comb_1  = 1 * [[0,0],[1,0],[0,0]] + 
+                      1 * [[0,0],[1,0],[1,0]] +
+                      3 * [[0,1],[0,0],[0,0]] + 
+                      2 * [[0,1],[0,1],[0,0]]
+
+    into
+
+        lin_comb_2_second_diffs = (3-2) * [[0, 1], [0, 0], [0, 0]]
+                                  (2-1) * [[0, 2], [0, 1], [0, 0]]
+                                  (1-1) * [[0, 2], [1, 1], [0, 0]]
+                                  (1-0) * [[0, 2], [2, 1], [1, 0]]
+
+    without affecting the offsets:
+
+        offsets  = 2 * [[1,0],[1,0],[1,0]]
+        offsets += 3 * [[0,1],[0,1],[0,1]]
+
     """
+
 
     lin_comb_2_second_diffs = barycentric_subdivide(lin_comb_1_first_diffs, return_offset_separately=False, preserve_scale=preserve_scale_in_step_2, use_assertion_self_test=True)
 
