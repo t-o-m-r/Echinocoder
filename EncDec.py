@@ -199,9 +199,9 @@ def simplex_1_preprocess_steps(set_array : np.array,
     """
     Step 2:
 
-    Re-write lin_comb_0 as a sum of the offset (which is the minimum coefficient times some perm-invariant 
-    basis element like (say)[[1,1],[1,1]] and some (so called) differences.  
-    The latter are a set of non-negative coefficients times other basis vectors only 
+    Re-write lin_comb_0 as a sum of the offset (which is the minimum coefficient times the perm-invariant
+    basis all-ones element (e.g [[1,1],[1,1]]) and some (so called) differences.
+    The latter are a set of non-negative coefficients times other basis vectors only
     containing zeros and ones.  Conceptually this step is turning:
 
        lin_comb_0 = 2 * [[1,0],[0,0]] + 8 * [[0,1],[0,0]] + 4 * [[0,0],[1,0]] + 5 * [[0,0],[0,1]]
@@ -308,7 +308,6 @@ def simplex_1_preprocess_steps(set_array : np.array,
 
     lin_comb_3_canonical = LinComb(( MonoLinComb(coeff, tools.sort_np_array_rows_lexicographically(basis_vec)) for coeff, basis_vec in zip(lin_comb_2_second_diffs.coeffs, lin_comb_2_second_diffs.basis_vecs) ))
 
-
     """
     Step 5:
 
@@ -353,9 +352,9 @@ def simplex_2_preprocess_steps(set_array : np.array,
     """
     Step 2:
 
-    Re-write each element of lin_comb_0 as a sum of an offset (which is the minimum coefficient times a 
-    perm-invariant element like (say) [[1,0],[1,0]] and some (so called) differences.  
-    The latter are a set of non-negative coefficients times other basis vectors only 
+    Re-write each element of lin_comb_0 as a sum of an offset (which is the minimum coefficient times the
+    perm-invariant all-ones element all (e.g. [[1,0],[1,0]] for the x-cpt) and some (so called) differences.
+    The latter are a set of non-negative coefficients times other basis vectors only
     containing zeros and ones.  Conceptually this step is turning:
 
        lin_comb_0[0] = 2 * [[1,0],[0,0],[0,0]] + 4 * [[0,0],[1,0],[0,0]] + 3 * [[0,0],[0,0],[1,0]]  # "x"-components
