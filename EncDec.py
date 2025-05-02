@@ -242,12 +242,30 @@ def simplex_1_preprocess_steps(set_array : np.array,
     In principle this subdivision should be done with preserve_scale=True (as the vertices of mid-points of 
     simplex edges are things like (v1+v2)/2 not (v1+v2).  However, since this introduces a lot of fractions 
     into the output, a lot of debugging is done with preserve_scale=False.
+
+    For our example input set above, this call turns:
+
+        lin_comb_1 = 3 * [[0,1],[0,0]] +
+                     1 * [[0,1],[0,1]] +
+                     2 * [[0,1],[1,1]] 
+    into
+
+        lin_comb_2_second_diffs = (3-2) * [[0, 1], [0, 0]] +
+                                  (2-1) * [[0, 2], [1, 1]] +
+                                  (1-0) * [[0, 3], [1, 2]]
     """
 
     lin_comb_2_second_diffs = barycentric_subdivide(lin_comb_1_first_diffs, return_offset_separately=False, preserve_scale=preserve_scale_in_step_2, use_assertion_self_test=True)
 
     if use_assertions:
         assert np.allclose(set_array.astype(float), (lin_comb_2_second_diffs + offset).to_numpy_array().astype(float))
+
+
+    """
+    Step 3.9b:
+
+    Option to return early, for debugging only:
+    """
 
     if not canonicalise:
         return lin_comb_2_second_diffs, offset
@@ -259,9 +277,43 @@ def simplex_1_preprocess_steps(set_array : np.array,
     Canonicalise the basis vectors.
 
     We hope this step is a bijection (given the domain).  PKH claims it is, but I am suspicious. Claim is being tested!
+
+    It re-orders the vectors within each set basis element so that the are listed in
+    lexicographical order, and in doing so it ensures that we 
+    our encoding is a set function.
+
+
+    In our example event it turns
+
+        lin_comb_2_second_diffs = (3-2) * [[0, 1], [0, 0]] +
+                                  (2-1) * [[0, 2], [1, 1]] +
+                                  (1-0) * [[0, 3], [1, 2]]
+
+    into
+
+        lin_comb_3_canonical = (3-2) * [[0, 0], [0, 1]] +    # ( because [0,1] is lexicographically AFTER  [0,0] )
+                               (2-1) * [[0, 2], [1, 1]] +    # ( because [0,2] is lexicographically BEFORE [1,1] )
+                               (1-0) * [[0, 3], [1, 2]]      # ( because [0,3] is lexicographically BEFORE [1,2] ).
+
+    Note that after this step lin_comb_3_canonical+offset need not (in general) be the same as set_array so we do not have a line below saying
+
+        assert np.allclose(set_array.astype(float), (lin_comb_3_canonical + offset).to_numpy_array().astype(float))
+
+    even though we did have a line above saying
+
+        assert np.allclose(set_array.astype(float), (lin_comb_2_second_diffs + offset).to_numpy_array().astype(float))
+    .
+
     """
 
     lin_comb_3_canonical = LinComb(( MonoLinComb(coeff, tools.sort_np_array_rows_lexicographically(basis_vec)) for coeff, basis_vec in zip(lin_comb_2_second_diffs.coeffs, lin_comb_2_second_diffs.basis_vecs) ))
+
+
+    """
+    Step 5:
+
+    We return both our canonicalised lin_comb_3, and our offsets (which are canonical by definition).
+    """
 
     return lin_comb_3_canonical, offset
 
