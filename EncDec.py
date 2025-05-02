@@ -372,8 +372,14 @@ def simplex_2_preprocess_steps(set_array : np.array,
 
     which are flattened into
 
-        lin_comb_1  = (4-3) * [[0,0],[1,0],[0,0]] + (3-2) * [[0,0],[1,0],[1,0]];    offsets  = 2 * [[1,0],[1,0],[1,0]]   # and
-        lin_comb_1 += (8-5) * [[0,1],[0,0],[0,0]] + (5-3) * [[0,1],[0,1],[0,0]];    offsets += 3 * [[0,1],[0,1],[0,1]] 
+        lin_comb_1  = (4-3) * [[0,0],[1,0],[0,0]] +
+                      (3-2) * [[0,0],[1,0],[1,0]] +
+                      (8-5) * [[0,1],[0,0],[0,0]] +
+                      (5-3) * [[0,1],[0,1],[0,0]] 
+    and
+
+        offsets  = 2 * [[1,0],[1,0],[1,0]] +
+                   3 * [[0,1],[0,1],[0,1]]
 
     The above example assumed that preserve_scale=False is supplied to barycentric_subdivide, and that thus
     the one-norm of the basis vecs in the linear combination is growing as you go down the list, rather than
@@ -414,7 +420,7 @@ def simplex_2_preprocess_steps(set_array : np.array,
     Now we do a barycentric subdivision of lin_comb_1, storing the answer in lin_comb_2.  
     The purpose of this step is to make the resulting basis vectors sufficiently complicated that the
     process of canonicalise them will allow the set of all vertices to retain enough information that the
-    canonicalisation process can be undone in all the materially important ways - according to PKH claim..
+    canonicalisation process can be undone in all the materially important ways - according to CGL guess.
     [Provably the canonicalisation process would delete information if it were applied to lin_comb_1 directly.] 
 
     In principle this subdivision should be done with preserve_scale=True (as the vertices of mid-points of 
@@ -423,9 +429,9 @@ def simplex_2_preprocess_steps(set_array : np.array,
 
     For our example input set above, this call turns:
 
-        lin_comb_1  = 1 * [[0,0],[1,0],[0,0]] + 
+        lin_comb_1  = 1 * [[0,0],[1,0],[0,0]] +
                       1 * [[0,0],[1,0],[1,0]] +
-                      3 * [[0,1],[0,0],[0,0]] + 
+                      3 * [[0,1],[0,0],[0,0]] +
                       2 * [[0,1],[0,1],[0,0]]
 
     into
@@ -437,11 +443,10 @@ def simplex_2_preprocess_steps(set_array : np.array,
 
     without affecting the offsets:
 
-        offsets  = 2 * [[1,0],[1,0],[1,0]]
-        offsets += 3 * [[0,1],[0,1],[0,1]]
+        offsets  = 2 * [[1,0],[1,0],[1,0]] +
+                   3 * [[0,1],[0,1],[0,1]]
 
     """
-
 
     lin_comb_2_second_diffs = barycentric_subdivide(lin_comb_1_first_diffs, return_offset_separately=False, preserve_scale=preserve_scale_in_step_2, use_assertion_self_test=True)
 
@@ -449,6 +454,12 @@ def simplex_2_preprocess_steps(set_array : np.array,
         assert np.allclose(set_array.astype(float), (lin_comb_2_second_diffs + offsets).to_numpy_array().astype(float))
         if debug:
             print("Happy after step 3")
+
+    """
+    Step 3.9b:
+
+    Option to return early, for debugging only:
+    """
 
     if not canonicalise:
         return lin_comb_2_second_diffs, offsets
