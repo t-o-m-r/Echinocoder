@@ -46,6 +46,7 @@ import numpy as np
 from itertools import combinations
 
 # Set small dimensions for illustration
+t, M, k = 4, 3, 4
 t, M, k = 4, 3, 1
 
 # Create dummy data for n
@@ -53,48 +54,53 @@ t, M, k = 4, 3, 1
 # A = n[0], B = n[1]
 n = np.array([
     [  # A: Two example matrices of shape (4,3)
-        [ [1, 0, 0],
-          [0, 1, 0],
-          [0, 0, 1],
-          [1, 1, 1] ],
-
         [ [1, 2, 3],
           [4, 5, 6],
           [7, 8, 9],
-          [0, 0, 0] ]
+          [10, 11, 12] ],
+
+     #   [ [1, 0, 0],
+     #     [0, 1, 0],
+     #     [0, 0, 1],
+     #     [1, 1, 1] ],
+
+     #   [ [1, 2, 3],
+     #     [4, 5, 6],
+     #     [7, 8, 9],
+     #     [0, 0, 0] ]
     ],
     [  # B: Two example matrices of shape (4,3)
-        [ [1, 0, 0],
+        [ [0, 0, 0],
           [0, 0, 0],
-          [0, 0, 1],
-          [1, 1, 0] ],
+          [0, 0, 0],
+          [0, 0, 0] ],
 
-        [ [1, 1, 1],
-          [1, 1, 1],
-          [1, 1, 1],
-          [0, 0, 0] ]
+     #    [ [1, 0, 0],
+     #      [0, 0, 0],
+     #      [0, 0, 1],
+     #      [1, 1, 0] ],
+
+     #    [ [1, 1, 1],
+     #      [1, 1, 1],
+     #      [1, 1, 1],
+     #      [0, 0, 0] ]
     ]
 ])
 
-# Transpose to get shape (2, 2, 4, 3) (2 matrices in A and B)
-n = np.transpose(n, (0, 2, 3, 1))  # Now n has shape (2, 2, 4, 3)
-n = n.reshape(2, 2, 4, 3)  # (2 groups: A and B) x (2 matrices each) x (4 rows) x (3 columns)
-
-# Now extract matrices from A and B by indexing
-n = n[:, :, :, :]  # Already shaped properly
-
-# Generator function as defined earlier
+# Generator function:
 def generate_variants(n, k):
-    A = n[0]  # shape (num_A, t, M)
-    B = n[1]  # shape (num_B, t, M)
-
+    # n is numpy array with shape (2, something, t, M)
+    A = n[0]  # shape (something, t, M)
+    B = n[1]  # shape (something, t, M)
+    print (f"shape A is {A.shape}")
     for a in A:
         for b in B:
             d = a - b  # shape (t, M)
             non_zero_row_indices = np.where(~np.all(d == 0, axis=1))[0]
 
-            if len(non_zero_row_indices) < k + 1:
-                continue
+            # Superfluous
+            # if len(non_zero_row_indices) < k + 1:
+            #    continue
 
             for rows_to_keep in combinations(non_zero_row_indices, k + 1):
                 variant = np.zeros_like(d)
