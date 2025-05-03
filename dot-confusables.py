@@ -89,18 +89,30 @@ n = np.array([
 
 # Generator function:
 def generate_variants(n, k):
-    # n is numpy array with shape (2, something, t, M)
+    """
+    n is numpy array with shape (2, something, t, M)
+
+    This generator treats n[0] as equivalent to a list of txM matrices (A), 
+    and n[1] as equivalent to another list of txM matrices (B).
+    Then for each a in A and each b in B it constructs the matrix d=a-b ...
+    ... i.e. it loops over the differences of all pairs of matrices, with one
+    from A and one from B.  And then it yields successively all "variants" of d ... these
+    being zero matrices into which k+1 non-zero rows of d have been copied, provided that
+    there are at least k+1 rows in d.
+
+    The purpose of doing so, is that the 
+
+    """
     A = n[0]  # shape (something, t, M)
     B = n[1]  # shape (something, t, M)
-    print (f"shape A is {A.shape}")
     for a in A:
         for b in B:
             d = a - b  # shape (t, M)
             non_zero_row_indices = np.where(~np.all(d == 0, axis=1))[0]
 
-            # Superfluous
-            # if len(non_zero_row_indices) < k + 1:
-            #    continue
+            if len(non_zero_row_indices) < k + 1:
+                # There would be 
+                continue
 
             for rows_to_keep in combinations(non_zero_row_indices, k + 1):
                 variant = np.zeros_like(d)
