@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from typing import Self
 from MultisetEmbedder import MultisetEmbedder
 from typing import Any
+from injection import hash_to_64_bit_reals_in_unit_interval
 
 Eji = namedtuple("Eji", ["j", "i"])
 
@@ -277,20 +278,7 @@ def eji_set_to_np_array(eji_set, n, k):
         ans[j][i] = 1
     return ans
 
-def hash_to_128_bit_md5_int(md5):
-    return int.from_bytes(md5.digest(), 'big') # 128 bits worth.
 
-def hash_to_64_bit_reals_in_unit_interval(md5):
-    """
-    An md5 sum is 64 bits long so we get two such reals.
-    N.B. This hash is of self._eji_counts only -- i.e. it ignores self._index.
-    For the purposes to which this hash will be used, that is believed to be apporopriate.
-    """
-
-    x = hash_to_128_bit_md5_int(md5)
-    bot_64_bits = x & 0xffFFffFFffFFffFF
-    top_64_bits = x >> 64
-    return np.float64(top_64_bits)/(1 << 64), np.float64(bot_64_bits)/(1 << 64)
 
 def eji_set_array_to_point_in_unit_hypercube(eji_set_array, dimension):
     m = hashlib.md5()
