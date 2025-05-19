@@ -18,9 +18,9 @@ E.g. if the coefficients are lambda_1, lambda_2, ... \lambda_M which are buried 
 
      \vec q_1 = \lambda_1(parameter_1) \vec Q_1
      \vec q_2 = \lambda_2(parameter_4) \vec Q_2
-     \vec q_3 = \lambda_3(parameter 1) \vec Q_3
-     \vec q_4 = \lambda_4(parameter 1) \vec Q_4
-     \vec q_5 = \lambda_5(parameter 2) \vec Q_5
+     \vec q_3 = \lambda_3(parameter_1) \vec Q_3
+     \vec q_4 = \lambda_4(parameter_5) \vec Q_4
+     \vec q_5 = \lambda_5(parameter_2) \vec Q_5
      \vdots
 
 then the vector
@@ -29,11 +29,11 @@ then the vector
 
 would be represented by
 
-    v_{param 1} = [  5,  0,  3, -8,  0, ... ]
+    v_{param 1} = [  5,  0,  3,  0,  0, ... ]
     v_{param 2} = [  0,  0,  0,  0,  9, ... ]
     v_{param 3} = [  0,  0,  0,  0,  0, ... ]
     v_{param 4} = [  0,  2,  0,  0,  0, ... ]
-    v_{param 5} = [  0,  0,  0,  0,  0, ... ]
+    v_{param 5} = [  0,  0,  0, -8,  0, ... ]
     \vdots
 
 which we could put into a matrix V_{ij}, with index i being the parameter, and index j being the occurrence count of vec q_j.
@@ -44,6 +44,7 @@ With such a format in mind, we could identify whether two different linear combi
 
 import numpy as np
 from itertools import combinations
+from tuple_ize import tuple_ize
 
 # Set small dimensions for illustration
 t, M, k = 4, 3, 4
@@ -105,13 +106,27 @@ def generate_variants(n, k):
     """
     A = n[0]  # shape (something, t, M)
     B = n[1]  # shape (something, t, M)
+
+    seen_differences = set()
     for a in A:
         for b in B:
             d = a - b  # shape (t, M)
+            d_tup = tuple_ize(d) 
+
+            if d_tup in seen_differences:
+                # Don't need to use it again:
+                continue
+            else:
+                # Record it (and its negative) so we don't use it again:
+                seen_differences.add(d_tup)
+                seen_differences.add(tuple_ize(-d))
+
             non_zero_row_indices = np.where(~np.all(d == 0, axis=1))[0]
 
             if len(non_zero_row_indices) < k + 1:
-                # There would be 
+                # The only way of setting the difference represented by d to zero would 
+                # necessarily set every member zero, and that
+                # would "collapse" E into O. So ignore and continue:
                 continue
 
             for rows_to_keep in combinations(non_zero_row_indices, k + 1):
