@@ -88,7 +88,7 @@ class LinComb:
 
     def __eq__(self, other):
         if len(self.coeffs) != len(other.coeffs):
-            return false
+            return False
 
         assert len(self.coeffs) == len(self.basis_vecs)
         assert len(other.coeffs) == len(other.basis_vecs)
