@@ -2,17 +2,13 @@
 
 import numpy as np
 from itertools import pairwise
-from collections import namedtuple
 from tools import sort_np_array_rows_lexicographically, sort_each_np_array_column
 from tools import ascending_data as ascending_data_from_tools
-import hashlib
-from dataclasses import dataclass, field
-from typing import Self
 from MultisetEmbedder import MultisetEmbedder
 from typing import Any
-from injection import hash_to_64_bit_reals_in_unit_interval
-
-Eji = namedtuple("Eji", ["j", "i"])
+from Eji import Eji
+from Eji_LinComb import Eji_LinComb
+from Maximal_Simplex_Vertex import Maximal_Simplex_Vertex
 
 class Embedder(MultisetEmbedder):
 
@@ -329,79 +325,6 @@ def eji_set_to_np_array(eji_set, n, k):
     for (j, i) in eji_set:
         ans[j][i] = 1
     return ans
-
-@dataclass
-class Maximal_Simplex_Vertex:
-    _vertex_set: set[Eji] = field(default_factory=set)
-
-    def __len__(self) -> int:
-        return len(self._vertex_set)
-
-    def __iter__(self):
-        return iter(self._vertex_set)
-
-    def get_canonical_form(self):
-        """Mod out by Sn for this single vertex, ignoring any others."""
-        # Method: sort the Eji by the i index, then populate the j's in order.
-        sorted_eji_list = sorted(list(self._vertex_set), key=lambda eji: eji.i)
-        renumbered_eji_list = [ Eji(j=j, i=eji.i) for j,eji in enumerate(sorted_eji_list)]
-        return Maximal_Simplex_Vertex(set(renumbered_eji_list))
-
-    def check_valid(self):
-        # every j index in the set must appear at most once
-        j_vals = { eji.j for eji in self._vertex_set }
-        assert len(j_vals) == len(self._vertex_set)
-
-    def get_permuted_by(self, perm):
-        return Maximal_Simplex_Vertex({Eji(perm[eji.j], eji.i) for eji in self._vertex_set})
-
-@dataclass
-class Eji_LinComb:
-    INT_TYPE = np.uint16 # uint16 should be enough as the eij_counts will not exceed n*k which can therefore reach 65535
-
-    _index : INT_TYPE
-    _eji_counts : np.ndarray
-
-    def index(self) -> INT_TYPE:
-        """How many things were added together to make this Linear Combination."""
-        return self._index
-
-    def hash_to_point_in_unit_hypercube(self, dimension):
-        m = hashlib.md5()
-        m.update(self._eji_counts)
-        m.update(np.array([self._index])) # creating an array with a single element is a kludge to work around difficulties of using to_bytes on np_integers of unknown size
-        ans = []
-        for i in range(dimension):
-            m.update(i.to_bytes(8))  # TODO: This 8 says 8 byte integers
-            real_1, _ = hash_to_64_bit_reals_in_unit_interval(m)  # TODO: make use of real_2 as well to save CPU
-            ans.append(real_1)
-        return np.asarray(ans)
-
-    def __init__(self, n: int, k: int, list_of_Maximal_Simplex_Vertices: list[Maximal_Simplex_Vertex] | None = None):
-        self._index = Eji_LinComb.INT_TYPE(0)
-        self._eji_counts = np.zeros((n, k), dtype=Eji_LinComb.INT_TYPE, order='C')
-        if list_of_Maximal_Simplex_Vertices:
-            for msv in list_of_Maximal_Simplex_Vertices: self.add(msv)
-
-    def _setup_debug(self, index: int, eji_counts: np.ndarray): # Really just for unit tests. Don't use in main alg code.
-        self._index = Eji_LinComb.INT_TYPE(index)
-        self._eji_counts = np.asarray(eji_counts, dtype=Eji_LinComb.INT_TYPE, order='C')
-
-    def add(self, msv: Maximal_Simplex_Vertex):
-        self._index += 1
-        for j, i in msv: self._eji_counts[j, i] += 1
-
-    def __eq__(self, other: Self):
-        return self._index == other._index and np.array_equal(self._eji_counts, other._eji_counts)
-
-    def __ne__(self, other: Self):
-        return not self.__eq__(other)
-
-    def get_canonical_form(self) -> Self:
-        ans = Eji_LinComb.__new__(Eji_LinComb)
-        ans._index = self._index
-        ans._eji_counts = sort_np_array_rows_lexicographically(self._eji_counts)
-        return ans
 
 def tost(): # Renamed from test -> tost to avoid pycharm mis-detecting / mis-running unit tests!
     calculated = np.array([2, 3, 4, 1, 0])
