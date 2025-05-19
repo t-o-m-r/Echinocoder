@@ -322,9 +322,6 @@ class Eji_LinComb:
     def hash_to_point_in_unit_hypercube(self, dimension):
         m = hashlib.md5()
         m.update(self._eji_counts)
-        #print("self._index is")
-        #print(self._index)
-        # self._index.nbytes returns the number of bytes in self._index as self._index is of a numpy type which provides this
         m.update(np.array([self._index])) # creating an array with a single element is a kludge to work around difficulties of using to_bytes on np_integers of unknown size
         ans = []
         for i in range(dimension):
