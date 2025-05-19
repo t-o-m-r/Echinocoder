@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+this is slow/broken
+
 """
 We work with (multu)sets of $n$ vectors in $k$-dimensions.
 
