@@ -278,20 +278,6 @@ def eji_set_to_np_array(eji_set, n, k):
         ans[j][i] = 1
     return ans
 
-
-
-def eji_set_array_to_point_in_unit_hypercube(eji_set_array, dimension):
-    m = hashlib.md5()
-    m.update(eji_set_array)
-    ans = []
-    for i in range(dimension):
-        m.update(i.to_bytes())
-        real_1, _ = hash_to_64_bit_reals_in_unit_interval(m) # TODO: make use of real_2 as well to save CPU
-        ans.append(real_1)
-    return np.asarray(ans)
-
-
-
 def first_occurrences_numpy(x):
     _, indices = np.unique(x, return_index=True)  # Get the first occurrence indices
     sorted_indices = np.sort(indices)  # Sort these indices to maintain original order
