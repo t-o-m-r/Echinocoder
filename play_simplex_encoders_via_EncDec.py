@@ -84,10 +84,14 @@ if __name__ == "__main__":
         else:
             raise ValueError(f"Don't know method {tmp}. Only know methods 1 and 2.")
             
+    if "reproduce_old_injection" in sys.argv:
+        preserve_scale_in_step_1 = False
+        preserve_scale_in_step_2 = True
+
     if (l := loc(sys.argv, "scales")) is not None and l+2 < len(sys.argv):
         preserve_scale_in_step_1 = bool(int(sys.argv[l+1]))
         preserve_scale_in_step_2 = bool(int(sys.argv[l+2]))
-    
+  
     randomise_array = "random" in sys.argv
     if randomise_array:
          #print (f"n is {n} and k is {k}")
