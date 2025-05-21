@@ -172,7 +172,7 @@ def barycentric_subdivide(lin_comb: LinComb, return_offset_separately=False, pre
 def simplex_1_preprocess_steps(set_array : np.array, 
                                preserve_scale_in_step_1=False,
                                preserve_scale_in_step_2=True,
-                               canonicalise=False,
+                               canonicalise=True,
                                use_assertions=False,
                                debug=False):
 
@@ -319,7 +319,7 @@ def simplex_1_preprocess_steps(set_array : np.array,
 def simplex_2_preprocess_steps(set_array : np.array, 
                                preserve_scale_in_step_1=False,
                                preserve_scale_in_step_2=True,
-                               canonicalise=False,
+                               canonicalise=True,
                                use_assertions=False,
                                debug=False):
 
