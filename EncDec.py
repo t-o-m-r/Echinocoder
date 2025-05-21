@@ -142,10 +142,19 @@ def barycentric_subdivide(lin_comb: LinComb, return_offset_separately=False, pre
     basis_vecs = [ x for _ , x in sorted_lin_comb ]
 
     if preserve_scale:
-        diff_lin_comb = LinComb(MonoLinComb((fac := (i+1))*(x-y), sum(basis_vecs[:i+1], start=0*basis_vecs[0]+Fraction())/fac) for i, (x,y) in enumerate(pairwise(coeffs)))
+        # 
+        diff_lin_comb = LinComb(MonoLinComb((fac := (i+1))*(x-y), 
+
+                        sum(basis_vecs[:i+1], start=0*basis_vecs[0]+Fraction())
+
+                        /fac) for i, (x,y) in enumerate(pairwise(coeffs)))
         offset_mono_lin_comb = MonoLinComb((fac := len(basis_vecs))*coeffs[-1], sum(basis_vecs, start=0*basis_vecs[0]+Fraction())/fac)
     else:
-        diff_lin_comb = LinComb(MonoLinComb((x-y), sum(basis_vecs[:i+1], start=0*basis_vecs[0])) for i, (x,y) in enumerate(pairwise(coeffs)))
+        diff_lin_comb = LinComb(MonoLinComb((x-y), 
+
+                        sum(basis_vecs[:i+1], start=0*basis_vecs[0])
+
+                        ) for i, (x,y) in enumerate(pairwise(coeffs)))
         offset_mono_lin_comb = MonoLinComb(coeffs[-1], sum(basis_vecs, start=0*basis_vecs[0]))
 
     if debug:
