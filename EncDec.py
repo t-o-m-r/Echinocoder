@@ -169,6 +169,81 @@ def barycentric_subdivide(lin_comb: LinComb, return_offset_separately=False, pre
 
     return ans
 
+def simplex_1_embed(set_array : np.array, 
+                    preserve_scale_in_step_1=False,
+                    preserve_scale_in_step_2=True,
+                    # Note that there is no option to turn canonicalisation off as that would lead to a non-embedding!
+                    injection_method="legacy", # TODO: implement better method so that default can change.
+                    use_assertions=False,
+                    debug=False):
+
+    lin_comb_3_canonical, offset = simplex_1_embed.preprocess_steps(set_array, 
+                                                                    preserve_scale_in_step_1=preserve_scale_in_step_1,
+                                                                    preserve_scale_in_step_2=preserve_scale_in_step_2,
+                                                                    canonicalise=True,
+                                                                    use_assertions=use_assertions,
+                                                                    debug=debug)
+
+    embedding = simplex_1_embed.postprocess_steps(injection_method, lin_comb_3_canonical, offset, 
+                                                  preserve_scale_in_step_1=preserve_scale_in_step_1,
+                                                  preserve_scale_in_step_2=preserve_scale_in_step_2,
+                                                  use_assertions=use_assertions,
+                                                  debug=debug)
+    return embedding
+
+def simplex_1_postprocess_steps(injection_method, # currently we only have one method, the legacy, so this is not yet used.
+                                lin_comb_3_canonical, offset, 
+                                preserve_scale_in_step_1=False,
+                                preserve_scale_in_step_2=True,
+                                use_assertions=False,
+                                debug=False):
+
+    if injection_method != "legacy":
+        raise NotImplementedError()
+
+    temporarily_use_legacy_code = True # We are using the legacy method:
+    
+    if temporarily_use_legacy_code:
+        # TODO: Put all this sectioninto deprocated.py
+
+        from Eji_LinComb import Eji_LinComb
+        print("========================")
+        print("Trying to regenerate canonical difference in legacy format:")
+        if preserve_scale_in_step_1 != False or preserve_scale_in_step_2 != True:
+            raise "Old MD5 output assumed normalisation of second barycentric subdivision and not of first."
+
+        canonical_difference_data =  [  (coeff, Eji_LinComb(0, 0)._setup_debug(index+1, (index+1)*basis_vec)) for index, (coeff, basis_vec) in enumerate(zip(lin_comb_3_canonical.coeffs, lin_comb_3_canonical.basis_vecs)) ]
+
+        if debug:
+            print("Made canonical difference data:")
+            for dpp in canonical_difference_data:
+                print(dpp)
+
+        num_vertices = len(canonical_difference_data)
+        bigN = 2*num_vertices + 1 # dimension of the space into which the simplex vertices embed
+
+        # Now we have regenerated the old format, we can use old code to complete the embedding, so
+        # pasting in code here from C0HemDeg1_simplicialComplex_embedder_1_for_arrayof_reals_as_multiset.py:
+
+        # BEGIN PASTE ============ (TODO: avoid code pasting and put common code in one place)
+        difference_point_pairs = [ (delta, eji_lin_comb.hash_to_point_in_unit_hypercube(bigN)) for (delta, eji_lin_comb) in canonical_difference_data ]
+        if debug:
+            print("difference point pairs are:")
+            _ = [print(bit) for bit in difference_point_pairs]
+
+        first_half_of_embedding = sum([delta * point for delta, point in difference_point_pairs]) + np.zeros(bigN)
+
+        length_of_embedding = bigN + 1 # "+1" for the offset term
+
+        embedding = np.zeros(length_of_embedding, dtype=np.float64)
+
+        embedding[:bigN] = first_half_of_embedding
+        embedding[-1] = offset.coeff
+        # END PASTE =============
+
+        return embedding
+
+
 def simplex_1_preprocess_steps(set_array : np.array, 
                                preserve_scale_in_step_1=False,
                                preserve_scale_in_step_2=True,
@@ -315,6 +390,36 @@ def simplex_1_preprocess_steps(set_array : np.array,
     """
 
     return lin_comb_3_canonical, offset
+
+def simplex_2_embed(set_array : np.array, 
+                    preserve_scale_in_step_1=False,
+                    preserve_scale_in_step_2=True,
+                    # Note that there is no option to turn canonicalisation off as that would lead to a non-embedding!
+                    injection_method="legacy", # TODO: implement better method so that default can change.
+                    use_assertions=False,
+                    debug=False):
+
+    lin_comb_3_canonical, offset = simplex_2_embed.preprocess_steps(set_array, 
+                                                                    preserve_scale_in_step_1=preserve_scale_in_step_1,
+                                                                    preserve_scale_in_step_2=preserve_scale_in_step_2,
+                                                                    canonicalise=True,
+                                                                    use_assertions=use_assertions,
+                                                                    debug=debug)
+
+    embedding = simplex_2_embed.postprocess_steps(injection_method, lin_comb_3_canonical, offset, 
+                                                  preserve_scale_in_step_1=preserve_scale_in_step_1,
+                                                  preserve_scale_in_step_2=preserve_scale_in_step_2,
+                                                  use_assertions=use_assertions,
+                                                  debug=debug)
+    return embedding
+
+def simplex_2_postprocess_steps(injection_method, # Currently only one, the legacy_method
+                                lin_comb_3_canonical, offset, 
+                                preserve_scale_in_step_1=False,
+                                preserve_scale_in_step_2=True,
+                                use_assertions=False,
+                                debug=False):
+    raise NotImplementedError
 
 def simplex_2_preprocess_steps(set_array : np.array, 
                                preserve_scale_in_step_1=False,
@@ -493,6 +598,11 @@ def simplex_2_preprocess_steps(set_array : np.array,
     return lin_comb_3_canonical, offsets
 
 
+simplex_1_embed.preprocess_steps = simplex_1_preprocess_steps
+simplex_1_embed.postprocess_steps = simplex_1_postprocess_steps
+
+simplex_2_embed.preprocess_steps = simplex_2_preprocess_steps
+simplex_2_embed.postprocess_steps = simplex_2_postprocess_steps
 
 
     

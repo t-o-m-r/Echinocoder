@@ -8,33 +8,33 @@ set_of_vectors_to_embed = np.array([
       (8,-1,-4,3),
       (-8,-5,9,7),
       (8,2,7,-7)])
-#another_set_of_vectors_to_embed = np.array([
-#      (8,2,7,-7),
-#      (8,-1,-4,3),
-#      (-8,-5,9,7)])
-#tweaked_set_of_vectors_to_embed = np.array([
-#      (8,-1,-4,3),
-#      (-8,-5,9,7),
-#      (8,2,7,-7.001)])
+another_set_of_vectors_to_embed = np.array([
+      (8,2,7,-7),
+      (8,-1,-4,3),
+      (-8,-5,9,7)])
+tweaked_set_of_vectors_to_embed = np.array([
+      (8,-1,-4,3),
+      (-8,-5,9,7),
+      (8,2,7,-7.001)])
 
 n,k = set_of_vectors_to_embed.shape
 
 test_sets_of_vectors = [ 
         set_of_vectors_to_embed,
-#        another_set_of_vectors_to_embed,
-#        tweaked_set_of_vectors_to_embed, 
+        another_set_of_vectors_to_embed,
+        tweaked_set_of_vectors_to_embed, 
     ]
 
 import C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset as simplex1
 import C0HomDeg1_simplicialComplex_embedder_2_for_array_of_reals_as_multiset as simplex2
 import C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset as conjectured_dotting
+from EncDec import simplex_1_embed
 
-some_embedders = [ 
+some_old_embedders = [ 
     simplex1.Embedder(),
-#    simplex2.Embedder(),
-#    conjectured_dotting.Embedder(n, k),
+    simplex2.Embedder(),
+    conjectured_dotting.Embedder(n, k),
 ]
-
 
 for arr in test_sets_of_vectors:
     print("")
@@ -47,8 +47,8 @@ for arr in test_sets_of_vectors:
        print(f"{vec}, ") 
 
     concat = [ n, k]
-    for embedder in some_embedders:
-       embedding, (n_out, k_out), metadata = embedder.embed(arr, debug=True)
+    for embedder in some_old_embedders:
+       embedding, (n_out, k_out), metadata = embedder.embed(arr, debug=False)
        assert (n_out, k_out) == (n, k)
        if debug:
            print(f"\nembedding for embedder {embedder} is {embedding}\n")

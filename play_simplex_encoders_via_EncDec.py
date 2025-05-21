@@ -12,19 +12,21 @@ def pretty_print_lin_comb(lin_comb: EncDec.LinComb):
         print(" + ", float(coeff), "*", tools.numpy_array_of_frac_to_str(basis_elt), f" (index sum {np.sum(basis_elt)})")
 
 def print_first_part_of_simplex_encoding(set_array : np.array,
-                                         simplex_method = EncDec.simplex_1_preprocess_steps,
+                                         simplex_method = EncDec.simplex_1_embed,
                                          preserve_scale_in_step_1 = False,
                                          preserve_scale_in_step_2 = False,
                                          canonicalise = True,
                                          md5_step = False,
                                          debug = False):
 
-    lin_comb_2_second_diffs, offsets = simplex_method(set_array,
-                                                      preserve_scale_in_step_1 = preserve_scale_in_step_1,
-                                                      preserve_scale_in_step_2 = preserve_scale_in_step_2,
-                                                      canonicalise = canonicalise,
-                                                      use_assertions = True,
-                                                      debug = debug)
+    simplex_preprocess_steps = simplex_method.preprocess_steps
+
+    lin_comb_2_second_diffs, offsets = simplex_preprocess_steps(set_array,
+                                                                preserve_scale_in_step_1 = preserve_scale_in_step_1,
+                                                                preserve_scale_in_step_2 = preserve_scale_in_step_2,
+                                                                canonicalise = canonicalise,
+                                                                use_assertions = True,
+                                                                debug = debug)
 
     lin_comb_3 = lin_comb_2_second_diffs + offsets
 
@@ -81,7 +83,7 @@ if __name__ == "__main__":
     arr = np.array([[2,3,4], [4,7,1], [3,-2,1], [9,8,2]])
     preserve_scale_in_step_1 = False
     preserve_scale_in_step_2 = False
-    simplex_method = EncDec.simplex_1_preprocess_steps
+    simplex_method = EncDec.simplex_1_embed
 
     # Override defaults:
     if (l := loc(sys.argv, "array")) is not None and l+1 < len(sys.argv): 
@@ -105,9 +107,9 @@ if __name__ == "__main__":
     if (l := loc(sys.argv, "method")) is not None and l+1 < len(sys.argv): 
         tmp = int(sys.argv[l+1])
         if tmp==1:
-            simplex_method = EncDec.simplex_1_preprocess_steps
+            simplex_method = EncDec.simplex_1_embed
         elif tmp==2:
-            simplex_method = EncDec.simplex_2_preprocess_steps
+            simplex_method = EncDec.simplex_2_embed
         else:
             raise ValueError(f"Don't know method {tmp}. Only know methods 1 and 2.")
             
@@ -131,5 +133,12 @@ if __name__ == "__main__":
         print_first_part_of_simplex_encoding(arr, simplex_method=simplex_method,  canonicalise=canonicalise, preserve_scale_in_step_1=preserve_scale_in_step_1, preserve_scale_in_step_2=preserve_scale_in_step_2, md5_step=md5_step)
         print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
         print()
+
+    encoding = simplex_method(arr, preserve_scale_in_step_1=preserve_scale_in_step_1, preserve_scale_in_step_2=preserve_scale_in_step_2)
+
+    print("Encoding was")
+    for val in encoding:
+        print(val)
+
     
 

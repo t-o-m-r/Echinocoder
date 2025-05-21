@@ -235,19 +235,17 @@ class Embedder(MultisetEmbedder):
         # Create a vector to contain the embedding:
         length_of_embedding = self.size_from_n_k(n,k)
     
-        assert length_of_embedding == bigN + 2
+        assert length_of_embedding == bigN + 1
         assert bigN == 2 * (n*k - 1) + 1
-        assert length_of_embedding == 2 * (n*k - 1) + 1 + 2  # bigN + 2
-        assert length_of_embedding == 2 * n * k + 1 # bigN + 2 expanded out.
+        assert length_of_embedding == 2 * (n*k - 1) + 1 + 1  # bigN + 1
+        assert length_of_embedding == 2 * n * k # bigN + 2 expanded out.
     
-        embedding = np.zeros(length_of_embedding, dtype=np.float64) # +2 for max_element and min_element .... TODO don't always need max_element!
+        embedding = np.zeros(length_of_embedding, dtype=np.float64) # +1 for min_element 
     
         # Populate first half of the embedding:
         embedding[:bigN] = first_half_of_embedding
         # Populate the last element of the embedding with the smallest element of the initial data.
         embedding[-1] = min_element # TODO: Don't do this if nk==0, as nothing to record in that case.
-        # Populate the second last element of the embedding with the largest element of the initial data.
-        embedding[-2] = max_element # TODO: Don't do this if nk<=1, as min_element is enough in that case.
     
         if debug:
             print(f"embedding is {embedding}")
@@ -265,7 +263,7 @@ class Embedder(MultisetEmbedder):
         return embedding, metadata
     
     def size_from_n_k_generic(self, n: int, k: int) -> int:
-        return 2*n*k + 1
+        return 2*n*k
     
 def eji_set_to_np_array(eji_set, n, k):
     ans = np.zeros(shape=(n, k))
