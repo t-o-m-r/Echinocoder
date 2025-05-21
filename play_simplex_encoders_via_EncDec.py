@@ -5,6 +5,7 @@ import numpy as np
 from itertools import pairwise
 import sys
 import tools
+from Eji_LinComb import Eji_LinComb # For legacy regress code only
 
 def pretty_print_lin_comb(lin_comb: EncDec.LinComb):
     for coeff, basis_elt in zip(lin_comb.coeffs, lin_comb.basis_vecs):
@@ -15,6 +16,7 @@ def print_first_part_of_simplex_encoding(set_array : np.array,
                                          preserve_scale_in_step_1 = False,
                                          preserve_scale_in_step_2 = False,
                                          canonicalise = True,
+                                         md5_step = False,
                                          debug = False):
 
     lin_comb_2_second_diffs, offsets = simplex_method(set_array,
@@ -39,6 +41,29 @@ def print_first_part_of_simplex_encoding(set_array : np.array,
     if len(lin_comb_2_second_diffs)>=2:
         print("and the differences between the subsequent (non-offset) basis vectors are:")
         [ print(EncDec.numpy_array_of_frac_to_str(tmp:=b-a), " with one-norm ", np.sum(tmp)) for a,b in list(pairwise( lin_comb_2_second_diffs.basis_vecs )) ]
+
+    if md5_step:
+        print("========================")
+        print("Trying to regenerate old MD5 output")
+        if preserve_scale_in_step_1 != False or preserve_scale_in_step_2 != True:
+            raise "Old MD5 output assumed normalisation of second barycentric subdivision and not of first."
+
+        #difference_point_triples_tmp =  [  (index, coeff, basis_vecs) for index, (coeff, basis_vecs) in enumerate(zip(lin_comb_2_second_diffs.coeffs, lin_comb_2_second_diffs.basis_vecs)) ]
+        #print("Made difference point triples:")
+        #for dpt in difference_point_triples_tmp:
+        #    print(dpt)
+
+        difference_point_pairs =  [  (coeff, 
+        #basis_vec 
+        Eji_LinComb(0, 0)._setup_debug(index+1, (index+1)*basis_vec)
+        ) for index, (coeff, basis_vec) in enumerate(zip(lin_comb_2_second_diffs.coeffs, lin_comb_2_second_diffs.basis_vecs)) ]
+        print("Made difference point pairs:")
+        for dpp in difference_point_pairs:
+            print(dpp)
+
+
+
+
 
 
 
@@ -67,6 +92,8 @@ if __name__ == "__main__":
 
     n, k = arr.shape
 
+    md5_step = False
+
     if (l := loc(sys.argv, "n")) is not None and l+1 < len(sys.argv): 
         n = int(sys.argv[l+1])
     if (l := loc(sys.argv, "k")) is not None and l+1 < len(sys.argv): 
@@ -87,6 +114,7 @@ if __name__ == "__main__":
     if "reproduce_old_injection" in sys.argv:
         preserve_scale_in_step_1 = False
         preserve_scale_in_step_2 = True
+        md5_step = True
 
     if (l := loc(sys.argv, "scales")) is not None and l+2 < len(sys.argv):
         preserve_scale_in_step_1 = bool(int(sys.argv[l+1]))
@@ -100,7 +128,7 @@ if __name__ == "__main__":
     print()
     for canonicalise in (False, True):
         print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        print_first_part_of_simplex_encoding(arr, simplex_method=simplex_method,  canonicalise=canonicalise, preserve_scale_in_step_1=preserve_scale_in_step_1, preserve_scale_in_step_2=preserve_scale_in_step_2)
+        print_first_part_of_simplex_encoding(arr, simplex_method=simplex_method,  canonicalise=canonicalise, preserve_scale_in_step_1=preserve_scale_in_step_1, preserve_scale_in_step_2=preserve_scale_in_step_2, md5_step=md5_step)
         print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
         print()
     

@@ -38,6 +38,7 @@ class Eji_LinComb:
     def _setup_debug(self, index: int, eji_counts: np.ndarray): # Really just for unit tests. Don't use in main alg code.
         self._index = Eji_LinComb.INT_TYPE(index)
         self._eji_counts = np.asarray(eji_counts, dtype=Eji_LinComb.INT_TYPE, order='C')
+        return self
 
     def add(self, msv: Maximal_Simplex_Vertex):
         self._index += 1
