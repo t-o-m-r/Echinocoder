@@ -142,17 +142,21 @@ def barycentric_subdivide(lin_comb: LinComb, return_offset_separately=False, pre
     basis_vecs = [ x for _ , x in sorted_lin_comb ]
 
     if preserve_scale:
-        # 
+        # Use of "+Fraction()" here is to coerce data types.
+        basis_vecs_cumsum = np.cumsum(basis_vecs, axis=0) + Fraction() # NEW
         diff_lin_comb = LinComb(MonoLinComb((fac := (i+1))*(x-y), 
 
-                        sum(basis_vecs[:i+1], start=0*basis_vecs[0]+Fraction())
+                        #sum(basis_vecs[:i+1], start=0*basis_vecs[0]+Fraction()) # OLD
+                        basis_vecs_cumsum[i]                                     # NEW
 
                         /fac) for i, (x,y) in enumerate(pairwise(coeffs)))
         offset_mono_lin_comb = MonoLinComb((fac := len(basis_vecs))*coeffs[-1], sum(basis_vecs, start=0*basis_vecs[0]+Fraction())/fac)
     else:
+        basis_vecs_cumsum = np.cumsum(basis_vecs, axis=0) # NEW
         diff_lin_comb = LinComb(MonoLinComb((x-y), 
 
-                        sum(basis_vecs[:i+1], start=0*basis_vecs[0])
+                        #sum(basis_vecs[:i+1], start=0*basis_vecs[0]) # OLD
+                        basis_vecs_cumsum[i]                          # NEW
 
                         ) for i, (x,y) in enumerate(pairwise(coeffs)))
         offset_mono_lin_comb = MonoLinComb(coeffs[-1], sum(basis_vecs, start=0*basis_vecs[0]))
