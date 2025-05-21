@@ -45,7 +45,8 @@ class Encoder(MultisetEncoder):
             print(f"About to muliply {self.matrix} by {data.T}")
 
         ##### HERE IS THE ACTUAL ENCODING:     ###########
-        encoding = sort_each_np_array_row(self.matrix @ data.T).flatten()
+        #encoding = sort_each_np_array_row(self.matrix @ data.T).flatten() # OLD - this code is in principle fine, but caused spurious error messages on MacOS 15.4.1 due to bug in M4 support, see https://github.com/numpy/numpy/issues/28687 so using workaround below:
+        encoding = sort_each_np_array_row(np.dot(self.matrix,data.T)).flatten() # NEW - workaround for https://github.com/numpy/numpy/issues/28687
         ##### THE ACTUAL ENCODING IS COMPLETE! ###########
 
         if debug:
