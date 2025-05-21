@@ -129,8 +129,36 @@ if __name__ == "__main__":
    
     print()
     for canonicalise in (False, True):
-        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        print_first_part_of_simplex_encoding(arr, simplex_method=simplex_method,  canonicalise=canonicalise, preserve_scale_in_step_1=preserve_scale_in_step_1, preserve_scale_in_step_2=preserve_scale_in_step_2, md5_step=md5_step)
+        print(f"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX{simplex_method}")
+        print(dir(simplex_method))
+        """ Shows ['__annotations__', '__builtins__', '__call__', '__class__', '__closure__', '__code__', 
+        '__defaults__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', 
+        '__get__', '__getattribute__', '__getstate__', '__globals__', '__gt__', '__hash__', '__init__', 
+        '__init_subclass__', '__kwdefaults__', '__le__', '__lt__', '__module__', '__name__', '__ne__', 
+        '__new__', '__qualname__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', 
+        '__str__', '__subclasshook__', '__type_params__', 'postprocess_steps', 'preprocess_steps']
+"""
+        print(dir(simplex_method.preprocess_steps))
+        """ Shows ['__annotations__', '__builtins__', '__call__', '__class__', '__closure__', '__code__', 
+        '__defaults__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', 
+        '__get__', '__getattribute__', '__getstate__', '__globals__', '__gt__', '__hash__', '__init__', 
+        '__init_subclass__', '__kwdefaults__', '__le__', '__lt__', '__module__', '__name__', '__ne__', 
+        '__new__', '__qualname__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', 
+        '__str__', '__subclasshook__', '__type_params__']
+"""
+
+        print_first_part_of_simplex_encoding(arr, simplex_method=simplex_method.preprocess_steps,  canonicalise=canonicalise, preserve_scale_in_step_1=preserve_scale_in_step_1, preserve_scale_in_step_2=preserve_scale_in_step_2, md5_step=md5_step)
+        """ Generates error message:
+        
+  Traceback (most recent call last):
+  File "/Users/lester/github/Echinocoder/./play_simplex_encoders_via_EncDec.py", line 136, in <module>
+    print_first_part_of_simplex_encoding(arr, simplex_method=(simplex_method.preprocess_steps),  canonicalise=canonicalise, preserve_scale_in_step_1=preserve_scale_in_step_1, preserve_scale_in_step_2=preserve_scale_in_step_2, md5_step=md5_step)
+  File "/Users/lester/github/Echinocoder/./play_simplex_encoders_via_EncDec.py", line 22, in print_first_part_of_simplex_encoding
+    simplex_preprocess_steps = simplex_method.preprocess_steps
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'function' object has no attribute 'preprocess_steps'
+"""
+
         print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
         print()
 

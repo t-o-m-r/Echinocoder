@@ -30,8 +30,10 @@ import C0HomDeg1_simplicialComplex_embedder_2_for_array_of_reals_as_multiset as 
 import C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset as conjectured_dotting
 from EncDec import simplex_1_embed
 
-some_old_embedders = [ 
-    simplex1.Embedder(),
+some_embedders = [ 
+    # The next two embedders generate identical output, but the first one is about ten times slower.
+    simplex1.Embedder(simplex1.Embedder.Method.LEGACY), # Old legacy implementation
+    simplex1.Embedder(simplex1.Embedder.Method.ENCDEC1LEGACY), # New EncDec based version that reproduces LEGACY but with some legacy code inherited.
     simplex2.Embedder(),
     conjectured_dotting.Embedder(n, k),
 ]
@@ -47,7 +49,7 @@ for arr in test_sets_of_vectors:
        print(f"{vec}, ") 
 
     concat = [ n, k]
-    for embedder in some_old_embedders:
+    for embedder in some_embedders:
        embedding, (n_out, k_out), metadata = embedder.embed(arr, debug=False)
        assert (n_out, k_out) == (n, k)
        if debug:

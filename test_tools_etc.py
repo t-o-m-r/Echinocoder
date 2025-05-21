@@ -4,7 +4,7 @@ import Historical.C0_simplicialComplex_embedder_1_for_array_of_reals_as_multiset
 embedder_C0_np_simplex_historical = C0_np_simplex_historical.Embedder()
 
 import C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset as C0HomDeg1_simplex1
-embedder_C0HomDeg1_simplex1 = C0HomDeg1_simplex1.Embedder()
+embedder_C0HomDeg1_simplex1legacy = C0HomDeg1_simplex1.Embedder(C0HomDeg1_simplex1.Embedder.Method.LEGACY)
 import C0HomDeg1_simplicialComplex_embedder_2_for_array_of_reals_as_multiset as C0HomDeg1_simplex2
 embedder_C0HomDeg1_simplex2 = C0HomDeg1_simplex2.Embedder()
 import C0HomDeg1_conjectured_dotting_embedder_for_array_of_reals_as_multiset as conjectured_dotting
@@ -186,7 +186,7 @@ def test_various_embedders():
 
     make_randoms_reproducable()
     all_ar_embedders=[
-        embedder_C0HomDeg1_simplex1,
+        embedder_C0HomDeg1_simplex1legacy,
         embedder_C0HomDeg1_simplex2,
         embedder_conjectured_dotting,
         embedder_Cinf_np_ar,
@@ -256,7 +256,7 @@ def test_various_embedders():
        embedders=[ 
        embedder_Cinf_np_ar, 
        embedder_Cinf_sp_bur_ar, 
-       embedder_C0HomDeg1_simplex1, 
+       embedder_C0HomDeg1_simplex1legacy, 
        embedder_C0HomDeg1_simplex2, 
        embedder_C0_np_simplex_historical,
        ],
@@ -268,7 +268,7 @@ def test_various_embedders():
        embedders=[ 
          embedder_Cinf_np_ar, 
          embedder_Cinf_sp_bur_ar, 
-         embedder_C0HomDeg1_simplex1, 
+         embedder_C0HomDeg1_simplex1legacy, 
          embedder_C0HomDeg1_simplex2, 
          embedder_C0_np_simplex_historical,
          ],

@@ -220,8 +220,9 @@ def simplex_1_postprocess_steps(injection_method, # currently we only have one m
         # TODO: Put all this sectioninto deprocated.py
 
         from Eji_LinComb import Eji_LinComb
-        print("========================")
-        print("Trying to regenerate canonical difference in legacy format:")
+        if debug:
+            print("========================")
+            print("Trying to regenerate canonical difference in legacy format:")
         if preserve_scale_in_step_1 != False or preserve_scale_in_step_2 != True:
             raise "Old MD5 output assumed normalisation of second barycentric subdivision and not of first."
 

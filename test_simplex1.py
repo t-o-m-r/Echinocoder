@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 
-from C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset import *
+import C0HomDeg1_simplicialComplex_embedder_1_for_array_of_reals_as_multiset as Simplex1
 from EncDec import simplex_1_embed
+import numpy as np
 
 def test_simplex1():
     data_1 = np.asarray([[8,-1,-4,3],[-8,-5,9,7],[8,2,7,-7]])
 
-    embedder = Embedder()
-    output_1 = embedder.embed(data_1, debug=False)
+
+    output_1 = Simplex1.Embedder(Simplex1.Embedder.Method.LEGACY).embed(data_1, debug=False)
 
     output_2 = simplex_1_embed(data_1, injection_method="legacy")
+
+    output_3 = Simplex1.Embedder(Simplex1.Embedder.Method.ENCDEC1LEGACY).embed(data_1, debug=False)
 
     print(f"Output 1\n{output_1}")
 
@@ -18,11 +21,13 @@ def test_simplex1():
          (3, 4), None)
 
     expected_2 = expected_1[0]
+    expected_3 = expected_1
     
 
     for output, expected in (
           (output_1, expected_1),
           (output_2, expected_2),
+          (output_3, expected_3),
           ):
 
         sout=str(output)
@@ -34,4 +39,4 @@ def test_simplex1():
 
 
 if __name__ == "__main__":
-    test_simplex2()
+    test_simplex1()

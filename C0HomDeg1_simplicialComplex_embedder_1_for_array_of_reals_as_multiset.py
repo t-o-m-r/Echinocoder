@@ -5,15 +5,38 @@ from typing import Any
 from Eji_LinComb import Eji_LinComb
 from Maximal_Simplex_Vertex import Maximal_Simplex_Vertex
 from Eji import Eji
+from enum import Enum, auto
+
+from EncDec import simplex_1_embed
 
 class Embedder(MultisetEmbedder):
+
+    class Method(Enum):
+        LEGACY = auto()
+        ENCDEC1LEGACY = auto()
+
+    def __init__(self, method: Method):
+        if method == Embedder.Method.LEGACY:
+            self.actual_embed_generic = self.embed_generic_legacy_method
+        elif method == Embedder.Method.ENCDEC1LEGACY:
+            self.actual_embed_generic = self.embed_generic_encdec1legacy_method
+        else:
+            raise ValueError()
 
     def embed_kOne(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
         metadata = None
         return MultisetEmbedder.embed_kOne_sorting(data), metadata
 
-
     def embed_generic(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
+        assert MultisetEmbedder.is_generic_data(data)  # Precondition
+        return self.actual_embed_generic(data, debug)
+
+    def embed_generic_encdec1legacy_method(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
+        embedding = simplex_1_embed(data, injection_method="legacy")
+        metadata = None
+        return embedding, metadata
+
+    def embed_generic_legacy_method(self, data: np.ndarray, debug=False) -> (np.ndarray, Any):
         assert MultisetEmbedder.is_generic_data(data) # Precondition
         if debug:
             print(f"data is {data}")
