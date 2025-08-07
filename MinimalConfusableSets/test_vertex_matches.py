@@ -47,6 +47,15 @@ M4_all_canonical_matches_expected = [
 
     ]
 
+k2M3_all_useful_canonical_matches_expected = [
+    # ( 0, 0,-1),
+    # ( 0,-1, 0),
+    # (-1, 0, 0),
+    ( 1, 1,-1),
+    ( 1,-1, 1),
+    (-1, 1, 1),
+    (-1,-1,-1),
+]
 k2M4_all_useful_canonical_matches_expected = [
      #( 0, 0, 0,-1,),
      #( 0, 0,-1, 0,),
@@ -98,7 +107,7 @@ k3M4_all_useful_canonical_matches_expected = [
 
     ]
 
-def test():
+def test_helper_functions():
 
     for x,y in [
             (-0.5, 1),
@@ -115,13 +124,15 @@ def test():
             (5.0001, 7),
             ]:
         z = vertex_matches.smallest_odd_number_greater_than_or_equal_to(x)
-        print(f"We hope that the smallest odd number greater than or equal to {x} is {z}")
+        print(f"We hope that the smallest odd number greater than or equal to {x} is {y} and is also {z}")
         assert z==y
 
+def test_main_generators():
     test_programme = [
         (None, 2, vertex_matches.generate_all_canonical_matches, M2_all_canonical_matches_expected, "M2 all",),
         (None, 3, vertex_matches.generate_all_canonical_matches, M3_all_canonical_matches_expected, "M3 all",),
         (None, 4, vertex_matches.generate_all_canonical_matches, M4_all_canonical_matches_expected, "M4 all",),
+        (2, 3, vertex_matches.generate_all_useful_canonical_matches, k2M3_all_useful_canonical_matches_expected, "k2M3 useful",),
         (2, 4, vertex_matches.generate_all_useful_canonical_matches, k2M4_all_useful_canonical_matches_expected, "k2M4 useful",),
         (3, 4, vertex_matches.generate_all_useful_canonical_matches, k3M4_all_useful_canonical_matches_expected, "k3M4 useful",),
         ]
