@@ -6,7 +6,7 @@ import vertex_matches
 
 
 
-k4M4_all_canonical_matches_expected = (
+k4M4_all_canonical_matches_expected = [
      ( 0, 0, 0,-1,),
      ( 0, 0,-1, 0,),
      ( 0,-1, 0, 0,),
@@ -30,7 +30,7 @@ k4M4_all_canonical_matches_expected = (
      (-1,-1, 0,-1,),
      (-1,-1,-1, 0,),
 
-    )
+    ]
 
 def test():
 
@@ -39,5 +39,10 @@ def test():
         M=4, #number of bad bats
         ))
 
-    assert sort(k4M4_all_canonical_matches_computed) == sort(k4M4_all_canonical_matches_expected)
+    print("k4M4_all_canonical_matches was")
+    for i in k4M4_all_canonical_matches_computed:
+        print(i)
+    print()
+
+    assert sorted(k4M4_all_canonical_matches_computed) == sorted(k4M4_all_canonical_matches_expected)
 
