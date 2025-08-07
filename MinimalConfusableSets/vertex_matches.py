@@ -6,8 +6,6 @@ from distinct_permutations import distinct_permutations
 
 # "Useful" canonical matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
 
-# TODO: Could optimise the code which runs when "show_only_useful_matches=True" as currently it's a bit wasteful. Optimising that now could be premature, though, so leave until later.
-
 def smallest_odd_number_greater_than_or_equal_to(x):
   return 2*math.ceil((x+1)/2)-1 
 
@@ -26,9 +24,24 @@ def generate_all_canonical_matches(
 
         for number_of_ones in range(0, M+1, 2):
             ones = (1,)*number_of_ones
-            for number_of_minus_ones in range(1, M+1-number_of_ones, 2):
-                if show_only_useful_matches and (number_of_ones + number_of_minus_ones <= k):
-                    continue
+
+            if show_only_useful_matches:
+                # In this case we need 
+                #         number_of_ones + number_of_minus_ones > k  and   number_of_minus_ones >= 1
+                # so
+                #         number_of_minus_ones > k - number_of_ones   and number_of_minus_ones >= 1
+                # so
+                #         number_of_minus_ones >= k - number_of_ones + 1 and number_of_minus_ones >=1
+                # so
+                #         number_of_minus_ones >= max(k - number_of_ones + 1, 1)
+                start_for_number_of_minus_ones =  max(1, smallest_odd_number_greater_than_or_equal_to(k - number_of_ones + 1))
+            else:
+                start_for_number_of_minus_ones = 1
+            for number_of_minus_ones in range(start_for_number_of_minus_ones, M+1-number_of_ones, 2):
+                # In alternative (but slower) implementation, one could always have start_for_number_of_minus_ones=1 but then 
+                # uncomment the next two lines:
+                # if show_only_useful_matches and (number_of_ones + number_of_minus_ones <= k):
+                #      continue
                 minus_ones = (-1,)*number_of_minus_ones
                 number_of_zeroes= M-number_of_ones-number_of_minus_ones
                 zeros = (0,)*number_of_zeroes
