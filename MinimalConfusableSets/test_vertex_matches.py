@@ -6,6 +6,9 @@ from itertools import zip_longest
 # "Useful" canonical matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
 
 
+M0_all_canonical_matches_expected = [
+]
+
 M1_all_canonical_matches_expected = [
     (-1,),
 ]
@@ -132,7 +135,9 @@ def test_helper_functions():
         assert z==y
 
 def test_main_generators():
+
     test_programme = [
+        (None, 0, vertex_matches.generate_all_canonical_matches, M0_all_canonical_matches_expected, "M0 all",),
         (None, 1, vertex_matches.generate_all_canonical_matches, M1_all_canonical_matches_expected, "M1 all",),
         (None, 2, vertex_matches.generate_all_canonical_matches, M2_all_canonical_matches_expected, "M2 all",),
         (None, 3, vertex_matches.generate_all_canonical_matches, M3_all_canonical_matches_expected, "M3 all",),
