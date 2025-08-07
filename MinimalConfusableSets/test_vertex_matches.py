@@ -18,6 +18,7 @@ M3_all_canonical_matches_expected = [
     ( 1, 1,-1),
     ( 1,-1, 1),
     (-1, 1, 1),
+    (-1,-1,-1),
 ]
 
 M4_all_canonical_matches_expected = [

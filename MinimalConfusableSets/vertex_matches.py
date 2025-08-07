@@ -19,9 +19,9 @@ def generate_all_canonical_matches(
         show_only_useful_matches = False,
         ):
 
-        for number_of_ones in range(0, M, 2):
+        for number_of_ones in range(0, M+1, 2):
             ones = (1,)*number_of_ones
-            for number_of_minus_ones in range(1, M-number_of_ones, 2):
+            for number_of_minus_ones in range(1, M+1-number_of_ones, 2):
                 if show_only_useful_matches and (number_of_ones + number_of_minus_ones <= k):
                     continue
                 minus_ones = (-1,)*number_of_minus_ones
