@@ -53,5 +53,11 @@ def generate_all_canonical_matches(
 if __name__ == "__main__":
     M=4
     print(f"All matches given M={M} bad bats are:")
-    for match in generate_all_canonical_matches(k=None, M=M):
-       print(" ",match)
+    for i, match in enumerate(generate_all_canonical_matches(k=None, M=M)):
+       print(f"   {i+1}:    {match}")
+    print()
+    k=2
+    print(f"All USEFUL matches in k={k} dimension given M={M} bad bats are:")
+    for i,match in enumerate(generate_all_useful_canonical_matches(k=k, M=M)):
+       print(f"   {i+1}:    {match}")
+    print()
