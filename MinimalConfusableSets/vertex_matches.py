@@ -9,6 +9,16 @@ from distinct_permutations import distinct_permutations
 def smallest_odd_number_greater_than_or_equal_to(x):
   return 2*math.ceil((x+1)/2)-1 
 
+def bi_range(n):
+    """
+    Whereas range(n) iterates over 0,1,2,3,...,n-1 ... bi_range(n) iterates over non-negative pairs of integers which sum to n.
+    The first integer grows, while the second integer shrinks.
+    For example, range(4) would iterate over
+        (0,4), (1,3), (2,2), (3,1), (4,0).
+    """
+    for i in range(n+1):
+        yield i, n-i
+
 def generate_all_useful_canonical_matches(
         k, # k=dimension of space
         M, #number of bad bats

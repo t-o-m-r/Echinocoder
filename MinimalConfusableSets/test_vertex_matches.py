@@ -133,6 +133,16 @@ def test_helper_functions():
         z = vertex_matches.smallest_odd_number_greater_than_or_equal_to(x)
         print(f"We hope that the smallest odd number greater than or equal to {x} is {y} and is also {z}")
         assert z==y
+ 
+    from vertex_matches import bi_range
+    assert list(bi_range(4)) == [ (0,4), (1,3), (2,2), (3,1), (4,0), ]
+    assert list(bi_range(3)) == [ (0,3), (1,2), (2,1), (3,0), ]
+    assert list(bi_range(2)) == [ (0,2), (1,1), (2,0), ]
+    assert list(bi_range(1)) == [ (0,1), (1,0), ]
+    assert list(bi_range(0)) == [ (0,0), ]
+    assert list(bi_range(-1)) == [ ]
+    assert list(bi_range(-2)) == [ ]
+    assert list(bi_range(-3)) == [ ]
 
 def test_main_generators():
 
