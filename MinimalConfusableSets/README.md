@@ -37,6 +37,15 @@ L = Matrix([
 ])
 ```
 
+#Unit Testing:
+Unit tests are organised for pytest, so run with
+```
+pytest
+```
+or if you don't want stdout suppressed use
+```
+pytest -s
+```
 
 # Notation:
 ```python
