@@ -49,3 +49,9 @@ def generate_all_canonical_matches(
                 for match in distinct_permutations( ones + minus_ones + zeros):
                     yield match
 
+
+if __name__ == "__main__":
+    M=4
+    print(f"All matches given M={M} bad bats are:")
+    for match in generate_all_canonical_matches(k=None, M=M):
+       print(" ",match)
