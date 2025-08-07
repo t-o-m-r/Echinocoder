@@ -37,7 +37,7 @@ L = Matrix([
 ])
 ```
 
-#Unit Testing:
+# Unit Testing:
 Unit tests are organised for pytest, so run with
 ```
 pytest
