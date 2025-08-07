@@ -12,14 +12,16 @@ def smallest_odd_number_greater_than_or_equal_to(x):
 def generate_all_useful_canonical_matches(
         k, # k=dimension of space
         M, #number of bad bats
+        permute = True,
         ):
-        yield from generate_all_canonical_matches(k=k, M=M, show_only_useful_matches = True)
+        yield from generate_all_canonical_matches(k=k, M=M, show_only_useful_matches = True, permute=permute)
 
 
 def generate_all_canonical_matches(
         k, # k=dimension of space
         M, #number of bad bats
         show_only_useful_matches = False,
+        permute = True,
         ):
 
         for number_of_ones in range(0, M+1, 2):
@@ -46,8 +48,11 @@ def generate_all_canonical_matches(
                 number_of_zeroes= M-number_of_ones-number_of_minus_ones
                 zeros = (0,)*number_of_zeroes
 
-                for match in distinct_permutations( ones + minus_ones + zeros):
-                    yield match
+                if permute:
+                    for match in distinct_permutations( ones + minus_ones + zeros):
+                        yield match
+                else:
+                    yield ones + minus_ones + zeros
 
 
 if __name__ == "__main__":
@@ -57,7 +62,15 @@ if __name__ == "__main__":
        print(f"   {i+1}:    {match}")
     print()
     k=2
-    print(f"All USEFUL matches in k={k} dimension given M={M} bad bats are:")
+    print(f"All USEFUL matches in k={k} dimensions, given M={M} bad bats are:")
     for i,match in enumerate(generate_all_useful_canonical_matches(k=k, M=M)):
+       print(f"   {i+1}:    {match}")
+    print()
+    print(f"All matches in k={k} dimensions, given M={M} bad bats, but ignoring permutations are:")
+    for i,match in enumerate(generate_all_canonical_matches(k=k, M=M, permute=False)):
+       print(f"   {i+1}:    {match}")
+    print()
+    print(f"All USEFUL matches in k={k} dimensions, given M={M} bad bats, but ignoring permutations are:")
+    for i,match in enumerate(generate_all_useful_canonical_matches(k=k, M=M, permute=False)):
        print(f"   {i+1}:    {match}")
     print()
