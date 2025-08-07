@@ -28,9 +28,10 @@ I plan to start on (1) and (2) first and will not start (4) until I am happy wit
 
 You may suppose that the L matrices being fed to any “f” you write would look something like this:
 
+```python
 from sympy import Matrix, Rational
 # Define a matrix with Rational entries
 L = Matrix([
    [Rational(1, 1), Rational(2,3), Rational(1, 3), Rational(3,1)],
    [Rational(0, 1), Rational(0,1), Rational(1, 1), Rational(2,1)]
-])
+])```
