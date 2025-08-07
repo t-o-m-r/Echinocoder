@@ -100,6 +100,24 @@ k3M4_all_useful_canonical_matches_expected = [
 
 def test():
 
+    for x,y in [
+            (-0.5, 1),
+            (0, 1),
+            (1, 1),
+            (1.1, 3),
+            (2, 3),
+            (3, 3),
+            (3.0001, 5),
+            (3.2, 5),
+            (4.2, 5),
+            (4.9999, 5),
+            (5, 5),
+            (5.0001, 7),
+            ]:
+        z = vertex_matches.smallest_odd_number_greater_than_or_equal_to(x)
+        print(f"We hope that the smallest odd number greater than or equal to {x} is {z}")
+        assert z==y
+
     test_programme = [
         (None, 2, vertex_matches.generate_all_canonical_matches, M2_all_canonical_matches_expected, "M2 all",),
         (None, 3, vertex_matches.generate_all_canonical_matches, M3_all_canonical_matches_expected, "M3 all",),
