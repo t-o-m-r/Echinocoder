@@ -74,3 +74,7 @@ Various unit tests can be run with [pytest](https://docs.pytest.org).  pytest ru
 ## References:
 
 Neither the [Don Davis papers](https://www.lehigh.edu/~dmd1/toppapers.html) nor [Don Davis immersion list](https://www.lehigh.edu/~dmd1/imms.html) has been used to create this library. Both may, however, be useful references and sources of other references, so some are cached in the [DOCS](DOCS) directory.
+
+## Notes to self
+
+7th Aug 2025 returned after break to find that I had been coding in LEGACY_HASH_BRANCH but dobn't know what it is. Have reverted to main.
