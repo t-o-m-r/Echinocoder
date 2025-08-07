@@ -34,8 +34,9 @@ from sympy import Matrix, Rational
 L = Matrix([
    [Rational(1, 1), Rational(2,3), Rational(1, 3), Rational(3,1)],
    [Rational(0, 1), Rational(0,1), Rational(1, 1), Rational(2,1)]
-])```
-#!/usr/bin/env python
+])
+```
+
 
 # Notation:
 ```python
