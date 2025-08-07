@@ -41,7 +41,7 @@ def print_first_part_of_simplex_encoding(set_array : np.array,
     if len(lin_comb_2_second_diffs)>=2:
         print("and the differences between the subsequent (non-offset) basis vectors are:")
         [ print(EncDec.numpy_array_of_frac_to_str(tmp:=b-a), " with one-norm ", np.sum(tmp)) for a,b in list(pairwise( lin_comb_2_second_diffs.basis_vecs )) ]
-
+e
 def loc(the_list, query):
     for i, entry in enumerate(the_list):
         if entry == query:

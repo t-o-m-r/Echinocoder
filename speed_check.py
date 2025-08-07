@@ -5,7 +5,7 @@ import time
 
 debug = False
 
-set_of_vectors_to_embed = np.random.rand(50,4)
+set_of_vectors_to_embed = np.random.rand(20,4)
 loops = 10
 
 n,k = set_of_vectors_to_embed.shape
