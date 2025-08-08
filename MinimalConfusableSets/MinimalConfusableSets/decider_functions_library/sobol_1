@@ -1,0 +1,25 @@
+"""
+Sobol Sampling Option 1
+------------------------
+Generates n k-dimensional unit vectors using the Sobol low-discrepancy sequence.
+If n is a power of 2, it uses Sobol's random_base2 method.
+Otherwise, it falls back to random(n), which may reduce balance.
+"""
+
+from scipy.stats import qmc
+import numpy as np
+
+def generate_unit_vectors_sobol(n,k):
+    sampler = qmc.Sobol(d=k, scramble = True)
+    
+    m = (np.log2(n))
+    if m.is_integer():
+        vectors = sampler.random_base2(int(m))
+        
+    else: 
+        vectors = sampler.random(n)
+        print("WARNING: Sobol balance only guaranteed for n a power of 2")
+
+    norms = np.linalg.norm(vectors, axis=1, keepdims=True) 
+    unit_vectors = vectors / norms
+    return(unit_vectors)
