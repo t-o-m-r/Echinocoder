@@ -10,7 +10,7 @@ This might achieve better uniformity compared to falling back to random(n) as in
 from scipy.stats import qmc
 import numpy as np
 
-def generate_unit_vectors_sobol_2(m,k):
+def generate_sobol_2(m,k):
     sampler = qmc.Sobol(d=k, scramble = True)
     
     if not np.log2(m).is_integer(): 
