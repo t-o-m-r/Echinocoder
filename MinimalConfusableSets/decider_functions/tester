@@ -27,6 +27,6 @@ A = construct_A(L,B)
 
 # CHECK COLLAPSE
 
-result = check_collapse(A)
+result = check_collapse_random(A)
 
 print("Collapse detected?", not result)
