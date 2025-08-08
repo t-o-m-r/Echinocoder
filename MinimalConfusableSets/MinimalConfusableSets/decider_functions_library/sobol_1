@@ -4,6 +4,8 @@ Sobol Sampling Option 1
 Generates n k-dimensional unit vectors using the Sobol low-discrepancy sequence.
 If n is a power of 2, it uses Sobol's random_base2 method.
 Otherwise, it falls back to random(n), which may reduce balance.
+
+NEEDS TO RETURN B, NOT D
 """
 
 from scipy.stats import qmc
