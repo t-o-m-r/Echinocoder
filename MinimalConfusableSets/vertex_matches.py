@@ -163,14 +163,14 @@ def generate_all_canonical_matches(
 
 def generate_all_useful_matches_given_fixed_places(
         k, # k=dimension of space
-        M, #number of bad bats
+        M, # number of bad bats
         fixed_places = 0, # permutations take place within the first "fixed_places" places, otherwise not.
         ):
     yield from generate_all_matches_given_fixed_places(k=k, M=M, show_only_useful_matches = True, fixed_places=fixed_places)
     
 def generate_all_matches_given_fixed_places(
         k, # k=dimension of space
-        M, #number of bad bats
+        M, # number of bad bats
         show_only_useful_matches = False,
         fixed_places = 0, # permutations take place within the first "fixed_places" places, otherwise not.
         ):
