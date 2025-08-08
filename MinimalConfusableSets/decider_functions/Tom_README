@@ -1,0 +1,33 @@
+The decider function, f(k,L, etc.) needs to carry out the following role: 
+(1) Generate a set D of m 'evenly spaced out' projection vectors in k dimensions
+(2) Generate B of size M from D
+(3) Test whether the matches defined by L collapse O and E
+
+Methodology notes----------------------------------------------------------------------------------------------------------------------
+
+(1) can be achieved using many different methods. Each method works best for some (n,k) range. 
+Some methods more reliably space out the vectors but are more comutationally expensive and vice versa. 
+I will write seperate code files for each method I investigate for now. Maybe in future, the program could
+decide what method to use given the size of (n,k).
+
+(2) is a standard and easy procedure. Maybe best added to (3) for now since (3) is standard, but (1) can have many different approaches.
+
+(3) should be a standardised method, unless particularily lage/small (n,k) call for different approaches. My current approach forms a 
+matrix A from L and B. The nullspace of A then contains the vector (alpha, beta, gamma,..., zeta). So we need to check whether the nullspace 
+of A contains a vector with no zero components. This is easy if nullity = 1. This is hard if nullity  > 1 as we must check if any linear 
+combination of basis vectors yields a vector with no zero entries. Need to either find a quick but robust way to do this 
+(would random sapling suffice.....maybe not) OR only investigate A with nullity = 1, as for nullity > 1 we have too much freedom anyway ie
+we're potentially not maximising the number of matches we could find. 
+
+Notes on f library for (1) --------------------------------------------------------------------------------------------------------------
+
+Need to come up with a metric to compare (i) the speed and (ii) the 'even-ness' of the spacing of the m vectors for each method. 
+
+Tried: 
+Sobol (see sobol_1 and sobol_2)
+Gaussian (not yet added - very simple) 
+
+To do: 
+Fibbonacci for k=3
+More low discrep seq
+
