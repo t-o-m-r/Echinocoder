@@ -1,7 +1,7 @@
 from sobol_1 import generate_sobol_1
 from sobol_2 import generate_sobol_2
 from generate_B import generate_B
-from collapse_checker import construct_A, check_collapse
+from collapse_checker_random import construct_A, check_collapse_random
 import sympy as sp 
 
 # SET PARAMETERS---------------------
