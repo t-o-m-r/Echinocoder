@@ -185,10 +185,14 @@ def test_main_generators():
         (3, 4, vertex_matches.generate_all_useful_canonical_matches, k3M4_all_useful_canonical_matches_expected, "k3M4 useful",),
 
         (2, 4, set_fixed_places(vertex_matches.generate_all_useful_matches_given_fixed_places, fixed_places=4), k2M4_all_useful_canonical_matches_expected, "k2M4 useful but testing fixed_places=4}",),
-
         (2, 4, set_fixed_places(vertex_matches.generate_all_useful_matches_given_fixed_places, fixed_places=4), list(vertex_matches.generate_all_useful_canonical_matches(k=2, M=4, permute=True)), "k2M4 useful but testing fixed_places=4}",), # permute=True is like fixed_places=M
         (2, 4, set_fixed_places(vertex_matches.generate_all_useful_matches_given_fixed_places, fixed_places=3), list(vertex_matches.generate_all_useful_canonical_matches(k=2, M=4, permute=True)), "k2M4 useful but testing fixed_places=3}",), # permute=True is also like fixed_places=M-1
         (2, 4, set_fixed_places(vertex_matches.generate_all_useful_matches_given_fixed_places, fixed_places=0), list(vertex_matches.generate_all_useful_canonical_matches(k=2, M=4, permute=False)), "k2M4 useful but testing fixed_places=0}",),
+
+        (2, 4, set_fixed_places(vertex_matches.generate_all_matches_given_fixed_places, fixed_places=4), M4_all_canonical_matches_expected, "M4 but testing fixed_places=4}",),
+        (2, 4, set_fixed_places(vertex_matches.generate_all_matches_given_fixed_places, fixed_places=4), list(vertex_matches.generate_all_canonical_matches(k=2, M=4, permute=True)), "M4 but testing fixed_places=4}",), # permute=True is like fixed_places=M
+        (2, 4, set_fixed_places(vertex_matches.generate_all_matches_given_fixed_places, fixed_places=3), list(vertex_matches.generate_all_canonical_matches(k=2, M=4, permute=True)), "M4 but testing fixed_places=3}",), # permute=True is also like fixed_places=M-1
+        (2, 4, set_fixed_places(vertex_matches.generate_all_matches_given_fixed_places, fixed_places=0), list(vertex_matches.generate_all_canonical_matches(k=2, M=4, permute=False)), "M4 but testing fixed_places=0}",),
 
         ]
 
