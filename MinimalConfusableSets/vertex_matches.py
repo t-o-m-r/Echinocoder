@@ -52,6 +52,18 @@ def bi_range(n):
     for i in range(n+1):
         yield i, n-i
 
+def bi_range_with_maxes(n, max_first, max_second):
+    """
+    Whereas range(n) iterates over 0,1,2,3,...,n-1 ... bi_range(n) iterates over non-negative pairs of integers which sum to n.
+    The first integer grows, while the second integer shrinks.
+    For example, range(4) would iterate over
+        (0,4), (1,3), (2,2), (3,1), (4,0).
+    """
+    for i in range(n+1):
+        if i>max_first or n-i>max_second:
+            continue # TODO! Slow Fix!
+        yield i, n-i
+
 def generate_all_useful_canonical_matches(
         k, # k=dimension of space
         M, #number of bad bats
@@ -117,6 +129,8 @@ def generate_all_matches_given_fixed_places(
         if fixed_places<0 or fixed_places>M:
             raise ValueError(f"fixed_places should be in [0,{M}]  but is {fixed_places}.")
 
+        non_fixed_places = M-fixed_places
+
         for number_of_ones in range(0, M+1, 2):
             #ones = (1,)*number_of_ones
 
@@ -141,16 +155,13 @@ def generate_all_matches_given_fixed_places(
                 number_of_zeros= M-number_of_ones-number_of_minus_ones
                 #zeros = (0,)*number_of_zeros
 
-                for perming_ones, non_perming_ones in bi_range(number_of_ones):
-                    if perming_ones > fixed_places:
-                        break
-                    for perming_minus_ones, non_perming_minus_ones in bi_range(number_of_minus_ones):
-                        if perming_ones + perming_minus_ones > fixed_places:
-                            break
-                        perming_zeros = fixed_places - (perming_ones + perming_minus_ones) # This is guaranteed non-negative
-                        non_perming_zeros = number_of_zeros - perming_zeros # this could be negative (but should not be) as we are not (yet) being careful enough with the ranges for perming ones, etc. So:
-                        if non_perming_zeros <0:
-                            continue # SLOW, SILLY TODO IMPROVE!
+                for perming_ones, non_perming_ones in bi_range_with_maxes(number_of_ones, max_first=fixed_places, max_second=non_fixed_places):
+                    for perming_minus_ones, non_perming_minus_ones in bi_range_with_maxes(number_of_minus_ones, max_first = fixed_places-perming_ones, max_second=non_fixed_places - non_perming_ones):
+                        perming_zeros = fixed_places - (perming_ones + perming_minus_ones)
+                        non_perming_zeros = number_of_zeros - perming_zeros
+
+                        assert perming_zeros >=0
+                        assert non_perming_zeros >=0
 
                         perming_part = (1,)*perming_ones + (-1,)*perming_minus_ones + (0,)*perming_zeros
                         non_perming_part = (1,)*non_perming_ones + (-1,)*non_perming_minus_ones + (0,)*non_perming_zeros
