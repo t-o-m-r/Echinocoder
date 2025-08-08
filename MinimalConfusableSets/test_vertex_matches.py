@@ -110,6 +110,30 @@ k2M4_all_useful_canonical_matches_with_1_fixed_places = [
      #(-1,-1, 0,-1,),
      (-1,-1,-1, 0,),
 ]
+k2M4_all_useful_canonical_matches_with_2_fixed_places = [
+     #( 0, 0, 0,-1,),
+     #( 0, 0,-1, 0,),
+     #( 0,-1, 0, 0,),
+     #(-1, 0, 0, 0,),
+
+     ( 0, 1, 1,-1,),
+     #( 0, 1,-1 ,1,),
+     ( 0,-1, 1, 1,),
+     ( 1, 0, 1,-1,),
+     #( 1, 0,-1 ,1,),
+     (-1, 0, 1, 1,),
+     #( 1, 1, 0,-1,),
+     #( 1,-1, 0, 1,),
+     #(-1, 1, 0, 1,),
+     ( 1, 1,-1, 0,),
+     ( 1,-1 ,1, 0,),
+     (-1, 1, 1, 0,),
+
+     ( 0,-1,-1,-1,),
+     (-1, 0,-1,-1,),
+     #(-1,-1, 0,-1,),
+     (-1,-1,-1, 0,),
+]
 k3M4_all_useful_canonical_matches_expected = [
      # ( 0, 0, 0,-1,),
      # ( 0, 0,-1, 0,),
@@ -208,6 +232,7 @@ def test_main_generators():
         (2, 4, set_fixed_places(vertex_matches.generate_all_useful_matches_given_fixed_places, fixed_places=4), k2M4_all_useful_canonical_matches_expected, "k2M4 useful but testing fixed_places=4}",),
         (2, 4, set_fixed_places(vertex_matches.generate_all_useful_matches_given_fixed_places, fixed_places=4), list(vertex_matches.generate_all_useful_canonical_matches(k=2, M=4, permute=True)), "k2M4 useful but testing fixed_places=4}",), # permute=True is like fixed_places=M
         (2, 4, set_fixed_places(vertex_matches.generate_all_useful_matches_given_fixed_places, fixed_places=3), list(vertex_matches.generate_all_useful_canonical_matches(k=2, M=4, permute=True)), "k2M4 useful but testing fixed_places=3}",), # permute=True is also like fixed_places=M-1
+        (2, 4, set_fixed_places(vertex_matches.generate_all_useful_matches_given_fixed_places, fixed_places=2), k2M4_all_useful_canonical_matches_with_2_fixed_places, "k2M4 useful but testing fixed_places=2}",),
         (2, 4, set_fixed_places(vertex_matches.generate_all_useful_matches_given_fixed_places, fixed_places=1), k2M4_all_useful_canonical_matches_with_1_fixed_places, "k2M4 useful but testing fixed_places=1}",),
         (2, 4, set_fixed_places(vertex_matches.generate_all_useful_matches_given_fixed_places, fixed_places=0), list(vertex_matches.generate_all_useful_canonical_matches(k=2, M=4, permute=False)), "k2M4 useful but testing fixed_places=0}",),
 
