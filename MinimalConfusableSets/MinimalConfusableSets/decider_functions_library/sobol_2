@@ -5,6 +5,8 @@ Generates n k-dimensional unit vectors using the Sobol low-discrepancy sequence.
 Always uses Sobol's random_base2 method to generate 2^m ≥ n vectors,
 then randomly removes excess vectors to obtain exactly n.
 This might achieve better uniformity compared to falling back to random(n) as in sobol_1.
+
+NEEDS TO RETURN B, NOT D
 """
 from scipy.stats import qmc
 import numpy as np
