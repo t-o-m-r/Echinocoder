@@ -33,6 +33,6 @@ def generate_B(D, k):
         if ns.size == 0:
             raise ValueError(f"No orthogonal vector found for block starting at index {i}.")
         w = ns[:, 0]  # Take the first basis vector in the nullspace
-        B.append(w / np.linalg.norm(w))  #Do i really need to normalise here (D normalised already)??
+        B.append(w / np.linalg.norm(w))  #Do i really need to normalise here (D normalised already)?? Inefficient to norm twice
 
     return np.array(B)
