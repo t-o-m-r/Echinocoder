@@ -28,9 +28,9 @@ def generate_unit_vectors_sobol_2(n,k):
     vectors = all_vectors[indices]
     
     norms = np.linalg.norm(vectors, axis=1, keepdims=True) 
-    unit_vectors = vectors / norms
+    D = vectors / norms
     print(f"{num_removals} vectors were randomly removed")
-    return(unit_vectors)
+    return(D)
     
 
 
