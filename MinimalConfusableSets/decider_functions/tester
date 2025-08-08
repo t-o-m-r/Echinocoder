@@ -3,7 +3,6 @@ from sobol_2 import generate_sobol_2
 from generate_B import generate_B
 from collapse_checker import construct_A, check_collapse
 import sympy as sp 
-import numpy as np
 
 # SET PARAMETERS---------------------
 m = 10
