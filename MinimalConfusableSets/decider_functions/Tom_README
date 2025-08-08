@@ -19,6 +19,8 @@ combination of basis vectors yields a vector with no zero entries. Need to eithe
 (would random sapling suffice.....maybe not) OR only investigate A with nullity = 1, as for nullity > 1 we have too much freedom anyway ie
 we're potentially not maximising the number of matches we could find. 
 
+Probs computationally inefficient to normalise the vectors in both steps (1) and (2)
+
 Notes on f library for (1) --------------------------------------------------------------------------------------------------------------
 
 Need to come up with a metric to compare (i) the speed and (ii) the 'even-ness' of the spacing of the m vectors for each method. 
