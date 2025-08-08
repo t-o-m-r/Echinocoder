@@ -201,7 +201,8 @@ def test_helper_functions():
         print(f"We hope that the smallest odd number greater than or equal to {x} is {y} and is also {z}")
         assert z==y
  
-    from vertex_matches import bi_range, bi_range_with_maxes
+    from vertex_matches import bi_range, bi_range_with_maxes, bi_range_with_maxes_crude
+
     assert list(bi_range(4)) == [ (0,4), (1,3), (2,2), (3,1), (4,0), ]
     assert list(bi_range(3)) == [ (0,3), (1,2), (2,1), (3,0), ]
     assert list(bi_range(2)) == [ (0,2), (1,1), (2,0), ]
@@ -211,9 +212,25 @@ def test_helper_functions():
     assert list(bi_range(-2)) == [ ]
     assert list(bi_range(-3)) == [ ]
 
-    assert list(bi_range_with_maxes(4, 5, 1)) == [ (3,1), (4,0), ]
-    assert list(bi_range_with_maxes(4, 2, 4)) == [ (0,4), (1,3), (2,2), ]
-    assert list(bi_range_with_maxes(4, 2, 3)) == [ (1,3), (2,2), ]
+    for brwm in (bi_range_with_maxes_crude, bi_range_with_maxes):
+        print("Using ",brwm)
+        assert list(brwm(-1, 0, 0)) == [ ]
+        assert list(brwm(-1, 0, 0)) == [ ]
+        assert list(brwm(-1, 0, 0)) == [ ]
+        assert list(brwm(0, 0, 0)) == [ (0,0), ]
+        assert list(brwm(0, 1, 0)) == [ (0,0), ]
+        assert list(brwm(0, 0, 3)) == [ (0,0), ]
+        assert list(brwm(0, 1, 3)) == [ (0,0), ]
+        assert list(brwm(4, 0, 0)) == [ ]
+        assert list(brwm(4, 1, 1)) == [ ]
+        assert list(brwm(4, -1, 4)) == [ ]
+        assert list(brwm(4, 4, -1)) == [ ]
+        assert list(brwm(4, -2, 4)) == [ ]
+        assert list(brwm(4, 4, -2)) == [ ]
+        assert list(brwm(4, 5, 1)) == [ (3,1), (4,0), ]
+        assert list(brwm(4, 2, 4)) == [ (0,4), (1,3), (2,2), ]
+        assert list(brwm(4, 1, 4)) == [ (0,4), (1,3), ]
+        assert list(brwm(4, 2, 3)) == [ (1,3), (2,2), ]
 
 
 def test_main_generators():
