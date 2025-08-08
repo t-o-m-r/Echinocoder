@@ -22,5 +22,5 @@ def generate_unit_vectors_sobol(n,k):
         print("WARNING: Sobol balance only guaranteed for n a power of 2")
 
     norms = np.linalg.norm(vectors, axis=1, keepdims=True) 
-    unit_vectors = vectors / norms
-    return(unit_vectors)
+    D = vectors / norms
+    return(D)
