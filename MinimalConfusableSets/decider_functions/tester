@@ -1,0 +1,33 @@
+from sobol_1 import generate_sobol_1
+from sobol_2 import generate_sobol_2
+from generate_B import generate_B
+from collapse_checker import construct_A, check_collapse
+import sympy as sp 
+import numpy as np
+
+# SET PARAMETERS---------------------
+m = 10
+k = 4
+
+# GENERATE D
+D = generate_sobol_2(m,k)
+
+# GENERATE B
+B = generate_B(D)
+
+# DEFINE L (for now)
+
+L = sp.Matrix([
+    [1, -1, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 1, -1, 0, 1, 0, 0, 0, 0, 0]
+])
+
+# BUILD MATRIX A 
+
+A = construct_A(L,B)
+
+# CHECK COLLAPSE
+
+result = check_collapse(A)
+
+print("No collape detected?", result)
