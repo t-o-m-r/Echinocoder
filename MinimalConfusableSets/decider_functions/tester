@@ -5,8 +5,8 @@ from collapse_checker import construct_A, check_collapse
 import sympy as sp 
 
 # SET PARAMETERS---------------------
-m = 10
-k = 4
+m = 40
+k = 5
 
 # GENERATE D
 D = generate_sobol_2(m,k)
@@ -17,8 +17,8 @@ B = generate_B(D)
 # DEFINE L (for now)
 
 L = sp.Matrix([
-    [1, -1, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 1, -1, 0, 1, 0, 0, 0, 0, 0]
+    [1, -1, 0, 1, 0, 1, 0, 0, 1, 0],
+    [0, 1, -1, 0, 1, 0, -1, 0, 0, -1]
 ])
 
 # BUILD MATRIX A 
@@ -29,4 +29,4 @@ A = construct_A(L,B)
 
 result = check_collapse(A)
 
-print("No collape detected?", result)
+print("Collapse detected?", not result)
