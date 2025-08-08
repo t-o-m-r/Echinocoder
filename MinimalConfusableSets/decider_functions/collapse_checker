@@ -1,6 +1,8 @@
 """
 CHECK COLLAPSE FUNCTION NEEDS UPDATING! It does not check whether a lin comb of the ns basis vectors 
 contains a vector with no zero components!
+
+ALSO MUST GENERATE B
 """
 
 import numpy as np
