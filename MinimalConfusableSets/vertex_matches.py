@@ -56,6 +56,7 @@ def bi_range_with_maxes(n, max_first, max_second):
     """
     Whereas range(n) iterates over 0,1,2,3,...,n-1 ... bi_range(n) iterates over non-negative pairs of integers which sum to n.
     The first integer grows, while the second integer shrinks.
+    The first integer may not exceed max_first, while the second may not exceed max_second.
     For example, range(4) would iterate over
         (0,4), (1,3), (2,2), (3,1), (4,0).
     """
