@@ -124,15 +124,16 @@ def generate_all_useful_canonical_matches(
         yield from generate_all_canonical_matches(k=k, M=M, show_only_useful_matches = True, permute=permute)
 
 
-def generate_all_canonical_matches(
+def generate_all_canonical_match_signatures(
         k, # k=dimension of space
         M, #number of bad bats
         show_only_useful_matches = False,
-        permute = True,
         ):
-
+        """
+        The signature of a caonoical match is how many ones, minus ones and zeros it has.
+        We yield a triplet of numbers in that order.
+        """
         for number_of_ones in range(0, M+1, 2):
-            ones = (1,)*number_of_ones
 
             if show_only_useful_matches:
                 # In this case we need 
@@ -146,20 +147,33 @@ def generate_all_canonical_matches(
                 start_for_number_of_minus_ones =  max(1, smallest_odd_number_greater_than_or_equal_to(k - number_of_ones + 1))
             else:
                 start_for_number_of_minus_ones = 1
+
             for number_of_minus_ones in range(start_for_number_of_minus_ones, M+1-number_of_ones, 2):
-                # In alternative (but slower) implementation, one could always have start_for_number_of_minus_ones=1 but then 
+                # In an alternative (but slower) implementation, one could always have start_for_number_of_minus_ones=1 but then 
                 # uncomment the next two lines:
                 # if show_only_useful_matches and (number_of_ones + number_of_minus_ones <= k):
                 #      continue
-                minus_ones = (-1,)*number_of_minus_ones
                 number_of_zeros= M-number_of_ones-number_of_minus_ones
-                zeros = (0,)*number_of_zeros
+                yield number_of_ones, number_of_minus_ones, number_of_zeros
 
-                if permute:
-                    for match in distinct_permutations( ones + minus_ones + zeros):
-                        yield match
-                else:
-                    yield ones + minus_ones + zeros
+def generate_all_canonical_matches(
+        k, # k=dimension of space
+        M, #number of bad bats
+        show_only_useful_matches = False,
+        permute = True,
+        ):
+
+        for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_canonical_match_signatures(k,M,show_only_useful_matches=show_only_useful_matches):
+
+            ones = (1,)*number_of_ones
+            minus_ones = (-1,)*number_of_minus_ones
+            zeros = (0,)*number_of_zeros
+
+            if permute:
+                for match in distinct_permutations( ones + minus_ones + zeros):
+                    yield match
+            else:
+                yield ones + minus_ones + zeros
 
 def generate_all_useful_matches_given_perming_places(
         k, # k=dimension of space
