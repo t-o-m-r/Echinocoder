@@ -1,7 +1,11 @@
-# This is taken from https://github.com/more-itertools/more-itertools/blob/edcafcfa58b1f2edc4b8588e98fba3f41784b746/more_itertools/more.py#L675
+# This is taken from https://github.com/more-itertools/more-itertools/blob/edcafcfa58b1f2edc4b8588e98fba3f41784b746/more_itertools/more.py#L675 ... but with
+# some modifications by Christopher Lester to add leftovers.
 
+from functools import partial
+from collections import defaultdict
+from itertools import cycle
 
-def distinct_permutations(iterable, r=None):
+def distinct_permutations(iterable, r=None, output_leftovers=False):
     """Yield successive distinct permutations of the elements in *iterable*.
 
         >>> sorted(distinct_permutations([1, 0, 1]))
@@ -49,7 +53,7 @@ def distinct_permutations(iterable, r=None):
     def _full(A):
         while True:
             # Yield the permutation we have
-            yield tuple(A)
+            yield tuple(A) if not output_leftovers else (tuple(A), ()) # Was just "yield tuple(A)" before CGL MOD
 
             # Find the largest index i such that A[i] < A[i + 1]
             for i in range(size - 2, -1, -1):
@@ -78,7 +82,10 @@ def distinct_permutations(iterable, r=None):
 
         while True:
             # Yield the permutation we have
-            yield tuple(head)
+            if output_leftovers: # CGL ADDED THIS LINE
+                yield tuple(head), tuple(tail) # CGL ADDED THIS LINE
+            else: # CGL ADDED THIS LINE
+                yield tuple(head) # CGL INDENTED THIS LINE
 
             # Starting from the right, find the first index of the head with
             # value smaller than the maximum value of the tail - call it i.
@@ -129,7 +136,7 @@ def distinct_permutations(iterable, r=None):
 
         def permuted_items(permuted_indices):
             return tuple(
-                next(equivalent_items[index]) for index in permuted_indices
+                next(equivalent_items[index]) for index in permuted_indices # THIS_LINE_FAILING
             )
 
     size = len(items)
@@ -143,10 +150,22 @@ def distinct_permutations(iterable, r=None):
         if sortable:
             return algorithm(items)
         else:
-            return (
-                permuted_items(permuted_indices)
-                for permuted_indices in algorithm(indices)
-            )
+            # CGL CHANGED THESE NEXT FOUR LINES
+            #return (
+            #    permuted_items(permuted_indices)
+            #    for permuted_indices in algorithm(indices)
+            #)
+            # TO THESE:
+            return (                                            # CGL
+                (permuted_items(permuted_indices),              # CGL
+                #tuple(items[i] for i in permuted_indices[r:])) # CGL
+                tuple(next(equivalent_items[index]) for index in permuted_indices[r:])) # TWEAKED
+                if output_leftovers and r < size                # CGL
+                else (permuted_items(permuted_indices), ())     # CGL
+                if output_leftovers and r == size               # CGL
+                else permuted_items(permuted_indices[:r])       # CGL
+                for permuted_indices in algorithm(indices)      # CGL
+            )                                                   # CGL
 
     return iter(() if r else ((),))
 
