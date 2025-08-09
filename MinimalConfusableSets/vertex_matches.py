@@ -117,25 +117,29 @@ def bi_range_with_maxes(n, max_first, max_second):
 
 
 def generate_all_useful_canonical_matches(
-        k, # k=dimension of space
         M, #number of bad bats
+        k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         permute = True,
         ):
-        yield from generate_all_canonical_matches(k=k, M=M, show_only_useful_matches = True, permute=permute)
+        yield from generate_all_canonical_matches(M=M, k=k, permute=permute)
 
 
 def generate_all_canonical_match_signatures(
-        k, # k=dimension of space
         M, #number of bad bats
-        show_only_useful_matches = False,
+        k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         ):
         """
         The signature of a caonoical match is how many ones, minus ones and zeros it has.
-        We yield a triplet of numbers in that order.
+        We yield triplets of numbers in that order.
+
+        Canonical matches have M entries in total, comprising an even number of +1 and and odd number of -1 entries, and others zero.
+
+        "Useful" canonical matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
+
         """
         for number_of_ones in range(0, M+1, 2):
 
-            if show_only_useful_matches:
+            if k is not None:
                 # In this case we need 
                 #         number_of_ones + number_of_minus_ones > k  and   number_of_minus_ones >= 1
                 # so
@@ -151,19 +155,18 @@ def generate_all_canonical_match_signatures(
             for number_of_minus_ones in range(start_for_number_of_minus_ones, M+1-number_of_ones, 2):
                 # In an alternative (but slower) implementation, one could always have start_for_number_of_minus_ones=1 but then 
                 # uncomment the next two lines:
-                # if show_only_useful_matches and (number_of_ones + number_of_minus_ones <= k):
+                # if k is not None and (number_of_ones + number_of_minus_ones <= k):
                 #      continue
                 number_of_zeros= M-number_of_ones-number_of_minus_ones
                 yield number_of_ones, number_of_minus_ones, number_of_zeros
 
 def generate_all_canonical_matches(
-        k, # k=dimension of space
-        M, #number of bad bats
-        show_only_useful_matches = False,
+        M, # M=number of bad bats
+        k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         permute = True,
         ):
 
-        for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_canonical_match_signatures(k,M,show_only_useful_matches=show_only_useful_matches):
+        for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_canonical_match_signatures(M, k=k):
 
             ones = (1,)*number_of_ones
             minus_ones = (-1,)*number_of_minus_ones
@@ -176,16 +179,15 @@ def generate_all_canonical_matches(
                 yield ones + minus_ones + zeros
 
 def generate_all_useful_matches_given_perming_places(
-        k, # k=dimension of space
-        M, # number of bad bats
+        M, # M=number of bad bats
+        k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         perming_places = 0, # permutations take place within the first "perming_places" places, otherwise not.
         ):
-    yield from generate_all_matches_given_perming_places(k=k, M=M, show_only_useful_matches = True, perming_places=perming_places)
+    yield from generate_all_matches_given_perming_places(M, k=k, perming_places=perming_places)
     
 def generate_all_matches_given_perming_places(
-        k, # k=dimension of space
-        M, # number of bad bats
-        show_only_useful_matches = False,
+        M, # M=number of bad bats
+        k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         perming_places = 0, # permutations take place within the first "perming_places" places, otherwise not.
         ):
 
@@ -197,11 +199,7 @@ def generate_all_matches_given_perming_places(
 
         non_perming_places = M-perming_places
 
-        for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_canonical_match_signatures(k,M,show_only_useful_matches=show_only_useful_matches):
-
-            #ones = (1,)*number_of_ones
-            #minus_ones = (-1,)*number_of_minus_ones
-            #zeros = (0,)*number_of_zeros
+        for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_canonical_match_signatures(M,k=k):
 
             for perming_ones, non_perming_ones in bi_range_with_maxes(number_of_ones, max_first=perming_places, max_second=non_perming_places):
                 for perming_minus_ones, non_perming_minus_ones in bi_range_with_maxes(number_of_minus_ones, max_first = perming_places-perming_ones, max_second=non_perming_places - non_perming_ones):
