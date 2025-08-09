@@ -2,9 +2,10 @@
 import vertex_matches
 from itertools import zip_longest
 
-# Canonical matches have an even number of +1 and and odd number of -1 entries, and others zero.
-# "Useful" canonical matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
-
+# Vertex matches have an even number of +1 and and odd number of -1 entries, and others zero. Their total number of entries is M, the numnber of bad bats.
+# The "signature" of a vertex match is how many ones, minus ones and zeros it contains.
+# "Useful" vertex matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
+# A "canonical" vertex match is one where all the ones come before all the minus ones which come before all the zeros WITHIN any positions which are otherwise equivalent. . E.g., of all position are equivalent, then (1,1,-1,-1,-1,0) is a canonical match.
 
 M0_all_vertex_matches_expected = [
 ]
@@ -36,6 +37,7 @@ M3_all_vertex_match_signatures_expected = [
               # ( 1, 1,-1),
               # ( 1,-1, 1),
               # (-1, 1, 1),
+    (0,3,0), # for
               # (-1,-1,-1),
 ]
 
@@ -259,6 +261,23 @@ def test_helper_functions():
         assert list(brwm(10, 5, 2)) == [ ]
         assert list(brwm(10, 4, 2)) == [ ]
 
+def test_signatures():
+    test_programme = [
+        (3, None, M3_all_vertex_match_signatures_expected, "M3 signatures"),
+        ]
+    for M, k, expected_signature, name in test_programme:
+        LHS = sorted(list(vertex_matches.generate_all_vertex_match_signatures(M=M, k=k)))
+        RHS = sorted(expected_signature)
+
+        print(f"Test '{name}' has LHS and RHS:")
+        print("[")
+        for i,j in zip_longest(LHS,RHS):
+            print(f"({i}, {j}), ")
+        print("]")
+
+        print()
+
+        assert LHS==RHS
 
 def test_main_generators():
 
