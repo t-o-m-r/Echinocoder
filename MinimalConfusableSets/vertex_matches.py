@@ -197,43 +197,25 @@ def generate_all_matches_given_perming_places(
 
         non_perming_places = M-perming_places
 
-        for number_of_ones in range(0, M+1, 2):
+        for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_canonical_match_signatures(k,M,show_only_useful_matches=show_only_useful_matches):
+
             #ones = (1,)*number_of_ones
+            #minus_ones = (-1,)*number_of_minus_ones
+            #zeros = (0,)*number_of_zeros
 
-            if show_only_useful_matches:
-                # In this case we need 
-                #         number_of_ones + number_of_minus_ones > k  and   number_of_minus_ones >= 1
-                # so
-                #         number_of_minus_ones > k - number_of_ones   and number_of_minus_ones >= 1
-                # so
-                #         number_of_minus_ones >= k - number_of_ones + 1 and number_of_minus_ones >=1
-                # so
-                #         number_of_minus_ones >= max(k - number_of_ones + 1, 1)
-                start_for_number_of_minus_ones =  max(1, smallest_odd_number_greater_than_or_equal_to(k - number_of_ones + 1))
-            else:
-                start_for_number_of_minus_ones = 1
-            for number_of_minus_ones in range(start_for_number_of_minus_ones, M+1-number_of_ones, 2):
-                # In alternative (but slower) implementation, one could always have start_for_number_of_minus_ones=1 but then 
-                # uncomment the next two lines:
-                # if show_only_useful_matches and (number_of_ones + number_of_minus_ones <= k):
-                #      continue
-                #minus_ones = (-1,)*number_of_minus_ones
-                number_of_zeros= M-number_of_ones-number_of_minus_ones
-                #zeros = (0,)*number_of_zeros
+            for perming_ones, non_perming_ones in bi_range_with_maxes(number_of_ones, max_first=perming_places, max_second=non_perming_places):
+                for perming_minus_ones, non_perming_minus_ones in bi_range_with_maxes(number_of_minus_ones, max_first = perming_places-perming_ones, max_second=non_perming_places - non_perming_ones):
+                    perming_zeros = perming_places - (perming_ones + perming_minus_ones)
+                    non_perming_zeros = number_of_zeros - perming_zeros
 
-                for perming_ones, non_perming_ones in bi_range_with_maxes(number_of_ones, max_first=perming_places, max_second=non_perming_places):
-                    for perming_minus_ones, non_perming_minus_ones in bi_range_with_maxes(number_of_minus_ones, max_first = perming_places-perming_ones, max_second=non_perming_places - non_perming_ones):
-                        perming_zeros = perming_places - (perming_ones + perming_minus_ones)
-                        non_perming_zeros = number_of_zeros - perming_zeros
+                    assert perming_zeros >=0
+                    assert non_perming_zeros >=0
 
-                        assert perming_zeros >=0
-                        assert non_perming_zeros >=0
+                    perming_part = (1,)*perming_ones + (-1,)*perming_minus_ones + (0,)*perming_zeros
+                    non_perming_part = (1,)*non_perming_ones + (-1,)*non_perming_minus_ones + (0,)*non_perming_zeros
 
-                        perming_part = (1,)*perming_ones + (-1,)*perming_minus_ones + (0,)*perming_zeros
-                        non_perming_part = (1,)*non_perming_ones + (-1,)*non_perming_minus_ones + (0,)*non_perming_zeros
-
-                        for perm in distinct_permutations(perming_part):
-                            yield perm + non_perming_part
+                    for perm in distinct_permutations(perming_part):
+                        yield perm + non_perming_part
 
 
 if __name__ == "__main__":
