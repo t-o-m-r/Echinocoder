@@ -3,11 +3,13 @@ import math
 from distinct_permutations import distinct_permutations
 
 """
-Canonical matches have an even number of +1 and and odd number of -1 entries, and others zero.
+Vertex matches have an even number of +1 and and odd number of -1 entries, and others zero. Their total number of entries is M, the numnber of bad bats.
 
-"Useful" canonical matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
+"Useful" vertex matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
 
-Sometimes it is not worth permuting canonical matches over every bad bat because other matches in the existing context may not yet have broken any symmetries between the bats.  WLOG we choose to put the entries which are deemed to have already broken symmetry FIRST.  And the argument "perming_places" describes how many such spaces there are.
+A "canonical" vertex match is one where all the ones come before all the minus ones which come before all the zeros WITHIN any positions which are otherwise equivalent. . E.g., of all position are equivalent, then (1,1,-1,-1,-1,0) is a canonical match.
+
+Sometimes it is not worth permuting vertex matches over every bad bat because other matches in the existing context may not yet have broken any symmetries between the bats.  WLOG we choose to put the entries which are deemed to have already broken symmetry FIRST.  And the argument "perming_places" describes how many such spaces there are.
 E.g.: perming_places=2 means that the first two position (i.e. pos 0 and pos 1) have broken some symmetry and permutations on them are relevant, whereas permutations on pos 2 and above are irrelevant.
 E.g. if one listed all distinct permutations of the letters "Speedo" for "perming_places=2" one would want these (in which the "." is not actually part of the string but has been inserted to help guide the eye so that you can see that only the first two letters explore all perms wile after the dot there is no perming.  Note that there are 4*4+5 = 21 of these:
 
@@ -132,9 +134,9 @@ def generate_all_vertex_match_signatures(
         The signature of a caonoical match is how many ones, minus ones and zeros it has.
         We yield triplets of numbers in that order.
 
-        Canonical matches have M entries in total, comprising an even number of +1 and and odd number of -1 entries, and others zero.
+        Vertex matches have M entries in total, comprising an even number of +1 and and odd number of -1 entries, and others zero.
 
-        "Useful" canonical matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
+        "Useful" vertex matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
 
         """
         for number_of_ones in range(0, M+1, 2):
