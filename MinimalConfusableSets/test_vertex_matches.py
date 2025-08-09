@@ -66,6 +66,33 @@ M4_all_vertex_matches_expected = [
      (-1,-1,-1, 0,),
     ]
 
+M4_all_vertex_match_signatures_expected = [
+     (0,1,3), # for
+              # ( 0, 0, 0,-1,),
+              # ( 0, 0,-1, 0,),
+              # ( 0,-1, 0, 0,),
+              # (-1, 0, 0, 0,),
+
+     (2,1,1), # for
+              # ( 0, 1, 1,-1,),
+              # ( 0, 1,-1 ,1,),
+              # ( 0,-1, 1, 1,),
+              # ( 1, 0, 1,-1,),
+              # ( 1, 0,-1 ,1,),
+              # (-1, 0, 1, 1,),
+              # ( 1, 1, 0,-1,),
+              # ( 1,-1, 0, 1,),
+              # (-1, 1, 0, 1,),
+              # ( 1, 1,-1, 0,),
+              # ( 1,-1 ,1, 0,),
+              # (-1, 1, 1, 0,),
+      (0,3,1), #for
+              # ( 0,-1,-1,-1,),
+              # (-1, 0,-1,-1,),
+              # (-1,-1, 0,-1,),
+              # (-1,-1,-1, 0,),
+    ]
+
 k2M3_all_useful_vertex_matches_expected = [
     # ( 0, 0,-1),
     # ( 0,-1, 0),
@@ -264,6 +291,7 @@ def test_helper_functions():
 def test_signatures():
     test_programme = [
         (3, None, M3_all_vertex_match_signatures_expected, "M3 signatures"),
+        (4, None, M4_all_vertex_match_signatures_expected, "M4 signatures"),
         ]
     for M, k, expected_signature, name in test_programme:
         LHS = sorted(list(vertex_matches.generate_all_vertex_match_signatures(M=M, k=k)))
