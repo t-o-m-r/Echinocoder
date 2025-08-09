@@ -116,15 +116,15 @@ def bi_range_with_maxes(n, max_first, max_second):
         yield a, n-a
 
 
-def generate_all_useful_canonical_matches(
+def generate_all_useful_vertex_matches(
         M, #number of bad bats
         k = None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         permute = True,
         ):
-        yield from generate_all_canonical_matches(M=M, k=k, permute=permute)
+        yield from generate_all_vertex_matches(M=M, k=k, permute=permute)
 
 
-def generate_all_canonical_match_signatures(
+def generate_all_vertex_match_signatures(
         M, #number of bad bats
         k = None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         ):
@@ -160,13 +160,13 @@ def generate_all_canonical_match_signatures(
                 number_of_zeros= M-number_of_ones-number_of_minus_ones
                 yield number_of_ones, number_of_minus_ones, number_of_zeros
 
-def generate_all_canonical_matches(
+def generate_all_vertex_matches(
         M, # M=number of bad bats
         k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         permute = True,
         ):
 
-        for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_canonical_match_signatures(M, k=k):
+        for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_vertex_match_signatures(M, k=k):
 
             ones = (1,)*number_of_ones
             minus_ones = (-1,)*number_of_minus_ones
@@ -199,7 +199,7 @@ def generate_all_matches_given_perming_places(
 
         non_perming_places = M-perming_places
 
-        for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_canonical_match_signatures(M,k=k):
+        for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_vertex_match_signatures(M,k=k):
 
             for perming_ones, non_perming_ones in bi_range_with_maxes(number_of_ones, max_first=perming_places, max_second=non_perming_places):
                 for perming_minus_ones, non_perming_minus_ones in bi_range_with_maxes(number_of_minus_ones, max_first = perming_places-perming_ones, max_second=non_perming_places - non_perming_ones):
@@ -219,23 +219,23 @@ def generate_all_matches_given_perming_places(
 if __name__ == "__main__":
     M=4
     print(f"All matches given M={M} bad bats are:")
-    for i, match in enumerate(generate_all_canonical_matches(k=None, M=M)):
+    for i, match in enumerate(generate_all_vertex_matches(k=None, M=M)):
        print(f"   {i+1}:    {match}")
     print()
 
     k=2
     print(f"All USEFUL matches in k={k} dimensions, given M={M} bad bats are:")
-    for i,match in enumerate(generate_all_useful_canonical_matches(k=k, M=M)):
+    for i,match in enumerate(generate_all_useful_vertex_matches(k=k, M=M)):
        print(f"   {i+1}:    {match}")
     print()
 
     print(f"All matches in k={k} dimensions, given M={M} bad bats, but ignoring permutations are:")
-    for i,match in enumerate(generate_all_canonical_matches(k=k, M=M, permute=False)):
+    for i,match in enumerate(generate_all_vertex_matches(k=k, M=M, permute=False)):
        print(f"   {i+1}:    {match}")
     print()
 
     print(f"All USEFUL matches in k={k} dimensions, given M={M} bad bats, but ignoring permutations are:")
-    for i,match in enumerate(generate_all_useful_canonical_matches(k=k, M=M, permute=False)):
+    for i,match in enumerate(generate_all_useful_vertex_matches(k=k, M=M, permute=False)):
        print(f"   {i+1}:    {match}")
     print()
 

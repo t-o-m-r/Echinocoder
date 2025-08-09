@@ -6,19 +6,19 @@ from itertools import zip_longest
 # "Useful" canonical matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
 
 
-M0_all_canonical_matches_expected = [
+M0_all_vertex_matches_expected = [
 ]
 
-M1_all_canonical_matches_expected = [
+M1_all_vertex_matches_expected = [
     (-1,),
 ]
 
-M2_all_canonical_matches_expected = [
+M2_all_vertex_matches_expected = [
     ( 0,-1),
     (-1, 0),
 ]
 
-M3_all_canonical_matches_expected = [
+M3_all_vertex_matches_expected = [
     ( 0, 0,-1),
     ( 0,-1, 0),
     (-1, 0, 0),
@@ -27,8 +27,19 @@ M3_all_canonical_matches_expected = [
     (-1, 1, 1),
     (-1,-1,-1),
 ]
+M3_all_vertex_match_signatures_expected = [
+    ( 0,1,2), # for
+              # ( 0, 0,-1),
+              # ( 0,-1, 0),
+              # (-1, 0, 0),
+    (2,1,0), # for
+              # ( 1, 1,-1),
+              # ( 1,-1, 1),
+              # (-1, 1, 1),
+              # (-1,-1,-1),
+]
 
-M4_all_canonical_matches_expected = [
+M4_all_vertex_matches_expected = [
      ( 0, 0, 0,-1,),
      ( 0, 0,-1, 0,),
      ( 0,-1, 0, 0,),
@@ -53,7 +64,7 @@ M4_all_canonical_matches_expected = [
      (-1,-1,-1, 0,),
     ]
 
-k2M3_all_useful_canonical_matches_expected = [
+k2M3_all_useful_vertex_matches_expected = [
     # ( 0, 0,-1),
     # ( 0,-1, 0),
     # (-1, 0, 0),
@@ -62,7 +73,7 @@ k2M3_all_useful_canonical_matches_expected = [
     (-1, 1, 1),
     (-1,-1,-1),
 ]
-k2M4_all_useful_canonical_matches_expected = [
+k2M4_all_useful_vertex_matches_expected = [
      #( 0, 0, 0,-1,),
      #( 0, 0,-1, 0,),
      #( 0,-1, 0, 0,),
@@ -86,7 +97,7 @@ k2M4_all_useful_canonical_matches_expected = [
      (-1,-1, 0,-1,),
      (-1,-1,-1, 0,),
     ]
-k2M4_all_useful_canonical_matches_with_1_perming_places = [
+k2M4_all_useful_vertex_matches_with_1_perming_places = [
      #( 0, 0, 0,-1,),
      #( 0, 0,-1, 0,),
      #( 0,-1, 0, 0,),
@@ -110,7 +121,7 @@ k2M4_all_useful_canonical_matches_with_1_perming_places = [
      #(-1,-1, 0,-1,),
      (-1,-1,-1, 0,),
 ]
-k2M4_all_useful_canonical_matches_with_2_perming_places = [
+k2M4_all_useful_vertex_matches_with_2_perming_places = [
      #( 0, 0, 0,-1,),
      #( 0, 0,-1, 0,),
      #( 0,-1, 0, 0,),
@@ -134,7 +145,7 @@ k2M4_all_useful_canonical_matches_with_2_perming_places = [
      #(-1,-1, 0,-1,),
      (-1,-1,-1, 0,),
 ]
-k3M4_all_useful_canonical_matches_expected = [
+k3M4_all_useful_vertex_matches_expected = [
      # ( 0, 0, 0,-1,),
      # ( 0, 0,-1, 0,),
      # ( 0,-1, 0, 0,),
@@ -256,26 +267,26 @@ def test_main_generators():
         return lambda k, M: f(M=M, k=k, perming_places=perming_places)
         
     test_programme = [
-        (None, 0, vertex_matches.generate_all_canonical_matches, M0_all_canonical_matches_expected, "M0 all",),
-        (None, 1, vertex_matches.generate_all_canonical_matches, M1_all_canonical_matches_expected, "M1 all",),
-        (None, 2, vertex_matches.generate_all_canonical_matches, M2_all_canonical_matches_expected, "M2 all",),
-        (None, 3, vertex_matches.generate_all_canonical_matches, M3_all_canonical_matches_expected, "M3 all",),
-        (None, 4, vertex_matches.generate_all_canonical_matches, M4_all_canonical_matches_expected, "M4 all",),
-        (2, 3, vertex_matches.generate_all_useful_canonical_matches, k2M3_all_useful_canonical_matches_expected, "k2M3 useful",),
-        (2, 4, vertex_matches.generate_all_useful_canonical_matches, k2M4_all_useful_canonical_matches_expected, "k2M4 useful",),
-        (3, 4, vertex_matches.generate_all_useful_canonical_matches, k3M4_all_useful_canonical_matches_expected, "k3M4 useful",),
+        (None, 0, vertex_matches.generate_all_vertex_matches, M0_all_vertex_matches_expected, "M0 all",),
+        (None, 1, vertex_matches.generate_all_vertex_matches, M1_all_vertex_matches_expected, "M1 all",),
+        (None, 2, vertex_matches.generate_all_vertex_matches, M2_all_vertex_matches_expected, "M2 all",),
+        (None, 3, vertex_matches.generate_all_vertex_matches, M3_all_vertex_matches_expected, "M3 all",),
+        (None, 4, vertex_matches.generate_all_vertex_matches, M4_all_vertex_matches_expected, "M4 all",),
+        (2, 3, vertex_matches.generate_all_useful_vertex_matches, k2M3_all_useful_vertex_matches_expected, "k2M3 useful",),
+        (2, 4, vertex_matches.generate_all_useful_vertex_matches, k2M4_all_useful_vertex_matches_expected, "k2M4 useful",),
+        (3, 4, vertex_matches.generate_all_useful_vertex_matches, k3M4_all_useful_vertex_matches_expected, "k3M4 useful",),
 
-        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=4), k2M4_all_useful_canonical_matches_expected, "k2M4 useful but testing perming_places=4}",),
-        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=4), list(vertex_matches.generate_all_useful_canonical_matches(M=4, k=2, permute=True)), "k2M4 useful but testing perming_places=4}",), # permute=True is like perming_places=M
-        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=3), list(vertex_matches.generate_all_useful_canonical_matches(k=2, M=4, permute=True)), "k2M4 useful but testing perming_places=3}",), # permute=True is also like perming_places=M-1
-        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=2), k2M4_all_useful_canonical_matches_with_2_perming_places, "k2M4 useful but testing perming_places=2}",),
-        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=1), k2M4_all_useful_canonical_matches_with_1_perming_places, "k2M4 useful but testing perming_places=1}",),
-        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=0), list(vertex_matches.generate_all_useful_canonical_matches(M=4, k=2, permute=False)), "k2M4 useful but testing perming_places=0}",),
+        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=4), k2M4_all_useful_vertex_matches_expected, "k2M4 useful but testing perming_places=4}",),
+        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=4), list(vertex_matches.generate_all_useful_vertex_matches(M=4, k=2, permute=True)), "k2M4 useful but testing perming_places=4}",), # permute=True is like perming_places=M
+        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=3), list(vertex_matches.generate_all_useful_vertex_matches(k=2, M=4, permute=True)), "k2M4 useful but testing perming_places=3}",), # permute=True is also like perming_places=M-1
+        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=2), k2M4_all_useful_vertex_matches_with_2_perming_places, "k2M4 useful but testing perming_places=2}",),
+        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=1), k2M4_all_useful_vertex_matches_with_1_perming_places, "k2M4 useful but testing perming_places=1}",),
+        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=0), list(vertex_matches.generate_all_useful_vertex_matches(M=4, k=2, permute=False)), "k2M4 useful but testing perming_places=0}",),
 
-        (None, 4, set_perming_places(vertex_matches.generate_all_matches_given_perming_places, perming_places=4), M4_all_canonical_matches_expected, "M4 but testing perming_places=4}",),
-        (None, 4, set_perming_places(vertex_matches.generate_all_matches_given_perming_places, perming_places=4), list(vertex_matches.generate_all_canonical_matches(M=4, permute=True)), "M4 but testing perming_places=4}",), # permute=True is like perming_places=M
-        (None, 4, set_perming_places(vertex_matches.generate_all_matches_given_perming_places, perming_places=3), list(vertex_matches.generate_all_canonical_matches(M=4, permute=True)), "M4 but testing perming_places=3}",), # permute=True is also like perming_places=M-1
-        (None, 4, set_perming_places(vertex_matches.generate_all_matches_given_perming_places, perming_places=0), list(vertex_matches.generate_all_canonical_matches(M=4, permute=False)), "M4 but testing perming_places=0}",),
+        (None, 4, set_perming_places(vertex_matches.generate_all_matches_given_perming_places, perming_places=4), M4_all_vertex_matches_expected, "M4 but testing perming_places=4}",),
+        (None, 4, set_perming_places(vertex_matches.generate_all_matches_given_perming_places, perming_places=4), list(vertex_matches.generate_all_vertex_matches(M=4, permute=True)), "M4 but testing perming_places=4}",), # permute=True is like perming_places=M
+        (None, 4, set_perming_places(vertex_matches.generate_all_matches_given_perming_places, perming_places=3), list(vertex_matches.generate_all_vertex_matches(M=4, permute=True)), "M4 but testing perming_places=3}",), # permute=True is also like perming_places=M-1
+        (None, 4, set_perming_places(vertex_matches.generate_all_matches_given_perming_places, perming_places=0), list(vertex_matches.generate_all_vertex_matches(M=4, permute=False)), "M4 but testing perming_places=0}",),
 
         ]
 
