@@ -118,7 +118,7 @@ def bi_range_with_maxes(n, max_first, max_second):
 
 def generate_all_useful_canonical_matches(
         M, #number of bad bats
-        k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
+        k = None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         permute = True,
         ):
         yield from generate_all_canonical_matches(M=M, k=k, permute=permute)
@@ -126,7 +126,7 @@ def generate_all_useful_canonical_matches(
 
 def generate_all_canonical_match_signatures(
         M, #number of bad bats
-        k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
+        k = None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         ):
         """
         The signature of a caonoical match is how many ones, minus ones and zeros it has.
