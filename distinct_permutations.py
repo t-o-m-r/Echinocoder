@@ -1,7 +1,7 @@
 # This is taken from https://github.com/more-itertools/more-itertools/blob/edcafcfa58b1f2edc4b8588e98fba3f41784b746/more_itertools/more.py#L675 ... but with
 # some modifications by Christopher Lester to add leftovers.
 
-from functools import partial
+from functools import partial, total_ordering
 from collections import defaultdict
 from itertools import cycle
 
@@ -124,20 +124,21 @@ def distinct_permutations(iterable, r=None, output_leftovers=False):
     except TypeError:
         sortable = False
 
-        indices_dict = defaultdict(list)
+        # New implementation by CGL.
+        @total_ordering
+        class Wrapper(object):
+            def __init__(self, sorting_cue, payload):
+                # sorting_cue should be something for which comparisons and sorting work, as surrogate for the payload
+                self.sorting_cue = sorting_cue
+                self.payload = payload
 
-        for item in items:
-            indices_dict[items.index(item)].append(item)
+            def __eq__(self, other):
+                return self.sorting_cue == other.sorting_cue
 
-        indices = [items.index(item) for item in items]
-        indices.sort()
+            def __lt__(self, other):
+                return self.sorting_cue < other.sorting_cue
 
-        equivalent_items = {k: cycle(v) for k, v in indices_dict.items()}
-
-        def permuted_items(permuted_indices):
-            return tuple(
-                next(equivalent_items[index]) for index in permuted_indices # THIS_LINE_FAILING
-            )
+        items = [Wrapper(items.index(item), item) for item in items ]
 
     size = len(items)
     if r is None:
@@ -148,24 +149,14 @@ def distinct_permutations(iterable, r=None, output_leftovers=False):
 
     if 0 < r <= size:
         if sortable:
-            return algorithm(items)
+            yield from algorithm(items)
         else:
-            # CGL CHANGED THESE NEXT FOUR LINES
-            #return (
-            #    permuted_items(permuted_indices)
-            #    for permuted_indices in algorithm(indices)
-            #)
-            # TO THESE:
-            return (                                            # CGL
-                (permuted_items(permuted_indices),              # CGL
-                #tuple(items[i] for i in permuted_indices[r:])) # CGL
-                tuple(next(equivalent_items[index]) for index in permuted_indices[r:])) # TWEAKED
-                if output_leftovers and r < size                # CGL
-                else (permuted_items(permuted_indices), ())     # CGL
-                if output_leftovers and r == size               # CGL
-                else permuted_items(permuted_indices[:r])       # CGL
-                for permuted_indices in algorithm(indices)      # CGL
-            )                                                   # CGL
+            if output_leftovers:
+                for wrapped_items, wrapped_leftovers in algorithm(items):
+                    yield [wrapped_item.payload for wrapped_item in wrapped_items], [wrapped_leftover.payload for wrapped_leftover in wrapped_leftovers]     
+            else:
+                for wrapped_items in algorithm(items):
+                    yield [wrapped_item.payload for wrapped_item in wrapped_items],     
 
     return iter(() if r else ((),))
 

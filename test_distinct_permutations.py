@@ -8,11 +8,7 @@ a = X('a')
 b = X('b')
 c = X('c')
 
-
-def test():
-    pass
-
-if __name__ == "__main__":
+def test_things():
     for data in (
          [1,2,2,3],
          ["S","p","e","e","d","o"],
@@ -30,4 +26,7 @@ if __name__ == "__main__":
                     else:
                         print(f"{i+1}:   {data} contains length={r} part {part}")
                 print()
+
+if __name__ == "__main__":
+    test_things()
 
