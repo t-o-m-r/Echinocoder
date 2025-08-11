@@ -146,7 +146,7 @@ def distinct_permutations(iterable, r=None, output_leftovers=False):
         r = size
 
     if not (0 <= r <= size):
-        # r was negative, or bigger than size, or even something crazy like a string, so there is nothing our iterator can/should return:
+        # r was negative, or bigger than size, so there is nothing our iterator can/should return. Note that r==0 is a different case, handled elsewhere differently depending on whether output_leftovers = True or False.  We don't thow a value error as there are lots of combinatorial reasons why binomial coefficients (n,r) make sense (by taking a negative value) when r<0 or r>n.
         return iter(())
 
     # functools.partial(_partial, ... )
