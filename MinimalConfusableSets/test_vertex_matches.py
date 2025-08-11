@@ -302,8 +302,8 @@ def test_main_generators():
         (2, 3, vertex_matches.generate_all_useful_vertex_matches(k=2, M=3), k2M3_all_useful_vertex_matches_expected, "k2M3 useful",),
         (2, 4, vertex_matches.generate_all_useful_vertex_matches(k=2, M=4), k2M4_all_useful_vertex_matches_expected, "k2M4 useful",),
         (3, 4, vertex_matches.generate_all_useful_vertex_matches(k=3, M=4), k3M4_all_useful_vertex_matches_expected, "k3M4 useful",),
-#
-#        (2, 4, set_perming_places(vertex_matches.generate_all_useful_vertex_matches_given_perming_places, perming_places=4), k2M4_all_useful_vertex_matches_expected, "k2M4 useful but testing perming_places=4}",),
+
+        (2, 4, vertex_matches.generate_all_useful_vertex_matches_given_perming_places(k=2, M=4,perming_places=4), k2M4_all_useful_vertex_matches_expected, "k2M4 useful but testing perming_places=4}",),
 #        (2, 4, set_perming_places(vertex_matches.generate_all_useful_vertex_matches_given_perming_places, perming_places=4), list(vertex_matches.generate_all_useful_vertex_matches(M=4, k=2, permute=True)), "k2M4 useful but testing perming_places=4}",), # permute=True is like perming_places=M
 #        (2, 4, set_perming_places(vertex_matches.generate_all_useful_vertex_matches_given_perming_places, perming_places=3), list(vertex_matches.generate_all_useful_vertex_matches(k=2, M=4, permute=True)), "k2M4 useful but testing perming_places=3}",), # permute=True is also like perming_places=M-1
 #        (2, 4, set_perming_places(vertex_matches.generate_all_useful_vertex_matches_given_perming_places, perming_places=2), k2M4_all_useful_vertex_matches_with_2_perming_places, "k2M4 useful but testing perming_places=2}",),
