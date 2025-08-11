@@ -27,9 +27,10 @@ Need to come up with a metric to compare (i) the speed and (ii) the 'even-ness' 
 
 Tried: 
 Sobol (see sobol_1 and sobol_2)
-Gaussian (not yet added - very simple) 
+Gaussian (very simple) 
 
 To do: 
 Fibbonacci for k=3
-More low discrep seq
+More low discrep seq? Sobol is probably the best, though. 
+Electrostatic repulsion?? Slow but reliable. (m,k) approx (6-8,100-500) is very approximate limit?
 
