@@ -5,8 +5,7 @@ from importlib import import_module
     
 L = sp.Matrix([
     [1, -1, 0, 1, 0, 1, -1, -1, 1, 0],
-    [0, 1, -1, 1, 1, 0, -1, -1, 0, 1]
-])
+    ])
 
 def f(m, k, method, L):
     """
@@ -23,7 +22,7 @@ def f(m, k, method, L):
         DIMENSION.
     method : string
         METHOD TO DEFINE m EQUALLY SPACED VECTORS TO GENERATE D.
-        OPTIONS (so far) ARE: "sobol_1" "sobol_2"
+        OPTIONS (so far) ARE: "sobol_1", "sobol_2", "gaussian", "electrostatic"
     L : sympy.Matrix
         MATRIX OF MATCHES (R x M)
 
