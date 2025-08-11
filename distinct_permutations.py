@@ -161,7 +161,7 @@ def distinct_permutations(iterable, r=None, output_leftovers=False):
     algorithm = _full if (r == size) else partial(_partial, r=r)
 
     print(f"DISTINCT PERMS CHOSE alg={algorithm}")
-    if 0 < r <= size:
+    if 0 <= r <= size:
         print(f"DISTINCT PERMS SAYS 0<r<=size")
         if sortable:
             print(f"DISTINCT PERMS CHOSE alg={algorithm}")
