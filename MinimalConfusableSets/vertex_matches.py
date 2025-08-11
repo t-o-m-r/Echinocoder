@@ -2,6 +2,7 @@
 import math
 from distinct_permutations import distinct_permutations
 from bi_range import bi_range_with_maxes
+from equivalent_places import Equivalent_Places
 
 """
 Vertex matches have an even number of +1 and and odd number of -1 entries, and others zero. Their total number of entries is M, the numnber of bad bats.
@@ -125,6 +126,36 @@ def generate_all_matches_given_perming_places(
 
         if perming_places<0 or perming_places>M:
             raise ValueError(f"perming_places should be in [0,{M}]  but is {perming_places}.")
+
+        non_perming_places = M-perming_places
+
+        for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_vertex_match_signatures(M,k=k):
+
+            for perming_ones, non_perming_ones in bi_range_with_maxes(number_of_ones, max_first=perming_places, max_second=non_perming_places):
+                for perming_minus_ones, non_perming_minus_ones in bi_range_with_maxes(number_of_minus_ones, max_first = perming_places-perming_ones, max_second=non_perming_places - non_perming_ones):
+                    perming_zeros = perming_places - (perming_ones + perming_minus_ones)
+                    non_perming_zeros = number_of_zeros - perming_zeros
+
+                    assert perming_zeros >=0
+                    assert non_perming_zeros >=0
+
+                    perming_part = (1,)*perming_ones + (-1,)*perming_minus_ones + (0,)*perming_zeros
+                    non_perming_part = (1,)*non_perming_ones + (-1,)*non_perming_minus_ones + (0,)*non_perming_zeros
+
+                    for perm in distinct_permutations(perming_part):
+                        yield perm + non_perming_part
+
+def generate_all_matches_given_equivalent_places(
+        M, # M=number of bad bats
+        k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
+        equivalent_places : None | Equivalent_Places = None,
+        ):
+
+        if M<0:
+            raise ValueError(f"M should be a non-negative integer but is {M}.")
+
+        if equivalent_places is None:
+            equivalent_places = Equivalent_Places(size=M, none_equivalent=True)
 
         non_perming_places = M-perming_places
 
