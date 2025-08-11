@@ -116,7 +116,7 @@ class Equivalent_Places:
             self._equivalent_places_with_singletons = tuple( i for i in equivalents_with_singletons ) # TODO: remove in long term
             self._equivalent_places_without_singletons = tuple( i for i in self._equivalent_places_with_singletons if len(i)>1 )
             self.size = max((max(i)+1 for i in self._equivalent_places_with_singletons), default=0) # Don't need to protect inner max as all should be at least singleton size.
-            assert(size is None or self.size == size)
+            assert (size is None or self.size == size)
             return
 
         if equivalents_without_singletons is not None and size is not None:
