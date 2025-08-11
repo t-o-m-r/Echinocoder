@@ -67,6 +67,31 @@ M4_all_vertex_matches_expected = [
      (-1,-1,-1, 0,),
     ]
 
+M4_left_pair_right_pair = [
+     #( 0, 0, 0,-1,),
+     ( 0, 0,-1, 0,),
+     #( 0,-1, 0, 0,),
+     (-1, 0, 0, 0,),
+
+     #( 0, 1, 1,-1,),
+     #(0, 1,-1 ,1,),
+     #( 0,-1, 1, 1,),
+     ( 1, 0, 1,-1,),
+     #( 1, 0,-1 ,1,),
+     (-1, 0, 1, 1,),
+     #( 1, 1, 0,-1,),
+     #( 1,-1, 0, 1,),
+     #(-1, 1, 0, 1,),
+     ( 1, 1,-1, 0,),
+     ( 1,-1 ,1, 0,),
+     #(-1, 1, 1, 0,),
+
+     #( 0,-1,-1,-1,),
+     (-1, 0,-1,-1,),
+     #(-1,-1, 0,-1,),
+     (-1,-1,-1, 0,),
+    ]
+
 k2M4_all_useful_vertex_match_signatures_expected = [
      #(0,1,3), # for
      #         # ( 0, 0, 0,-1,),
@@ -324,6 +349,8 @@ def test_main_generators():
         # which should be the same as:
         (None, 4, vertex_matches.generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(size=4, none_equivalent=True) ), list(vertex_matches.generate_all_vertex_matches(M=4, permute=True)), "M4 but testing equivalent_places NONE",),
 
+        (None, 4, vertex_matches.generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,1,),(2,3,),    )) ), M4_left_pair_right_pair, "M4 left pair right pair",),
+
         ]
 
     for k, M, gen, expected, name in test_programme:
@@ -333,8 +360,8 @@ def test_main_generators():
 
         print(f"Test '{name}' has LHS and RHS:")
         print("[")
-        for i,j in zip_longest(LHS,RHS):
-            print(f"({i}, {j}), ")
+        for idx, (i,j) in enumerate(zip_longest(LHS,RHS)):
+            print(f"{idx}:  ({i} {'==' if i==j else '!='} {j}), ")
         print("]")
 
         print()
