@@ -53,7 +53,7 @@ def distinct_permutations(iterable, r=None, output_leftovers=False):
     def _full(A):
         while True:
             # Yield the permutation we have
-            yield tuple(A) if not output_leftovers else (tuple(A), ()) # Was just "yield tuple(A)" before CGL MOD
+            yield tuple(A) if not output_leftovers else (tuple(A), ())
 
             # Find the largest index i such that A[i] < A[i + 1]
             for i in range(size - 2, -1, -1):
@@ -82,10 +82,10 @@ def distinct_permutations(iterable, r=None, output_leftovers=False):
 
         while True:
             # Yield the permutation we have
-            if output_leftovers: # CGL ADDED THIS LINE
-                yield tuple(head), tuple(tail) # CGL ADDED THIS LINE
-            else: # CGL ADDED THIS LINE
-                yield tuple(head) # CGL INDENTED THIS LINE
+            if output_leftovers:
+                yield tuple(head), tuple(tail)
+            else:
+                yield tuple(head)
 
             # Starting from the right, find the first index of the head with
             # value smaller than the maximum value of the tail - call it i.
