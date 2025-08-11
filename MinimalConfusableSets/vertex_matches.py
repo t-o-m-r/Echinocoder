@@ -108,14 +108,14 @@ def generate_all_vertex_matches(
             else:
                 yield ones + minus_ones + zeros
 
-def generate_all_useful_matches_given_perming_places(
+def generate_all_useful_vertex_matches_given_perming_places(
         M, # M=number of bad bats
         k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         perming_places = 0, # permutations take place within the first "perming_places" places, otherwise not.
         ):
-    yield from generate_all_matches_given_perming_places(M, k=k, perming_places=perming_places)
+    yield from generate_all_vertex_matches_given_perming_places(M, k=k, perming_places=perming_places)
     
-def generate_all_matches_given_perming_places(
+def generate_all_vertex_matches_given_perming_places(
         M, # M=number of bad bats
         k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         perming_places = 0, # permutations take place within the first "perming_places" places, otherwise not.
@@ -145,7 +145,7 @@ def generate_all_matches_given_perming_places(
                     for perm in distinct_permutations(perming_part):
                         yield perm + non_perming_part
 
-def generate_all_matches_given_equivalent_places(
+def generate_all_vertex_matches_given_equivalent_places(
         M, # M=number of bad bats
         k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         equivalent_places : None | Equivalent_Places = None,
@@ -163,46 +163,53 @@ def generate_all_matches_given_equivalent_places(
             equivalent_places = Equivalent_Places(size=M, none_equivalent=True)
 
         ##############################################
-        def generate_dicts_for(e_places, signature, M):
+        def _generate_dicts_for(e_places, signature):
+            #print(f"GENERATE_DICTS_FOR e_places={e_places} signature={signature}.")
             # Caller must guarantee e_places is non-empty, M>0 and signature consistent with e_places
-            assert M>0
+            tot = sum(signature)
             assert e_places
-            assert sum(signature) == sum(len(e_place) for eplace in e_places)
-
+            number_of_ones, number_of_minus_ones, number_of_zeros = signature
+            assert tot == sum(len(e_place) for e_place in e_places)
+        
             perming_places = len(e_places[0]) # TODO: We can have a constant e_places and just transmit a moving LOCATION within it!! FASTER!
-            non_perming_places = M - perming_places
-
+            non_perming_places = tot - perming_places
+        
             # Recursion will stop when non_perming_places reaches 0 .... which should be the same as wheb e_places is length 1.
             # Let's check the above statement.
             assert (non_perming_places > 0 and len(e_places) > 1) or (non_perming_places == 0 and len(e_places)==1)
-
+        
+            #print(f"ones bi_range {list(bi_range_with_maxes(number_of_ones, max_first=perming_places, max_second=non_perming_places))}")
             for perming_ones, non_perming_ones in bi_range_with_maxes(number_of_ones, max_first=perming_places, max_second=non_perming_places):
+                #print(f"minus ones bi_range {list(bi_range_with_maxes(number_of_minus_ones, max_first=perming_places-perming_ones, max_second=non_perming_places - non_perming_ones))}")
                 for perming_minus_ones, non_perming_minus_ones in bi_range_with_maxes(number_of_minus_ones, max_first = perming_places-perming_ones, max_second=non_perming_places - non_perming_ones):
                     perming_zeros = perming_places - (perming_ones + perming_minus_ones)
                     non_perming_zeros = number_of_zeros - perming_zeros
-
+        
+        
+                    #print(f"PERMING_SIG = {perming_ones, perming_minus_ones, perming_zeros}")
+                    #print(f"NON_PERMING_SIG = {non_perming_ones, non_perming_minus_ones, non_perming_zeros}")
                     assert perming_zeros >=0
                     assert non_perming_zeros >=0
-
-                    perming_part = (1,)*perming_ones + (-1,)*perming_minus_ones + (0,)*perming_zero
+        
+                    perming_part = (1,)*perming_ones + (-1,)*perming_minus_ones + (0,)*perming_zeros
                     assert len(perming_part) == len(e_places[0])
-
+        
                     perming_part_dict = dict(zip(e_places[0], perming_part))
-
+        
                     if non_perming_places == 0:
                         yield perming_part_dict
                     else:
                         new_signature = (non_perming_ones, non_perming_minus_ones, non_perming_zeros)
-                        for non_perming_part_dict in generate_dicts_for(e_places[1:], new_signature, M):
-                           yield perming_part_dict + non_perming_part_dict
+                        for non_perming_part_dict in _generate_dicts_for(e_places[1:], new_signature):
+                           yield perming_part_dict | non_perming_part_dict
         ##############################################
 
+
         for signature in generate_all_vertex_match_signatures(M,k=k):
-        #for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_vertex_match_signatures(M,k=k):
 
             e_places = equivalent_places._equivalent_places_with_singletons
 
-            for d in generate_dicts_for(e_places, signature, M):
+            for d in _generate_dicts_for(e_places, signature):
                 yield tuple(d[i] for i in range(M))
 
                   
@@ -231,12 +238,19 @@ if __name__ == "__main__":
 
     for perming_places in range(5):
         print(f"All matches in k={k} dimensions, given M={M} bad bats, for perming_places={perming_places}")
-        for i,match in enumerate(generate_all_matches_given_perming_places(k=k, M=M, perming_places=perming_places)):
+        for i,match in enumerate(generate_all_vertex_matches_given_perming_places(k=k, M=M, perming_places=perming_places)):
            print(f"   {i+1}:    {match}")
         print()
 
     for perming_places in range(5):
         print(f"All USEFUL matches in k={k} dimensions, given M={M} bad bats, for perming_places={perming_places}")
-        for i,match in enumerate(generate_all_useful_matches_given_perming_places(k=k, M=M, perming_places=perming_places)):
+        for i,match in enumerate(generate_all_useful_vertex_matches_given_perming_places(k=k, M=M, perming_places=perming_places)):
            print(f"   {i+1}:    {match}")
         print()
+
+    for equivalent_places in ( Equivalent_Places(size=M, none_equivalent=True), ):
+        print(f"All USEFUL matches in k={k} dimensions, given M={M} bad bats, for equivalent_places={equivalent_places}")
+        for i,match in enumerate(generate_all_vertex_matches_given_equivalent_places(k=k, M=M, equivalent_places=equivalent_places)):
+           print(f"   {i+1}:    {match}")
+        print()
+
