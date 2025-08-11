@@ -1,5 +1,5 @@
 
-import vertex_matches
+from vertex_matches import generate_all_vertex_matches, generate_all_useful_vertex_matches, generate_all_useful_vertex_matches_given_perming_places, generate_all_vertex_matches_given_equivalent_places
 from equivalent_places import Equivalent_Places
 from itertools import zip_longest
 
