@@ -1,5 +1,5 @@
 # This is taken from https://github.com/more-itertools/more-itertools/blob/edcafcfa58b1f2edc4b8588e98fba3f41784b746/more_itertools/more.py#L675 ... but with
-# some modifications by Christopher Lester to add leftovers.
+# some modifications by Christopher Lester to add leftovers, and to make r=-1 output empty iterators.
 
 from functools import partial, total_ordering
 from collections import defaultdict
@@ -152,16 +152,16 @@ def distinct_permutations(iterable, r=None, output_leftovers=False):
     # functools.partial(_partial, ... )
     algorithm = _full if (r == size) else partial(_partial, r=r)
 
-    if 0 <= r <= size:
-        if sortable:
-            yield from algorithm(items) # HERE
+    if sortable:
+        yield from algorithm(items) # HERE
+    else:
+        # Need to peel off the wrappers:
+        if output_leftovers:
+            for wrapped_items, wrapped_leftovers in algorithm(items):
+                yield tuple(wrapped_item.payload for wrapped_item in wrapped_items), tuple(wrapped_leftover.payload for wrapped_leftover in wrapped_leftovers)     
         else:
-            if output_leftovers:
-                for wrapped_items, wrapped_leftovers in algorithm(items):
-                    yield tuple(wrapped_item.payload for wrapped_item in wrapped_items), tuple(wrapped_leftover.payload for wrapped_leftover in wrapped_leftovers)     
-            else:
-                for wrapped_items in algorithm(items):
-                    yield tuple(wrapped_item.payload for wrapped_item in wrapped_items),     
+            for wrapped_items in algorithm(items):
+                yield tuple(wrapped_item.payload for wrapped_item in wrapped_items),     
 
 def demo():
     thing=[3,0,3]
