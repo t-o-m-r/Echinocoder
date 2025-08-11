@@ -51,6 +51,7 @@ def distinct_permutations(iterable, r=None, output_leftovers=False):
 
     # Algorithm: https://w.wiki/Qai
     def _full(A):
+        print(f"MMMMMM in _full with A={A}")
         while True:
             # Yield the permutation we have
             yield tuple(A) if not output_leftovers else (tuple(A), ()) # Was just "yield tuple(A)" before CGL MOD
@@ -75,17 +76,23 @@ def distinct_permutations(iterable, r=None, output_leftovers=False):
 
     # Algorithm: modified from the above
     def _partial(A, r):
+        print(f"MMMMMM in _partial with A={A}, r={r}")
         # Split A into the first r items and the last r items
         head, tail = A[:r], A[r:]
         right_head_indexes = range(r - 1, -1, -1)
         left_tail_indexes = range(len(tail))
+        print(f"MMM 1")
 
         while True:
+            print(f"MMM 2")
             # Yield the permutation we have
             if output_leftovers: # CGL ADDED THIS LINE
+                print(f"MMM 3")
                 yield tuple(head), tuple(tail) # CGL ADDED THIS LINE
             else: # CGL ADDED THIS LINE
+                print(f"MMM 4")
                 yield tuple(head) # CGL INDENTED THIS LINE
+            print(f"MMM 5")
 
             # Starting from the right, find the first index of the head with
             # value smaller than the maximum value of the tail - call it i.
@@ -118,6 +125,7 @@ def distinct_permutations(iterable, r=None, output_leftovers=False):
 
     items = list(iterable)
 
+    print(f"DISTINCT PERMS GOT items={items}")
     try:
         items.sort()
         sortable = True
@@ -138,18 +146,26 @@ def distinct_permutations(iterable, r=None, output_leftovers=False):
             def __lt__(self, other):
                 return self.sorting_cue < other.sorting_cue
 
-        items = [Wrapper(items.index(item), item) for item in items ]
+        items = [Wrapper(items.index(item), item) for item in items ].sort() # TODO: It is important for the method below that items is sorted, so we sort here. However, it may be that by construction we are already sorted, in which case we could save time by removing this sort method. Or, indeed, we could change the way that the list is constructed so that it gets constructed.  However, for now we have belt and braces to avoid premature optimisation.
 
     size = len(items)
     if r is None:
         r = size
+    
+    print(f"DISTINCT PERMS SET size={size}")
+    print(f"DISTINCT PERMS SET r={r}")
+    print(f"DISTINCT PERMS HAS output_leftovers={output_leftovers}")
+    print(f"DISTINCT PERMS IS {'Sortable' if sortable else 'Not Sortable'}")
 
     # functools.partial(_partial, ... )
     algorithm = _full if (r == size) else partial(_partial, r=r)
 
+    print(f"DISTINCT PERMS CHOSE alg={algorithm}")
     if 0 < r <= size:
+        print(f"DISTINCT PERMS SAYS 0<r<=size")
         if sortable:
-            yield from algorithm(items)
+            print(f"DISTINCT PERMS CHOSE alg={algorithm}")
+            yield from algorithm(items) # HERE
         else:
             if output_leftovers:
                 for wrapped_items, wrapped_leftovers in algorithm(items):
@@ -157,8 +173,10 @@ def distinct_permutations(iterable, r=None, output_leftovers=False):
             else:
                 for wrapped_items in algorithm(items):
                     yield [wrapped_item.payload for wrapped_item in wrapped_items],     
-
-    return iter(() if r else ((),))
+    else:
+        print(f"DISTINCT PERMS SAYS NOT(0<r<=size) with r={r} and size={size}")
+        raise NotImplementedError("Fix this for output_leftovers!")
+        return iter(() if r else ((),))
 
 
 def tost():
