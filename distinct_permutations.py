@@ -157,10 +157,10 @@ def distinct_permutations(iterable, r=None, output_leftovers=False):
         # Need to peel off the wrappers:
         if output_leftovers:
             for wrapped_items, wrapped_leftovers in algorithm(items):
-                yield tuple(wrapped_item.payload for wrapped_item in wrapped_items), tuple(wrapped_leftover.payload for wrapped_leftover in wrapped_leftovers)     
+                yield tuple(wrapped_item.payload for wrapped_item in wrapped_items), tuple(wrapped_leftover.payload for wrapped_leftover in wrapped_leftovers)
         else:
             for wrapped_items in algorithm(items):
-                yield tuple(wrapped_item.payload for wrapped_item in wrapped_items),     
+                yield tuple(wrapped_item.payload for wrapped_item in wrapped_items)
 
 def demo():
     thing=[3,0,3]
