@@ -13,18 +13,18 @@ but rather as
 
 AB.xByDDEzw....
 
-since though all the first cels are filled, they are not all indistinguishable. On hte contrary, the second column (BB) is the same as the 5th column (BB) and so these cannot be distinguished and do not therefore need perming among themselves. We therefore need to keep track not of the number of filled spaces (as at present) but rather need to report a set of classes where two positions are equivalent iff they have the same label.
+since though all the first cels are filled, they are not all indistinguishable. On the contrary, the second column (BB) is the same as the 5th column (BB) and so these cannot be distinguished and do not therefore need perming among themselves. We therefore need to keep track not of the number of filled spaces (as at present) but rather need to report a set of classes where two positions are equivalent iff they have the same label.
 
 The structure which shall record the equivalence classes shall be iterable, having one element per equivalence class of locations.
-Each element shall then be a list or iterable of the locatons which are eqilalent.
+Each element shall  be an iterable containing the locatons which are eqilalent.
 E.g. if the list is
 
 Cabbage   # This is the word
 0123456   # (this is just a ruler I put below the word)
 
-then a suitable equivalence class representer might be a dictionary, like this:
+then a suitable equivalence class representer for "Cabbage" might d.values() for this dictionary:
 
- {
+ d = {
   "a" : (1,4,),
   "b" : (2,3,),
   "C" : (0,),
@@ -32,4 +32,4 @@ then a suitable equivalence class representer might be a dictionary, like this:
   "e" : (6,)
  }
 
-
+since d.values() would return iter(((1,4), (2,3), (0,), (5,), (6,) ))
