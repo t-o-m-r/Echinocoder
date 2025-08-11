@@ -1,5 +1,6 @@
 
 import vertex_matches
+from equivalent_places import Equivalent_Places
 from itertools import zip_longest
 
 # Vertex matches have an even number of +1 and and odd number of -1 entries, and others zero. Their total number of entries is M, the numnber of bad bats.
@@ -289,10 +290,6 @@ def test_signatures():
 
 def test_main_generators():
 
-
-    def set_perming_places(f, perming_places=0):
-        return lambda k, M: f(M=M, k=k, perming_places=perming_places)
-        
     test_programme = [
         (None, 0, vertex_matches.generate_all_vertex_matches(M=0), M0_all_vertex_matches_expected, "M0 all",),
         (None, 1, vertex_matches.generate_all_vertex_matches(M=1), M1_all_vertex_matches_expected, "M1 all",),
@@ -314,6 +311,10 @@ def test_main_generators():
         (None, 4, vertex_matches.generate_all_vertex_matches_given_perming_places(M=4, perming_places=4), list(vertex_matches.generate_all_vertex_matches(M=4, permute=True)), "M4 but testing perming_places=4}",), # permute=True is like perming_places=M
         (None, 4, vertex_matches.generate_all_vertex_matches_given_perming_places(M=4, perming_places=3), list(vertex_matches.generate_all_vertex_matches(M=4, permute=True)), "M4 but testing perming_places=3}",), # permute=True is also like perming_places=M-1
         (None, 4, vertex_matches.generate_all_vertex_matches_given_perming_places(M=4, perming_places=0), list(vertex_matches.generate_all_vertex_matches(M=4, permute=False)), "M4 but testing perming_places=0}",),
+
+
+        (None, 4, vertex_matches.generate_all_vertex_matches_given_equivalent_places(M=4, equivalent_places = Equivalent_Places(size=4, all_equivalent=True) ), list(vertex_matches.generate_all_vertex_matches(M=4, permute=False)), "M4 but testing equivalent_places ALL",),
+        (None, 4, vertex_matches.generate_all_vertex_matches_given_equivalent_places(M=4, equivalent_places = Equivalent_Places(size=4, none_equivalent=True) ), list(vertex_matches.generate_all_vertex_matches(M=4, permute=True)), "M4 but testing equivalent_places NONE",),
 
         ]
 
