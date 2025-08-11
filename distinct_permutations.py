@@ -124,11 +124,10 @@ def distinct_permutations(iterable, r=None, output_leftovers=False):
     except TypeError:
         sortable = False
 
-        # New implementation by CGL.
         @total_ordering
         class Wrapper(object):
             def __init__(self, sorting_cue, payload):
-                # sorting_cue should be something for which comparisons and sorting work, as surrogate for the payload
+                # sorting_cue should be something for which comparisons and sorting work, as surrogate for the payload.
                 self.sorting_cue = sorting_cue
                 self.payload = payload
 
@@ -146,7 +145,7 @@ def distinct_permutations(iterable, r=None, output_leftovers=False):
         r = size
 
     if not (0 <= r <= size):
-        # r was negative, or bigger than size, so there is nothing our iterator can/should return. Note that r==0 is a different case, handled elsewhere differently depending on whether output_leftovers = True or False.  We don't thow a value error as there are lots of combinatorial reasons why binomial coefficients (n,r) make sense (by taking a negative value) when r<0 or r>n.
+        # r was supplied negative, or supplied bigger than size, so there is nothing our iterator can/should return. Note that r==0 is a different case, handled elsewhere differently depending on whether output_leftovers = True or False.  We don't thow a value error as there are lots of combinatorial reasons why binomial coefficients (n,r) make sense (by taking a negative value) when r<0 or r>n.
         return iter(())
 
     # functools.partial(_partial, ... )
