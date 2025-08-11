@@ -29,10 +29,21 @@ def demo():
 
 def test_things():
     test_programme= [
+        {"data" : [1,2,2,3], "r" : 0, "output_leftovers" : False, "expected" : [
+          tuple(),
+        ]},
+        {"data" : [1,2,2,3], "r" : 1, "output_leftovers" : False, "expected" : [
+          (1,),(2,),(3,),
+        ]},
         {"data" : [1,2,2,3], "r" : 2, "output_leftovers" : False, "expected" : [
             (1,2), (2,1), (2,2),
             (1,3), (2,3),
             (3,1), (3,2), 
+        ]},
+        {"data" : [1,2,2,3], "r" : 2, "output_leftovers" : True, "expected" : [
+            ((1,2), (2,3)), ((2,1),(2,3)), ((2,2), (1,3)),
+            ((1,3), (2,2)), ((2,3),(1,2)),
+            ((3,1), (2,2)), ((3,2),(1,2)),
         ]},
         {"data" : [1,2,2,3], "r" : None, "output_leftovers" : False, "expected" : [
             (1,2,2,3), (2,1,2,3), (2,2,1,3), 
