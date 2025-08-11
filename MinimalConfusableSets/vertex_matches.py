@@ -254,3 +254,9 @@ if __name__ == "__main__":
            print(f"   {i+1}:    {match}")
         print()
 
+    for equivalent_places in ( Equivalent_Places(size=M, none_equivalent=True), ):
+        print(f"All matches given M={M} bad bats, for equivalent_places={equivalent_places}")
+        for i,match in enumerate(generate_all_vertex_matches_given_equivalent_places(k=None, M=M, equivalent_places=equivalent_places)):
+           print(f"   {i+1}:    {match}")
+        print()
+
