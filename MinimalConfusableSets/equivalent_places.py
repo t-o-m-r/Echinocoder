@@ -69,7 +69,7 @@ class Equivalent_Places:
         NONE: equivalent_places = tuple()                      # No places are equivalent (i.e All are different).
         ALL:  equivalent_places = ( tuple(range(len(data))), ) # All places are equivalent (i.e. none are different).
 
-        In the limit of complex code with many places inequivalent, this may possibly be the faster more economical, since the deeper in the stack one gets (increasingly inequivalent places) the shorter will the representation become. However, that's guess work.  
+        In the limit of complex code with many places inequivalent, this may possibly be the faster more economical, since the deeper in the stack one gets (increasingly inequivalent places) the shorter will the representation become. However, that's guess work.
 
         ====
 
@@ -79,7 +79,7 @@ class Equivalent_Places:
 
     def  __init__(self, size=None, all_equivalent=False, none_equivalent=False, equivalents_with_singletons=None, equivalents_without_singletons=None):
         """ Initialise in ONE of the following ways.  Any other initialisation is an error.
-           
+
            (1) specify size (non-negative int) and all_equivalent=True
            (2) specify size (non-negative int) and none_equivalent=True
            (3) specify equivalents_with_singletons like this (Way 1 above) for "Cabbage": # TODO: Remove this option in the long term
@@ -111,7 +111,7 @@ class Equivalent_Places:
             self.size = size
             return
     
-        # TODO: Remove constructioin method in long term 
+        # TODO: Remove construction method in long term
         if equivalents_with_singletons is not None:
             self._equivalent_places_with_singletons = tuple( i for i in equivalents_with_singletons ) # TODO: remove in long term
             self._equivalent_places_without_singletons = tuple( i for i in self._equivalent_places_with_singletons if len(i)>1 )
@@ -132,7 +132,7 @@ class Equivalent_Places:
         return f"EQUIVALENT_PLACES(size={self.size},\nwithout_singletons={self._equivalent_places_without_singletons},\nwith_singletons={self._equivalent_places_with_singletons}\n)"
 
 def demo():
-   
+
     all_3  = Equivalent_Places(size=3, all_equivalent=True)
     none_4 = Equivalent_Places(size=4, none_equivalent=True)
     mid_5a = Equivalent_Places(        equivalents_with_singletons    = ( (1,2), (3,0), (4,),       ))

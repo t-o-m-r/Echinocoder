@@ -188,7 +188,7 @@ def generate_all_matches_given_equivalent_places(
                     assert len(perming_part) == len(e_places[0])
 
                     perming_part_dict = dict(zip(e_places[0], perming_part))
-                    
+
                     if non_perming_places == 0:
                         yield perming_part_dict
                     else:
