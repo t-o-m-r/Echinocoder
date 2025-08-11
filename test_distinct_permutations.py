@@ -164,6 +164,21 @@ def test_things():
             ((3,2,1,2), ()),
             ((3,2,2,1), ()),
         ]},
+        # Try on a string:
+        {"data" : "cat", "r" : None, "output_leftovers" : True, "expected" : [
+            (("a","c","t"), ()),
+            (("a","t","c"), ()),
+            (("c","a","t"), ()),
+            (("c","t","a"), tuple()), # Just for fun!
+            (("t","a","c"), ()),
+            (("t","c","a"), ()),
+        ]},
+        # Try on a string:
+        {"data" : "moo", "r" : 2, "output_leftovers" : True, "expected" : [
+            (("m","o"), ("o",)),
+            (("o","m"), ("o",)),
+            (("o","o"), ("m",)),
+        ]},
     ]
 
     def sanitize(data, output_leftovers):
