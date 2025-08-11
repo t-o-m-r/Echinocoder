@@ -146,21 +146,19 @@ def generate_all_vertex_matches_given_perming_places(
                         yield perm + non_perming_part
 
 def generate_all_vertex_matches_given_equivalent_places(
-        M, # M=number of bad bats
+        equivalent_places : Equivalent_Places,
+        # M=None, # M = number of bad bats. (Can be derived from equivalent_places, so no longer supplied)
         k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
-        equivalent_places : None | Equivalent_Places = None,
         ):
 
+        M = equivalent_places.size
         if int(M) != M or M<0:
-            raise ValueError(f"M should be a non-negative integer but is {M}.")
+            raise RuntimeError("Equivalent_Places is not behaving!")
 
         if M==0:
             return
 
         assert M>0
-
-        if equivalent_places is None:
-            equivalent_places = Equivalent_Places(size=M, none_equivalent=True)
 
         ##############################################
         def _generate_dicts_for(e_places, signature):
@@ -250,13 +248,13 @@ if __name__ == "__main__":
 
     for equivalent_places in ( Equivalent_Places(size=M, none_equivalent=True), ):
         print(f"All USEFUL matches in k={k} dimensions, given M={M} bad bats, for equivalent_places={equivalent_places}")
-        for i,match in enumerate(generate_all_vertex_matches_given_equivalent_places(k=k, M=M, equivalent_places=equivalent_places)):
+        for i,match in enumerate(generate_all_vertex_matches_given_equivalent_places(k=k, equivalent_places=equivalent_places)):
            print(f"   {i+1}:    {match}")
         print()
 
     for equivalent_places in ( Equivalent_Places(size=M, none_equivalent=True), ):
         print(f"All matches given M={M} bad bats, for equivalent_places={equivalent_places}")
-        for i,match in enumerate(generate_all_vertex_matches_given_equivalent_places(k=None, M=M, equivalent_places=equivalent_places)):
+        for i,match in enumerate(generate_all_vertex_matches_given_equivalent_places(k=None, equivalent_places=equivalent_places)):
            print(f"   {i+1}:    {match}")
         print()
 
