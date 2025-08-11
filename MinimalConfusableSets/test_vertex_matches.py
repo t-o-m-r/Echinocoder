@@ -1,5 +1,5 @@
 
-from vertex_matches import generate_all_vertex_matches, generate_all_useful_vertex_matches, generate_all_useful_vertex_matches_given_perming_places, generate_all_vertex_matches_given_equivalent_places
+from vertex_matches import generate_all_vertex_matches, generate_all_useful_vertex_matches, generate_all_vertex_matches_given_perming_places, generate_all_useful_vertex_matches_given_perming_places, generate_all_vertex_matches_given_equivalent_places, smallest_odd_number_greater_than_or_equal_to, generate_all_vertex_match_signatures
 from equivalent_places import Equivalent_Places
 from itertools import zip_longest
 
@@ -289,7 +289,7 @@ def test_helper_functions():
             (5, 5),
             (5.0001, 7),
             ]:
-        z = vertex_matches.smallest_odd_number_greater_than_or_equal_to(x)
+        z = smallest_odd_number_greater_than_or_equal_to(x)
         print(f"We hope that the smallest odd number greater than or equal to {x} is {y} and is also {z}")
         assert z==y
  
@@ -300,7 +300,7 @@ def test_signatures():
         (4, 2, k2M4_all_useful_vertex_match_signatures_expected, "k2M4 useful signatures"),
         ]
     for M, k, expected_signature, name in test_programme:
-        LHS = sorted(list(vertex_matches.generate_all_vertex_match_signatures(M=M, k=k)))
+        LHS = sorted(list(generate_all_vertex_match_signatures(M=M, k=k)))
         RHS = sorted(expected_signature)
 
         print(f"Test '{name}' has LHS and RHS:")
@@ -316,40 +316,40 @@ def test_signatures():
 def test_main_generators():
 
     test_programme = [
-        (None, 0, vertex_matches.generate_all_vertex_matches(M=0), M0_all_vertex_matches_expected, "M0 all",),
-        (None, 1, vertex_matches.generate_all_vertex_matches(M=1), M1_all_vertex_matches_expected, "M1 all",),
-        (None, 2, vertex_matches.generate_all_vertex_matches(M=2), M2_all_vertex_matches_expected, "M2 all",),
-        (None, 3, vertex_matches.generate_all_vertex_matches(M=3), M3_all_vertex_matches_expected, "M3 all",),
-        (None, 4, vertex_matches.generate_all_vertex_matches(M=4), M4_all_vertex_matches_expected, "M4 all",),
-        (2, 3, vertex_matches.generate_all_useful_vertex_matches(k=2, M=3), k2M3_all_useful_vertex_matches_expected, "k2M3 useful",),
-        (2, 4, vertex_matches.generate_all_useful_vertex_matches(k=2, M=4), k2M4_all_useful_vertex_matches_expected, "k2M4 useful",),
-        (3, 4, vertex_matches.generate_all_useful_vertex_matches(k=3, M=4), k3M4_all_useful_vertex_matches_expected, "k3M4 useful",),
+        (None, 0, generate_all_vertex_matches(M=0), M0_all_vertex_matches_expected, "M0 all",),
+        (None, 1, generate_all_vertex_matches(M=1), M1_all_vertex_matches_expected, "M1 all",),
+        (None, 2, generate_all_vertex_matches(M=2), M2_all_vertex_matches_expected, "M2 all",),
+        (None, 3, generate_all_vertex_matches(M=3), M3_all_vertex_matches_expected, "M3 all",),
+        (None, 4, generate_all_vertex_matches(M=4), M4_all_vertex_matches_expected, "M4 all",),
+        (2, 3, generate_all_useful_vertex_matches(k=2, M=3), k2M3_all_useful_vertex_matches_expected, "k2M3 useful",),
+        (2, 4, generate_all_useful_vertex_matches(k=2, M=4), k2M4_all_useful_vertex_matches_expected, "k2M4 useful",),
+        (3, 4, generate_all_useful_vertex_matches(k=3, M=4), k3M4_all_useful_vertex_matches_expected, "k3M4 useful",),
 
-        (2, 4, vertex_matches.generate_all_useful_vertex_matches_given_perming_places(k=2, M=4,perming_places=4), k2M4_all_useful_vertex_matches_expected, "k2M4 useful but testing perming_places=4}",),
-        (2, 4, vertex_matches.generate_all_useful_vertex_matches_given_perming_places(k=2, M=4, perming_places=4), list(vertex_matches.generate_all_useful_vertex_matches(M=4, k=2, permute=True)), "k2M4 useful but testing perming_places=4}",), # permute=True is like perming_places=M
-        (2, 4, vertex_matches.generate_all_useful_vertex_matches_given_perming_places(k=2, M=4, perming_places=3), list(vertex_matches.generate_all_useful_vertex_matches(k=2, M=4, permute=True)), "k2M4 useful but testing perming_places=3}",), # permute=True is also like perming_places=M-1
-        (2, 4, vertex_matches.generate_all_useful_vertex_matches_given_perming_places(k=2, M=4, perming_places=2), k2M4_all_useful_vertex_matches_with_2_perming_places, "k2M4 useful but testing perming_places=2}",),
-        (2, 4, vertex_matches.generate_all_useful_vertex_matches_given_perming_places(k=2, M=4, perming_places=1), k2M4_all_useful_vertex_matches_with_1_perming_places, "k2M4 useful but testing perming_places=1}",),
-        (2, 4, vertex_matches.generate_all_useful_vertex_matches_given_perming_places(k=2, M=4, perming_places=0), list(vertex_matches.generate_all_useful_vertex_matches(M=4, k=2, permute=False)), "k2M4 useful but testing perming_places=0}",),
+        (2, 4, generate_all_useful_vertex_matches_given_perming_places(k=2, M=4,perming_places=4), k2M4_all_useful_vertex_matches_expected, "k2M4 useful but testing perming_places=4}",),
+        (2, 4, generate_all_useful_vertex_matches_given_perming_places(k=2, M=4, perming_places=4), list(generate_all_useful_vertex_matches(M=4, k=2, permute=True)), "k2M4 useful but testing perming_places=4}",), # permute=True is like perming_places=M
+        (2, 4, generate_all_useful_vertex_matches_given_perming_places(k=2, M=4, perming_places=3), list(generate_all_useful_vertex_matches(k=2, M=4, permute=True)), "k2M4 useful but testing perming_places=3}",), # permute=True is also like perming_places=M-1
+        (2, 4, generate_all_useful_vertex_matches_given_perming_places(k=2, M=4, perming_places=2), k2M4_all_useful_vertex_matches_with_2_perming_places, "k2M4 useful but testing perming_places=2}",),
+        (2, 4, generate_all_useful_vertex_matches_given_perming_places(k=2, M=4, perming_places=1), k2M4_all_useful_vertex_matches_with_1_perming_places, "k2M4 useful but testing perming_places=1}",),
+        (2, 4, generate_all_useful_vertex_matches_given_perming_places(k=2, M=4, perming_places=0), list(generate_all_useful_vertex_matches(M=4, k=2, permute=False)), "k2M4 useful but testing perming_places=0}",),
 
-        (None, 4, vertex_matches.generate_all_vertex_matches_given_perming_places(M=4, perming_places=4), M4_all_vertex_matches_expected, "M4 but testing perming_places=4}",),
-        (None, 4, vertex_matches.generate_all_vertex_matches_given_perming_places(M=4, perming_places=4), list(vertex_matches.generate_all_vertex_matches(M=4, permute=True)), "M4 but testing perming_places=4}",), # permute=True is like perming_places=M
-        (None, 4, vertex_matches.generate_all_vertex_matches_given_perming_places(M=4, perming_places=3), list(vertex_matches.generate_all_vertex_matches(M=4, permute=True)), "M4 but testing perming_places=3}",), # permute=True is also like perming_places=M-1
-        (None, 4, vertex_matches.generate_all_vertex_matches_given_perming_places(M=4, perming_places=0), list(vertex_matches.generate_all_vertex_matches(M=4, permute=False)), "M4 but testing perming_places=0}",),
+        (None, 4, generate_all_vertex_matches_given_perming_places(M=4, perming_places=4), M4_all_vertex_matches_expected, "M4 but testing perming_places=4}",),
+        (None, 4, generate_all_vertex_matches_given_perming_places(M=4, perming_places=4), list(generate_all_vertex_matches(M=4, permute=True)), "M4 but testing perming_places=4}",), # permute=True is like perming_places=M
+        (None, 4, generate_all_vertex_matches_given_perming_places(M=4, perming_places=3), list(generate_all_vertex_matches(M=4, permute=True)), "M4 but testing perming_places=3}",), # permute=True is also like perming_places=M-1
+        (None, 4, generate_all_vertex_matches_given_perming_places(M=4, perming_places=0), list(generate_all_vertex_matches(M=4, permute=False)), "M4 but testing perming_places=0}",),
 
 
-        (None, 4, vertex_matches.generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(size=4, all_equivalent=True) ), list(vertex_matches.generate_all_vertex_matches(M=4, permute=False)), "M4 but testing equivalent_places ALL",),
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(size=4, all_equivalent=True) ), list(generate_all_vertex_matches(M=4, permute=False)), "M4 but testing equivalent_places ALL",),
         # which should be the same as
-        (None, 4, vertex_matches.generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,1,2,3,),    )) ), list(vertex_matches.generate_all_vertex_matches_given_perming_places(M=4, perming_places=0)), "M4 but using equivalent_places to regenerate perming places 0",),
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,1,2,3,),    )) ), list(generate_all_vertex_matches_given_perming_places(M=4, perming_places=0)), "M4 but using equivalent_places to regenerate perming places 0",),
         # which leads to this sequence:
-        (None, 4, vertex_matches.generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,),(1,2,3,),    )) ), list(vertex_matches.generate_all_vertex_matches_given_perming_places(M=4, perming_places=1)), "M4 but using equivalent_places to regenerate perming places 1",),
-        (None, 4, vertex_matches.generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,),(1,),(2,3,),    )) ), list(vertex_matches.generate_all_vertex_matches_given_perming_places(M=4, perming_places=2)), "M4 but using equivalent_places to regenerate perming places 2",),
-        (None, 4, vertex_matches.generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,),(1,),(2,),(3,),    )) ), list(vertex_matches.generate_all_vertex_matches_given_perming_places(M=4, perming_places=3)), "M4 but equivalent_places to regenerate perming places 3",),
-        (None, 4, vertex_matches.generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,),(1,),(2,),(3,),    )) ), list(vertex_matches.generate_all_vertex_matches_given_perming_places(M=4, perming_places=4)), "M4 but equivalent_places to regenerate perming places 4",),
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,),(1,2,3,),    )) ), list(generate_all_vertex_matches_given_perming_places(M=4, perming_places=1)), "M4 but using equivalent_places to regenerate perming places 1",),
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,),(1,),(2,3,),    )) ), list(generate_all_vertex_matches_given_perming_places(M=4, perming_places=2)), "M4 but using equivalent_places to regenerate perming places 2",),
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,),(1,),(2,),(3,),    )) ), list(generate_all_vertex_matches_given_perming_places(M=4, perming_places=3)), "M4 but equivalent_places to regenerate perming places 3",),
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,),(1,),(2,),(3,),    )) ), list(generate_all_vertex_matches_given_perming_places(M=4, perming_places=4)), "M4 but equivalent_places to regenerate perming places 4",),
         # which should be the same as:
-        (None, 4, vertex_matches.generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(size=4, none_equivalent=True) ), list(vertex_matches.generate_all_vertex_matches(M=4, permute=True)), "M4 but testing equivalent_places NONE",),
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(size=4, none_equivalent=True) ), list(generate_all_vertex_matches(M=4, permute=True)), "M4 but testing equivalent_places NONE",),
 
-        (None, 4, vertex_matches.generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,1,),(2,3,),    )) ), M4_left_pair_right_pair, "M4 left pair right pair",),
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,1,),(2,3,),    )) ), M4_left_pair_right_pair, "M4 left pair right pair",),
 
         ]
 
