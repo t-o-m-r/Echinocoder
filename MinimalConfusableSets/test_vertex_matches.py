@@ -247,7 +247,7 @@ All USEFUL matches in k=2 dimensions, given M=4 bad bats, for perming_places=2
 
 """
 
-def tost_helper_functions():
+def test_helper_functions():
 
     for x,y in [
             (-0.5, 1),
@@ -314,7 +314,7 @@ def tost_helper_functions():
         assert list(brwm(10, 5, 2)) == [ ]
         assert list(brwm(10, 4, 2)) == [ ]
 
-def tost_signatures():
+def test_signatures():
     test_programme = [
         (3, None, M3_all_vertex_match_signatures_expected, "M3 signatures"),
         (4, None, M4_all_vertex_match_signatures_expected, "M4 signatures"),
