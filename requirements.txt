@@ -4,3 +4,4 @@ numpy >= 2.0.0
 iwpc >= 0.3.5
 pytest
 # drawsvg ~= 2.0
+more-itertools # Can be avoided as dep if you only need distinct_permutations_with_leftovers, but needed if you use distinct_split
