@@ -1,4 +1,5 @@
 from distinct_permutations_with_leftovers import distinct_permutations_with_leftovers
+from more_itertools import distinct_permutations
 
 class X:
     def __init__(self, name): self.name = name
@@ -80,6 +81,11 @@ def test_things():
             ((3,2), (1,2)),
         ]},
         # a, b and c are not sortable. So the next few tests check action on non-sortable things
+        {"data" : [a,b,b,c], "r" : -1, "output_leftovers" : False, "expected" : [
+        ]},
+        {"data" : [a,b,b,c], "r" : 0, "output_leftovers" : False, "expected" : [
+            tuple(),
+        ]},
         {"data" : [a,b,b,c], "r" : 1, "output_leftovers" : False, "expected" : [
             (a,),
             (b,),
@@ -189,17 +195,30 @@ def test_things():
             return list(data)
                 
     for d in test_programme:
-        got = list(distinct_permutations_with_leftovers(d["data"], r=d["r"], output_leftovers=d["output_leftovers"]))
-        expected = d["expected"]
-        from itertools import zip_longest
-        print("got, expected")
-        for i, (g,e) in enumerate(zip_longest(got, expected)):
-            print(f"    {i}: ({g==e})   {g}   {e}")
-        print()
+  
+        if d["output_leftovers"]:
+            other_methods = tuple()
+        else:
+            other_methods = ( distinct_permutations, )
 
-        got = sanitize(got, d["output_leftovers"])
-        expected = sanitize(expected, d["output_leftovers"])
-        assert got == expected
+        methods = (distinct_permutations_with_leftovers, ) + other_methods
+
+        for method in methods:
+            print(f"With method {method}:")
+            if d["output_leftovers"]:            
+                got = list(method(d["data"], r=d["r"], output_leftovers=d["output_leftovers"]))
+            else:
+                got = list(method(d["data"], r=d["r"]))
+            expected = d["expected"]
+            from itertools import zip_longest
+            print("got, expected")
+            for i, (g,e) in enumerate(zip_longest(got, expected)):
+                print(f"    {i}: ({g==e})   {g}   {e}")
+            print()
+
+            got = sanitize(got, d["output_leftovers"])
+            expected = sanitize(expected, d["output_leftovers"])
+            assert got == expected
 
 
 if __name__ == "__main__":
