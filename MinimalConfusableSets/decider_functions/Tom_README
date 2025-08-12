@@ -1,3 +1,5 @@
+***Need to change process, as the target is evenly spaced B, not D. So need to generate evenly spaced B and then work in reverse to find D??***
+
 The decider function, f(k,L, etc.) needs to carry out the following role: 
 (1) Generate a set D of m 'evenly spaced out' projection vectors in k dimensions [sobol, gaussian, electrostatic]
 (2) Generate B of size M from D [generate_B]
