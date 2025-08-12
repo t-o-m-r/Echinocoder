@@ -1,8 +1,7 @@
 import plotly.graph_objects as go
 import plotly.io as pio
 from gaussian import generate_gaussian
-from sobol_1 import generate_sobol_1
-from sobol_2 import generate_sobol_2
+from sobol_1 import generate_sobol
 from electrostatic import generate_electrostatic
 
 vectors_to_plot = generate_electrostatic(40, 3) # need k=3
@@ -29,7 +28,7 @@ fig.update_layout(
     ),
     width=800,
     height=800,
-    title="3D Vectors Plot",
+    title="3D Vectors Plot", # REMEMBER TO LABEL PLOT
     showlegend=False
 )
 
