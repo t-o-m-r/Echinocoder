@@ -1,9 +1,18 @@
 
-from vertex_matches import generate_all_vertex_matches, generate_all_useful_vertex_matches, generate_all_vertex_matches_given_perming_places, generate_all_useful_vertex_matches_given_perming_places, smallest_odd_number_greater_than_or_equal_to, generate_all_vertex_match_signatures
+from vertex_matches import (
+    generate_all_vertex_matches,
+    generate_all_vertex_match_signatures,
+    _smallest_odd_number_greater_than_or_equal_to,
+    generate_all_vertex_matches_given_equivalent_places,
+    generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A,
+    generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B,
+)
 
-from vertex_matches import generate_all_vertex_matches_given_equivalent_places
-from vertex_matches import generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A
-from vertex_matches import generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B
+from _vertex_matches import (
+    generate_all_useful_vertex_matches,
+    generate_all_vertex_matches_given_perming_places,
+    generate_all_useful_vertex_matches_given_perming_places,
+)
 
 from equivalent_places import Equivalent_Places
 from itertools import zip_longest
@@ -294,7 +303,7 @@ def test_helper_functions():
             (5, 5),
             (5.0001, 7),
             ]:
-        z = smallest_odd_number_greater_than_or_equal_to(x)
+        z = _smallest_odd_number_greater_than_or_equal_to(x)
         print(f"We hope that the smallest odd number greater than or equal to {x} is {y} and is also {z}")
         assert z==y
  

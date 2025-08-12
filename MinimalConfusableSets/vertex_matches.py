@@ -12,9 +12,9 @@ Vertex matches have an even number of +1 and and odd number of -1 entries, and o
 
 A "canonical" vertex match is one where all the ones come before all the minus ones which come before all the zeros WITHIN any positions which are otherwise equivalent. . E.g., of all position are equivalent, then (1,1,-1,-1,-1,0) is a canonical match.
 
-Sometimes it is not worth permuting vertex matches over every bad bat because other matches in the existing context may not yet have broken any symmetries between the bats.  WLOG we choose to put the entries which are deemed to have already broken symmetry FIRST.  And the argument "perming_places" describes how many such spaces there are.
-E.g.: perming_places=2 means that the first two position (i.e. pos 0 and pos 1) have broken some symmetry and permutations on them are relevant, whereas permutations on pos 2 and above are irrelevant.
-E.g. if one listed all distinct permutations of the letters "Speedo" for "perming_places=2" one would want these (in which the "." is not actually part of the string but has been inserted to help guide the eye so that you can see that only the first two letters explore all perms wile after the dot there is no perming.  Note that there are 4*4+5 = 21 of these:
+Sometimes it is not worth permuting vertex matches over every bad bat because other matches in the existing context may not yet have broken any symmetries between the bats.
+
+E.g. if the first two places are different to each other (and to any other place) but the last four places are all equivalent to each other, then one need only consider these orderings of the letters "Speedo" in that context:
 
     Sp.eedo
     Se.pedo
@@ -44,7 +44,7 @@ E.g. if one listed all distinct permutations of the letters "Speedo" for "permin
 """
 
 
-def smallest_odd_number_greater_than_or_equal_to(x):
+def _smallest_odd_number_greater_than_or_equal_to(x):
     return 2*math.ceil((x+1)/2)-1 
 
 def generate_all_vertex_match_signatures(
@@ -58,7 +58,6 @@ def generate_all_vertex_match_signatures(
     Vertex matches have M entries in total, comprising an even number of +1 and and odd number of -1 entries, and others zero.
 
     "Useful" vertex matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
-
     """
     for number_of_ones in range(0, M+1, 2):
 
@@ -71,7 +70,7 @@ def generate_all_vertex_match_signatures(
             #         number_of_minus_ones >= k - number_of_ones + 1 and number_of_minus_ones >=1
             # so
             #         number_of_minus_ones >= max(k - number_of_ones + 1, 1)
-            start_for_number_of_minus_ones =  max(1, smallest_odd_number_greater_than_or_equal_to(k - number_of_ones + 1))
+            start_for_number_of_minus_ones =  max(1, _smallest_odd_number_greater_than_or_equal_to(k - number_of_ones + 1))
         else:
             start_for_number_of_minus_ones = 1
 
@@ -80,7 +79,7 @@ def generate_all_vertex_match_signatures(
             # uncomment the next two lines:
             # if k is not None and (number_of_ones + number_of_minus_ones <= k):
             #      continue
-            number_of_zeros= M-number_of_ones-number_of_minus_ones
+            number_of_zeros = M-number_of_ones-number_of_minus_ones
             yield number_of_ones, number_of_minus_ones, number_of_zeros
 
 def generate_all_vertex_matches(
@@ -88,6 +87,21 @@ def generate_all_vertex_matches(
         k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         permute = True,
         ):
+        """
+        M should be a non-negative integer. It specifies how long each generated tuple will be. (The number of bad bats!)
+
+        k, if not None, should be the dimension of space.  Supply k if you want to generate only the useful matches for that spatial dimension.
+
+        This method generates all tuples with the following properties:
+
+           * the tuple has length M,
+           * the tuple has an even number of ones,
+           * the tuple has an odd number of minus ones,
+           * the tuple is composed only of ones, minus ones and zeros, and
+           * if k is not None, then the tuple shall have AT LEAST k+1 non-zero entries.
+        
+        By default, each tuple is yielded in every possible distinct ordering of its elements. However, this perming can be disabled by setting permute=False. This will result in each tuple being yielded once only in a canonical form (all ones followed by all minus ones followed by all zeros).
+        """
 
         for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_vertex_match_signatures(M, k=k):
 
@@ -101,51 +115,12 @@ def generate_all_vertex_matches(
             else:
                 yield ones + minus_ones + zeros
 
-# TODO: Get rid of these "useful" versions?
 def generate_all_useful_vertex_matches(
     M, # M=number of bad bats
     k, # k=dimension of space 
     permute = True,
     ):
     yield from generate_all_vertex_matches(M=M, k=k, permute=permute)
-
-
-def generate_all_useful_vertex_matches_given_perming_places(
-        M, # M=number of bad bats
-        k, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
-        perming_places = 0, # permutations take place within the first "perming_places" places, otherwise not.
-        ):
-    yield from generate_all_vertex_matches_given_perming_places(M, k=k, perming_places=perming_places)
-    
-def generate_all_vertex_matches_given_perming_places(
-        M, # M=number of bad bats
-        k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
-        perming_places = 0, # permutations take place within the first "perming_places" places, otherwise not.
-        ):
-
-        if M<0:
-            raise ValueError(f"M should be a non-negative integer but is {M}.")
-
-        if perming_places<0 or perming_places>M:
-            raise ValueError(f"perming_places should be in [0,{M}]  but is {perming_places}.")
-
-        non_perming_places = M-perming_places
-
-        for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_vertex_match_signatures(M,k=k):
-
-            for perming_ones, non_perming_ones in bi_range_with_maxes(number_of_ones, max_first=perming_places, max_second=non_perming_places):
-                for perming_minus_ones, non_perming_minus_ones in bi_range_with_maxes(number_of_minus_ones, max_first = perming_places-perming_ones, max_second=non_perming_places - non_perming_ones):
-                    perming_zeros = perming_places - (perming_ones + perming_minus_ones)
-                    non_perming_zeros = number_of_zeros - perming_zeros
-
-                    assert perming_zeros >=0
-                    assert non_perming_zeros >=0
-
-                    perming_part = (1,)*perming_ones + (-1,)*perming_minus_ones + (0,)*perming_zeros
-                    non_perming_part = (1,)*non_perming_ones + (-1,)*non_perming_minus_ones + (0,)*non_perming_zeros
-
-                    for perm in distinct_permutations(perming_part):
-                        yield perm + non_perming_part
 
 
 def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(
@@ -251,8 +226,8 @@ def generate_all_vertex_matches_given_equivalent_places(
         ):
     #return generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(equivalent_places, k=k)
     return generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(equivalent_places, k=k)
-                  
-if __name__ == "__main__":
+
+def demo():
     M=4
     print(f"All matches given M={M} bad bats are:")
     for i, match in enumerate(generate_all_vertex_matches(k=None, M=M)):
@@ -260,32 +235,13 @@ if __name__ == "__main__":
     print()
 
     k=2
-    print(f"All USEFUL matches in k={k} dimensions, given M={M} bad bats are:")
-    for i,match in enumerate(generate_all_useful_vertex_matches(k=k, M=M)):
-       print(f"   {i+1}:    {match}")
-    print()
 
-    print(f"All matches in k={k} dimensions, given M={M} bad bats, but ignoring permutations are:")
+    print(f"All useful matches in k={k} dimensions, given M={M} bad bats, but ignoring permutations are:")
     for i,match in enumerate(generate_all_vertex_matches(k=k, M=M, permute=False)):
        print(f"   {i+1}:    {match}")
     print()
 
-    print(f"All USEFUL matches in k={k} dimensions, given M={M} bad bats, but ignoring permutations are:")
-    for i,match in enumerate(generate_all_useful_vertex_matches(k=k, M=M, permute=False)):
-       print(f"   {i+1}:    {match}")
-    print()
 
-    for perming_places in range(5):
-        print(f"All matches in k={k} dimensions, given M={M} bad bats, for perming_places={perming_places}")
-        for i,match in enumerate(generate_all_vertex_matches_given_perming_places(k=k, M=M, perming_places=perming_places)):
-           print(f"   {i+1}:    {match}")
-        print()
-
-    for perming_places in range(5):
-        print(f"All USEFUL matches in k={k} dimensions, given M={M} bad bats, for perming_places={perming_places}")
-        for i,match in enumerate(generate_all_useful_vertex_matches_given_perming_places(k=k, M=M, perming_places=perming_places)):
-           print(f"   {i+1}:    {match}")
-        print()
 
     for equivalent_places in ( Equivalent_Places(size=M, none_equivalent=True), ):
         print(f"All USEFUL matches in k={k} dimensions, given M={M} bad bats, for equivalent_places={equivalent_places}")
@@ -322,4 +278,6 @@ if __name__ == "__main__":
 
         print(f"{total} seconds for {iterations} iterations of {method} on {equivalent_places}. Each found {count} matches.")
 
+if __name__ == "__main__":
+    demo()
 
