@@ -22,7 +22,7 @@ def f(m, k, method, L):
         DIMENSION.
     method : string
         METHOD TO DEFINE m EQUALLY SPACED VECTORS TO GENERATE D.
-        OPTIONS (so far) ARE: "sobol_1", "sobol_2", "gaussian", "electrostatic"
+        OPTIONS (so far) ARE: "sobol", "gaussian", "electrostatic"
     L : sympy.Matrix
         MATRIX OF MATCHES (R x M)
 
@@ -42,7 +42,7 @@ def f(m, k, method, L):
     print("Collapse detected?", not result)
 
 # example
-f(40, 5, "sobol_2", L)
+f(40, 5, "sobol", L)
     
     
  
