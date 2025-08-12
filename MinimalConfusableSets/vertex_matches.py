@@ -1,6 +1,6 @@
 #import itertools
 import math
-from distinct_permutations import distinct_permutations
+from distinct_permutations_with_leftovers import distinct_permutations_with_leftovers as distinct_permutations
 from bi_range import bi_range_with_maxes
 from equivalent_places import Equivalent_Places
 
@@ -169,7 +169,7 @@ def generate_all_vertex_matches_given_equivalent_places(
             number_of_ones, number_of_minus_ones, number_of_zeros = signature
             assert tot == sum(len(e_place) for e_place in e_places)
         
-            perming_places = len(e_places[0]) # TODO: We can have a constant e_places and just transmit a moving LOCATION within it!! FASTER!
+            perming_places = len(e_places[0])
             non_perming_places = tot - perming_places
         
             # Recursion will stop when non_perming_places reaches 0 .... which should be the same as wheb e_places is length 1.

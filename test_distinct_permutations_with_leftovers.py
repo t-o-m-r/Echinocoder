@@ -1,4 +1,4 @@
-from distinct_permutations import distinct_permutations
+from distinct_permutations_with_leftovers import distinct_permutations_with_leftovers
 
 class X:
     def __init__(self, name): self.name = name
@@ -20,7 +20,7 @@ def demo():
                     print("Will compute leftovers:")
                 else:
                     print("Will not compute leftovers:")
-                for i, part in enumerate(distinct_permutations(data, r=r, output_leftovers=output_leftovers)):
+                for i, part in enumerate(distinct_permutations_with_leftovers(data, r=r, output_leftovers=output_leftovers)):
                     if r is None:
                         print(f"{i+1}:   {data} contains {part}")
                     else:
@@ -189,7 +189,7 @@ def test_things():
             return list(data)
                 
     for d in test_programme:
-        got = list(distinct_permutations(d["data"], r=d["r"], output_leftovers=d["output_leftovers"]))
+        got = list(distinct_permutations_with_leftovers(d["data"], r=d["r"], output_leftovers=d["output_leftovers"]))
         expected = d["expected"]
         from itertools import zip_longest
         print("got, expected")
