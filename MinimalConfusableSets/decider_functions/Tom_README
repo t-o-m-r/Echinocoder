@@ -38,6 +38,7 @@ ISSUE: sobol_1 and sobol_2 only generate vectors with all positive entries as so
 FIX:
 (i) use linear transformation 2*v - 1 [sobol_1L, sobol_2L]
 (ii) use sobol points to sample an inverse gaussian distribution [sobol_1G, sobol_2G]
+*** I dont want to create too many files, so just toggle between L and G in sobol_1 and sobol_2 file themselves ***
 
 Tried: 
 Sobol (see sobol_1 and sobol_2)
