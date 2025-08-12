@@ -32,6 +32,12 @@ Notes on f library for (1) -----------------------------------------------------
 Maybe need to come up with a metric to compare (i) the speed and (ii) the 'even-ness' of the spacing of the m vectors for each method. 
 
 QUESTION: what (m,k) are we typically looking at, so I don't code useless things eg a Thomson problem that only really works for small (m,k). 
+ANSWER around (at a minimum for k) (25, 4). So Thomson is viable. 
+
+ISSUE: sobol_1 and sobol_2 only generate vectors with all positive entries as sobol samples [0,1] hypercube. 
+FIX:
+(i) use linear transformation 2*v - 1 [sobol_1L, sobol_2L]
+(ii) use sobol points to sample an inverse gaussian distribution [sobol_1G, sobol_2G]
 
 Tried: 
 Sobol (see sobol_1 and sobol_2)
@@ -39,6 +45,6 @@ Gaussian (very simple)
 
 To do: 
 Fibbonacci for k=3
-More low discrep seq? Sobol is probably the best, though. 
+More low discrep seq? Halton Leaped is debatably better than sobol. https://dl.acm.org/doi/pdf/10.1145/264029.264064
 Electrostatic repulsion?? Slow but reliable. (m,k) approx (6-8,100-500) is very approximate limit? Barnes-Hut?
 
