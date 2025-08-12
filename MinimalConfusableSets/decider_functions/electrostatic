@@ -4,8 +4,8 @@ from gaussian import generate_gaussian
 def generate_electrostatic(m, k, iters=500, learning_rate=0.01, power=2.0):
     """
     Generate m k dimensional unit vectors, which are evenly spread out
-    by placing a unit + charge on the tip of m vectors on the surface of a k-sphere. 
-    Initially place vectors randomly on unit k-sphere using a gaussian distribution
+    by placing a unit + charge on the tip of m vectors on S^(k-1). 
+    Initially place vectors randomly on S^(k-1) using a gaussian distribution
     power = 2 for coulomb's law'
     """
     D = generate_gaussian(m, k)
