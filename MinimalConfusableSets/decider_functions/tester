@@ -1,5 +1,4 @@
-from sobol_1 import generate_sobol_1
-from sobol_2 import generate_sobol_2
+from sobol import generate_sobol
 from generate_B import generate_B
 from collapse_checker_random import construct_A, check_collapse_random
 import sympy as sp 
@@ -9,7 +8,7 @@ m = 40
 k = 5
 
 # GENERATE D
-D = generate_sobol_2(m,k)
+D = generate_sobol(m,k)
 
 # GENERATE B
 B = generate_B(D)
