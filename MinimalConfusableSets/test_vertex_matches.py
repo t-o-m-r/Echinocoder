@@ -1,5 +1,10 @@
 
-from vertex_matches import generate_all_vertex_matches, generate_all_useful_vertex_matches, generate_all_vertex_matches_given_perming_places, generate_all_useful_vertex_matches_given_perming_places, generate_all_vertex_matches_given_equivalent_places, smallest_odd_number_greater_than_or_equal_to, generate_all_vertex_match_signatures
+from vertex_matches import generate_all_vertex_matches, generate_all_useful_vertex_matches, generate_all_vertex_matches_given_perming_places, generate_all_useful_vertex_matches_given_perming_places, smallest_odd_number_greater_than_or_equal_to, generate_all_vertex_match_signatures
+
+from vertex_matches import generate_all_vertex_matches_given_equivalent_places
+from vertex_matches import generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A
+from vertex_matches import generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B
+
 from equivalent_places import Equivalent_Places
 from itertools import zip_longest
 
@@ -351,14 +356,24 @@ def test_main_generators():
 
         (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,1,),(2,3,),    )) ), M4_left_pair_right_pair, "M4 left pair right pair",),
 
+        (None, 10,
+     generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,7,),(1,4,5,6),(2,3,9,), (8,),  ))), 
+     generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,7,),(1,4,5,6),(2,3,9,), (8,),  ))), 
+      "Big 10 test.",),
+
         ]
 
     for k, M, gen, expected, name in test_programme:
-  
+ 
+
+        gen = tuple(gen)
+        print(f"Test '{name}' has LHS and RHS:")
+        print(f"gen {gen}")
+        print(f"expected {expected}")
+
         LHS = sorted(gen)
         RHS = sorted(expected)
 
-        print(f"Test '{name}' has LHS and RHS:")
         print("[")
         for idx, (i,j) in enumerate(zip_longest(LHS,RHS)):
             print(f"{idx}:  ({i} {'==' if i==j else '!='} {j}), ")
