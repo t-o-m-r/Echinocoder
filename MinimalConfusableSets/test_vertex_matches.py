@@ -376,7 +376,7 @@ def test_main_generators():
 
         print("[")
         for idx, (i,j) in enumerate(zip_longest(LHS,RHS)):
-            print(f"{idx}:  ({i} {'==' if i==j else '!='} {j}), ")
+            print(f"{idx+1}:  ({i} {'==' if i==j else '!='} {j}), ")
         print("]")
 
         print()
