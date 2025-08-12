@@ -1,19 +1,60 @@
 from more_itertools import distinct_combinations
 
 
-def distinct_split(iterable, n):
-    """Yield distinct unordered partitions into sizes n and len(iterable)-n."""
-    items = tuple(iterable)  # fixed-size storage
-    m = len(items) - n
-    for comb in distinct_combinations(items, n):
-        # Build complement without storing all seen
-        remaining = list(items)
-        for c in comb:
-            remaining.remove(c)  # safe: remove one occurrence per element in comb
-        group1 = tuple(comb)
-        group2 = tuple(remaining)
+def distinct_partitions(iterable, splitting):
+    
+    """
+    Yield distinct unordered partitions according to sizes given in (ordered!) splitting.
+    splitting shall be a tuple of non-negative integers whose sum shall be the length of the iterable.
 
-        yield group1, group2
+    E.g. the result for
+
+        distinct_split( "hello", (2,3) )
+
+    should be
+        (
+            (('h', 'a'), ('p', 'p', 'y')),
+            (('h', 'p'), ('a', 'p', 'y')),
+            (('h', 'y'), ('a', 'p', 'p')),
+            (('a', 'p'), ('h', 'p', 'y')),
+            (('a', 'y'), ('h', 'p', 'p')),
+            (('p', 'p'), ('h', 'a', 'y')),
+            (('p', 'y'), ('h', 'a', 'p')),
+        )
+
+    """
+
+    items = tuple(iterable)  # fixed-size storage
+    #print(f"DISTINCT SPLIT got items={items} splitting={splitting}")
+
+    if len(items) != sum(splitting):
+        raise ValueError()
+
+    #print(f"DISTINCT SPLIT testing len splitting")
+
+    if len(splitting) == 1:
+        ans = (tuple(iterable),)
+        #print(f"About to yield and then stop after {ans}")
+        yield ans
+        return 
+
+    assert len(splitting)>1
+   
+    #print(f"About run over combs of size {splitting[0]} in {items}")
+  
+    for comb in distinct_combinations(items, splitting[0]):
+        first_group = tuple(comb)
+        #print(f"first_group is {first_group}")
+
+        # Build complement without storing all seen
+        remaining_items = list(items)
+        for c in first_group:
+            remaining_items.remove(c)  # safe: remove one occurrence per element in comb
+
+        #print(f"XXXXX About to consider {remaining_items} in {splitting[1:]}")
+        for other_groups in distinct_partitions(remaining_items, splitting[1:]):
+            #print(f"About to yield {first_group} and {other_groups}")
+            yield (first_group,) + other_groups
 
 """ BAD: Memory grows with length of number of combinations:
 def distinct_split(iterable, n):
@@ -37,8 +78,13 @@ def distinct_split(iterable, n):
 """
 
 def demo():
-    for a, b in distinct_split("happy", 2):
-        print(f"{a} --- {b}")
+    print("distinct_partitions.py demo:")
+    print()
+    data = "happy"
+    splitting = (2,2)
+    print(f"distinct_partitions({data}, {splitting}) gives:")
+    for split in distinct_partitions(data, splitting):
+        print(f"{split}")
 
 if __name__ == "__main__":
     demo()
