@@ -1,5 +1,5 @@
 The decider function, f(k,L, etc.) needs to carry out the following role: 
-(1) Generate a set D of m 'evenly spaced out' projection vectors in k dimensions [sobol_1, sobol_2, gaussian]
+(1) Generate a set D of m 'evenly spaced out' projection vectors in k dimensions [sobol, gaussian, electrostatic]
 (2) Generate B of size M from D [generate_B]
 (3) Check whether the matches defined by L collapse O and E [collapse_checker_basic, collapse_checker_random]
 [(4) - optional] Minimise the chance of floating point errors by eg repeating (1),(2),(3) with a different 
@@ -38,10 +38,10 @@ ISSUE: sobol_1 and sobol_2 only generate vectors with all positive entries as so
 FIX:
 (i) use linear transformation 2*v - 1 [sobol_1L, sobol_2L]
 (ii) use sobol points to sample an inverse gaussian distribution [sobol_1G, sobol_2G]
-*** I dont want to create too many files, so just toggle between L and G in sobol_1 and sobol_2 file themselves ***
+*** I dont want to create too many files, so just toggle between lin and gauss in sobol file ***
 
 Tried: 
-Sobol (see sobol_1 and sobol_2)
+Sobol 
 Gaussian (very simple) 
 
 To do: 
