@@ -24,10 +24,10 @@ def f_multi(m, k, method_1, method_2, method_3, L):
         DIMENSION.
     method_1 : string
         1st METHOD TO DEFINE m EQUALLY SPACED VECTORS TO GENERATE D.
-        OPTIONS (so far) ARE: "sobol_1", "sobol_2", "gaussian", "electrostatic"
+        OPTIONS (so far) ARE: "sobol", "gaussian", "electrostatic"
     method_2 : string
         2nd METHOD TO DEFINE m EQUALLY SPACED VECTORS TO GENERATE D.
-        OPTIONS (so far) ARE: "sobol_1", "sobol_2", "gaussian", "electrostatic"
+        OPTIONS (so far) ARE: "sobol", "gaussian", "electrostatic"
     etc. 
     
     L : sympy.Matrix
@@ -54,7 +54,7 @@ def f_multi(m, k, method_1, method_2, method_3, L):
         print(f"Collapse detected by {method_name}?", not result)
 
 # example
-f_multi(40, 5, "sobol_1", "sobol_2", "gaussian",  L)
+f_multi(40, 5, "sobol", "electrostatic", "gaussian",  L)
     
     
  
