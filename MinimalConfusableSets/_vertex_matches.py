@@ -59,12 +59,12 @@ def generate_all_vertex_matches_given_perming_places(
                   
 def demo():
     M=4
-    k=2
     for perming_places in range(5):
-        print(f"All matches in k={k} dimensions, given M={M} bad bats, for perming_places={perming_places}")
-        for i,match in enumerate(generate_all_vertex_matches_given_perming_places(k=k, M=M, perming_places=perming_places)):
+        print(f"All matches, given M={M} bad bats, for perming_places={perming_places}")
+        for i,match in enumerate(generate_all_vertex_matches_given_perming_places(M=M, perming_places=perming_places)):
            print(f"   {i+1}:    {match}")
         print()
+    k=2
     for perming_places in range(5):
         print(f"All USEFUL matches in k={k} dimensions, given M={M} bad bats, for perming_places={perming_places}")
         for i,match in enumerate(generate_all_useful_vertex_matches_given_perming_places(k=k, M=M, perming_places=perming_places)):
