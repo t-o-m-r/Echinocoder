@@ -232,7 +232,7 @@ def generate_all_vertex_matches_given_equivalent_places(
 def generate_viable_vertex_match_matrices(
     M, # M = number of bad bats. 
     k, # k=dimension of space.
-    veto_matrix_yield = None,
+    veto_branch = None,
     ):
     """
     Generate sympy.Matrix objects from a depth-first traversal of rows.
@@ -251,7 +251,7 @@ def generate_viable_vertex_match_matrices(
         if prefix:
             mat = sp.Matrix(prefix)
 
-            if veto_matrix_yield is not None and veto_matrix_yield(mat):
+            if veto_branch is not None and veto_branch(mat):
                 return # Skip deeper exploration without yielding mat due to internally discovered test failure
 
             user_aborted_this_branch = (yield mat)
@@ -307,27 +307,22 @@ def demo():
 
 
 
-    def abort_test(mat, max_rows):
+    print("===========================================")
+    def veto_branch(mat, max_rows):
         return sp.shape(mat)[0] >= max_rows
 
     mat_gen = generate_viable_vertex_match_matrices(
         M=3,
         k=2,
-        #abort_test = partial(abort_test, max_rows=3),
+        veto_branch = partial(veto_branch, max_rows=6),
         ) 
 
-    i=-1
-    mat = next(mat_gen) # priming the generator # TODO - check for StopIteration?
-    while True:
-        i += 1
-        #print(f"Got mat {mat}")
-        print(i, mat)
-        abort = sp.shape(mat)[0] >= 4
 
-        try:
-            mat = mat_gen.send(abort)
-        except StopIteration:
-            break
+    for i, mat in enumerate(mat_gen):
+        print(i, mat)
+    print("===========================================")
+
+
 
 
 if __name__ == "__main__":
