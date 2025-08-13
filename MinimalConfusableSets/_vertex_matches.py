@@ -10,6 +10,7 @@ from distinct_partitions import distinct_partitions
 from bi_range import bi_range_with_maxes
 from equivalent_places import Equivalent_Places
 
+#DONE
 def generate_all_useful_vertex_matches(
     M, # M=number of bad bats
     k, # k=dimension of space 
@@ -18,13 +19,15 @@ def generate_all_useful_vertex_matches(
     yield from generate_all_vertex_matches(M=M, k=k, permute=permute)
 
 
+#DONE
 def generate_all_useful_vertex_matches_given_perming_places(
         M, # M=number of bad bats
         k, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         perming_places = 0, # permutations take place within the first "perming_places" places, otherwise not.
         ):
     yield from generate_all_vertex_matches_given_perming_places(M, k=k, perming_places=perming_places)
-    
+
+#DONE
 def generate_all_vertex_matches_given_perming_places(
         M, # M=number of bad bats
         k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
@@ -49,8 +52,8 @@ def generate_all_vertex_matches_given_perming_places(
                     assert perming_zeros >=0
                     assert non_perming_zeros >=0
 
-                    perming_part = (1,)*perming_ones + (-1,)*perming_minus_ones + (0,)*perming_zeros
-                    non_perming_part = (1,)*non_perming_ones + (-1,)*non_perming_minus_ones + (0,)*non_perming_zeros
+                    perming_part = (-1,)*perming_minus_ones + (0,)*perming_zeros + (1,)*perming_ones # Note numerical order!
+                    non_perming_part = (-1,)*non_perming_minus_ones + (0,)*non_perming_zeros + (1,)*non_perming_ones # Note numerical order!
 
                     for perm in distinct_permutations(perming_part):
                         yield perm + non_perming_part
