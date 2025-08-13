@@ -82,28 +82,28 @@ M4_all_vertex_matches_expected = [
     ]
 
 M4_left_pair_right_pair = [
-     ( 0, 0, 0,-1,),
-     #( 0, 0,-1, 0,),
-     ( 0,-1, 0, 0,),
-     #(-1, 0, 0, 0,),
+     #( 0, 0, 0,-1,),
+     ( 0, 0,-1, 0,),#
+     #( 0,-1, 0, 0,),
+     (-1, 0, 0, 0,),#
 
      #( 0, 1, 1,-1,),
-     (0, 1,-1 ,1,),
+     ( 0, 1,-1 ,1,),#
      #( 0,-1, 1, 1,),
      #( 1, 0, 1,-1,),
      #( 1, 0,-1 ,1,),
      (-1, 0, 1, 1,),
      #( 1, 1, 0,-1,),
      #( 1,-1, 0, 1,),
-     (-1, 1, 0, 1,),
-     ( 1, 1,-1, 0,),
+     (-1, 1, 0, 1,),#
+     ( 1, 1,-1, 0,),#
      #( 1,-1 ,1, 0,),
      #(-1, 1, 1, 0,),
 
      #( 0,-1,-1,-1,),
-     (-1, 0,-1,-1,),
+     (-1, 0,-1,-1,),#
      #(-1,-1, 0,-1,),
-     (-1,-1,-1, 0,),
+     (-1,-1,-1, 0,),#
     ]
 
 k2M4_all_useful_vertex_match_signatures_expected = [
@@ -363,7 +363,7 @@ def test_main_generators():
         # which should be the same as:
         (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(size=4, none_equivalent=True) ), list(generate_all_vertex_matches(M=4, permute=True)), "M4 but testing equivalent_places NONE",),
 
-        # NOT DONE YET (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,1,),(2,3,),    )) ), M4_left_pair_right_pair, "M4 left pair right pair",),
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,1,),(2,3,),    )) ), M4_left_pair_right_pair, "M4 left pair right pair",),
 
         (None, 10,
      generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,7,),(1,4,5,6),(2,3,9,), (8,),  ))), 
