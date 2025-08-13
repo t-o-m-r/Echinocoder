@@ -392,13 +392,13 @@ def test_main_generators():
 
         assert LHS==RHS
 
-def do_note_test_order():
-    """ It would be nice if (but it is not the case that) within constant SIGNATURE, the tuples shall be rendered in numerical order. This would test:"""
-
+def test_order():
     
     for gen in (
-          generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,7,),(1,4,5,6),(2,3,9,), (8,),  ))),
-          generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,7,),(1,4,5,6),(2,3,9,), (8,),  ))),
+          generate_all_vertex_matches(M=4),
+          generate_all_vertex_matches(M=6),
+          # WILL NOTE WORK: generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,7,),(1,4,5,6),(2,3,9,), (8,),  ))),
+          # WILL NOTE WORK: generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,7,),(1,4,5,6),(2,3,9,), (8,),  ))),
           ):
         print(f"\n New Order Test")
         last_signature, last_vertex_match = None, None
@@ -408,8 +408,7 @@ def do_note_test_order():
             # Only check_order progression when within a given signature:
             if last_signature != None and signature == last_signature:
                 # Check_order!
-                #assert last_vertex_match < vertex_match
-                pass
+                assert last_vertex_match < vertex_match
             last_signature, last_vertex_match = signature, vertex_match
 
 
