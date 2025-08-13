@@ -1,9 +1,11 @@
 #import itertools
+import sympy as sp
 import math
 from distinct_permutations_with_leftovers import distinct_permutations_with_leftovers as distinct_permutations
 from distinct_partitions import distinct_partitions
 from bi_range import bi_range_with_maxes
 from equivalent_places import Equivalent_Places
+from functools import partial
 
 """
 Vertex matches have an even number of +1 and and odd number of -1 entries, and others zero. Their total number of entries is M, the numnber of bad bats.
@@ -227,6 +229,50 @@ def generate_all_vertex_matches_given_equivalent_places(
     #return generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(equivalent_places, k=k)
     return generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(equivalent_places, k=k)
 
+def generate_viable_vertex_match_matrices(
+    M, # M = number of bad bats. 
+    k, # k=dimension of space.
+    veto_matrix_yield = None,
+    ):
+    """
+    Generate sympy.Matrix objects from a depth-first traversal of rows.
+    
+    rows_factory: callable taking `start_row` or None, returning a generator of rows >= start_row.
+    M: number of columns per row.
+   
+    To abort the current branch after yielding a given matrix, the user may send True to the generator.
+
+    Alteratively, if the user would prefer that the branch be aborted prior to yielding the matrix, they should supply the generator with a function "veto_matrix_yield" which takes a matrix as a single input. If it returns True, the current branch will be aborted without a yield. Think of this as an "internal" abort rather than an "external" abort with the send True mechanism.
+    """
+
+    def dfs(prefix, start_row):
+
+        # Yield the current matrix (if prefix is non-empty)
+        if prefix:
+            mat = sp.Matrix(prefix)
+
+            if veto_matrix_yield is not None and veto_matrix_yield(mat):
+                return # Skip deeper exploration without yielding mat due to internally discovered test failure
+
+            user_aborted_this_branch = (yield mat)
+            if user_aborted_this_branch:
+                return  # Skip deeper exploration
+
+        # Start the rows at the given start_row
+        # row_gen = rows_factory(start_row)
+        # TODO: FIX TEMPORARY 
+        row_gen = generate_all_vertex_matches_given_equivalent_places(equivalent_places=Equivalent_Places(size=M, all_equivalent=True), k=k, )
+
+        for row in row_gen:
+            # Avoid repeating the start_row itself at the top of recursion
+            if start_row is not None and row == start_row:
+                continue
+            # Recurse with the new row appended to prefix
+            yield from dfs(prefix + [row], row)
+
+    # Start with no prefix and no lower bound
+    yield from dfs([], None)
+
 def demo():
     M=4
     print(f"All matches given M={M} bad bats are:")
@@ -256,6 +302,33 @@ def demo():
         print()
 
     print("timing tests are now in timing_tests.py")
+
+
+
+
+
+    def abort_test(mat, max_rows):
+        return sp.shape(mat)[0] >= max_rows
+
+    mat_gen = generate_viable_vertex_match_matrices(
+        M=3,
+        k=2,
+        #abort_test = partial(abort_test, max_rows=3),
+        ) 
+
+    i=-1
+    mat = next(mat_gen) # priming the generator # TODO - check for StopIteration?
+    while True:
+        i += 1
+        #print(f"Got mat {mat}")
+        print(i, mat)
+        abort = sp.shape(mat)[0] >= 4
+
+        try:
+            mat = mat_gen.send(abort)
+        except StopIteration:
+            break
+
 
 if __name__ == "__main__":
     demo()
