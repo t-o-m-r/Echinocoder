@@ -277,6 +277,12 @@ def generate_viable_vertex_match_matrices(
     yield from dfs([], None)
 
 def demo():
+    M=10
+    print(f"All ***SIGNATURES*** given M={M} bad bats are:")
+    for i, match in enumerate(generate_all_vertex_match_signatures(k=None, M=M)):
+       print(f"   {i+1}:    {match}")
+    print()
+
     M=4
     print(f"All matches given M={M} bad bats are:")
     for i, match in enumerate(generate_all_vertex_matches(k=None, M=M)):
