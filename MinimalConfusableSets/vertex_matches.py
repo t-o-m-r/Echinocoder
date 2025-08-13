@@ -54,29 +54,49 @@ def _smallest_odd_number_greater_than_or_equal_to(x):
 def generate_all_vertex_match_signatures(
     M, #number of bad bats
     k = None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
+    start = None
     ):
     """
     The signature of a caonoical match is how many ones, minus ones and zeros it has.
     We yield triplets of numbers in that order.
 
+    If suplied and not None, start must be a tuple containing a signature which the method would ordinarily generate, and as a consequence the generator will start here.
+
     Vertex matches have M entries in total, comprising an even number of +1 and and odd number of -1 entries, and others zero.
 
     "Useful" vertex matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
     """
-    for number_of_ones in range(0, M+1, 2):
 
-        if k is not None:
-            # In this case we need 
-            #         number_of_ones + number_of_minus_ones > k  and   number_of_minus_ones >= 1
-            # so
-            #         number_of_minus_ones > k - number_of_ones   and number_of_minus_ones >= 1
-            # so
-            #         number_of_minus_ones >= k - number_of_ones + 1 and number_of_minus_ones >=1
-            # so
-            #         number_of_minus_ones >= max(k - number_of_ones + 1, 1)
-            start_for_number_of_minus_ones =  max(1, _smallest_odd_number_greater_than_or_equal_to(k - number_of_ones + 1))
+    if start is not None:
+        starting = True
+        if len(start) != 3:
+            raise ValueError(f"len(start) should equal 3 but is {len(start)}. start={start}.")
+        if sum(start) != M:
+            raise ValueError(f"sum(start) should equal {M} but is {sum(start)}. start={start}.")
+        if True in ((int(c) != c or c<0) for c in start):
+            raise ValueError(f"start should be a tuple of non-negative integers but start={start}.")
+
+        start_ones, start_minus_ones, _ = start
+    else:
+        starting = False
+
+    for number_of_ones in range(start_ones if starting else 0, M+1, 2):
+
+        if starting:
+            start_for_number_of_minus_ones = start_minus_ones
         else:
-            start_for_number_of_minus_ones = 1
+            if k is not None:
+                # In this case we need 
+                #         number_of_ones + number_of_minus_ones > k  and   number_of_minus_ones >= 1
+                # so
+                #         number_of_minus_ones > k - number_of_ones   and number_of_minus_ones >= 1
+                # so
+                #         number_of_minus_ones >= k - number_of_ones + 1 and number_of_minus_ones >=1
+                # so
+                #         number_of_minus_ones >= max(k - number_of_ones + 1, 1)
+                start_for_number_of_minus_ones =  max(1, _smallest_odd_number_greater_than_or_equal_to(k - number_of_ones + 1))
+            else:
+                start_for_number_of_minus_ones = 1
 
         for number_of_minus_ones in range(start_for_number_of_minus_ones, M+1-number_of_ones, 2):
             # In an alternative (but slower) implementation, one could always have start_for_number_of_minus_ones=1 but then 
@@ -84,7 +104,12 @@ def generate_all_vertex_match_signatures(
             # if k is not None and (number_of_ones + number_of_minus_ones <= k):
             #      continue
             number_of_zeros = M-number_of_ones-number_of_minus_ones
+            if starting:
+                assert (number_of_ones, number_of_minus_ones, number_of_zeros) == start
+                starting = False
             yield number_of_ones, number_of_minus_ones, number_of_zeros
+    assert starting == False
+
 #DONE
 def generate_all_vertex_matches(
         M, # M=number of bad bats
@@ -280,6 +305,20 @@ def demo():
     M=10
     print(f"All ***SIGNATURES*** given M={M} bad bats are:")
     for i, match in enumerate(generate_all_vertex_match_signatures(k=None, M=M)):
+       print(f"   {i+1}:    {match}")
+    print()
+
+    M=10
+    start=(0,3,7)
+    print(f"The ***SIGNATURES*** starting at {start} given M={M} bad bats are:")
+    for i, match in enumerate(generate_all_vertex_match_signatures(k=None, M=M, start=start)):
+       print(f"   {i+1}:    {match}")
+    print()
+
+    M=10
+    start=(4,3,3)
+    print(f"The ***SIGNATURES*** starting at {start} given M={M} bad bats are:")
+    for i, match in enumerate(generate_all_vertex_match_signatures(k=None, M=M, start=start)):
        print(f"   {i+1}:    {match}")
     print()
 
