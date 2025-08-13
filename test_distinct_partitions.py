@@ -1,4 +1,4 @@
-from distinct_partitions import distinct_partitions
+from distinct_partitions_v1_no_start import distinct_partitions_v1_no_start
 from itertools import zip_longest
 
 def test_distinct_partitions():
@@ -148,14 +148,14 @@ def test_distinct_partitions():
         print('================')
         if typ=="throws":
             try:
-               distinct_partitions(data, n)
+               distinct_partitions_v1_no_start(data, n)
                assert True
             except:
                assert False
             continue
 
-        result_exact = distinct_partitions(data, n)
-        result_list = tuple(distinct_partitions(data, n))
+        result_exact = distinct_partitions_v1_no_start(data, n)
+        result_list = tuple(distinct_partitions_v1_no_start(data, n))
         if converter is not None:
             expected = tuple(map( converter, expected ))
 

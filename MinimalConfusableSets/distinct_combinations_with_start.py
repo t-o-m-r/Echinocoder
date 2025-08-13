@@ -3,6 +3,8 @@ from operator import itemgetter
 from more_itertools import distinct_combinations 
 from bisect import bisect_left
 
+#### Here is the implementation from itertools before it got modified to add "start"
+####
 #### def distinct_combinations_as_more_itertools(iterable, r):
 ####     """Yield the distinct combinations of *r* items taken from *iterable*.
 #### 
