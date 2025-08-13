@@ -4,7 +4,8 @@ from more_itertools import distinct_combinations
 def distinct_partitions(iterable, splitting, validate_splitting=True):
     
     """
-    Yield all the partitions of "iterable" which split it according to the sizes given in the (ordered!) tuple "splitting".
+    This returns a generator which will yield all the partitions of "iterable" which split it according to
+    the sizes given in the (ordered!) tuple "splitting".
     Within each group, the order is preserved according to first-come first-served in the original iterable.
 
     splitting shall be a tuple of non-negative integers whose sum shall be the length of the iterable.
