@@ -142,7 +142,6 @@ def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(
 
     ##############################################
     def _generate_dicts_for(e_places, signature):
-        #print(f"GENERATE_DICTS_FOR e_places={e_places} signature={signature}.")
         # Caller must guarantee e_places is non-empty, M>0 and signature consistent with e_places
         tot = sum(signature)
         assert e_places
@@ -156,16 +155,12 @@ def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(
         # Let's check the above statement.
         assert (non_perming_places > 0 and len(e_places) > 1) or (non_perming_places == 0 and len(e_places)==1)
     
-        #print(f"ones bi_range {list(bi_range_with_maxes(number_of_ones, max_first=perming_places, max_second=non_perming_places))}")
         for perming_ones, non_perming_ones in bi_range_with_maxes(number_of_ones, max_first=perming_places, max_second=non_perming_places):
-            #print(f"minus ones bi_range {list(bi_range_with_maxes(number_of_minus_ones, max_first=perming_places-perming_ones, max_second=non_perming_places - non_perming_ones))}")
             for perming_minus_ones, non_perming_minus_ones in bi_range_with_maxes(number_of_minus_ones, max_first = perming_places-perming_ones, max_second=non_perming_places - non_perming_ones):
                 perming_zeros = perming_places - (perming_ones + perming_minus_ones)
                 non_perming_zeros = number_of_zeros - perming_zeros
     
     
-                #print(f"PERMING_SIG = {perming_ones, perming_minus_ones, perming_zeros}")
-                #print(f"NON_PERMING_SIG = {non_perming_ones, non_perming_minus_ones, non_perming_zeros}")
                 assert perming_zeros >=0
                 assert non_perming_zeros >=0
     
