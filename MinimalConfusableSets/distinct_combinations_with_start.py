@@ -45,8 +45,9 @@ from bisect import bisect_left
 def distinct_combinations_with_start(iterable, r, start=None):
     """Yield the distinct combinations of r items taken from iterable.
 
-    If `start` is provided (a tuple that this generator would normally produce),
-    begin yielding from that combination without skipping through earlier results.
+    If `start` is provided: (1) it must bea tuple that this generator would normally produce,
+    and (2) the generator will then begin yielding from that combination efficently -- 
+    i.e. without calculating and discarding earlier results.
 
     Examples:
         >>> list(distinct_combinations_with_start("hello", 2))
