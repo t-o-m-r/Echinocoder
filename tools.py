@@ -1,7 +1,8 @@
 import numpy as np
 import inspect
 from itertools import permutations, product
-from distinct_permutations import distinct_permutations
+#from distinct_permutations_with_leftovers import distinct_permutations_with_leftovers as distinct_permutations # Use either this or the next line!
+from more_itertools import distinct_permutations # Use either this or the last line!
 
 
 class LineNo:

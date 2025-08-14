@@ -1,10 +1,14 @@
-# This is taken from https://github.com/more-itertools/more-itertools/blob/edcafcfa58b1f2edc4b8588e98fba3f41784b746/more_itertools/more.py#L675
+# This is taken from https://github.com/more-itertools/more-itertools/blob/edcafcfa58b1f2edc4b8588e98fba3f41784b746/more_itertools/more.py#L675 ... but with
+# some modifications by Christopher Lester to add leftovers, and to make r=-1 output empty iterators.
 
+from functools import partial, total_ordering
+from collections import defaultdict
+from itertools import cycle
 
-def distinct_permutations(iterable, r=None):
+def distinct_permutations_with_leftovers(iterable, r=None, output_leftovers=False):
     """Yield successive distinct permutations of the elements in *iterable*.
 
-        >>> sorted(distinct_permutations([1, 0, 1]))
+        >>> sorted(distinct_permutations_with_leftovers([1, 0, 1]))
         [(0, 1, 1), (1, 0, 1), (1, 1, 0)]
 
     Equivalent to yielding from ``set(permutations(iterable))``, except
@@ -19,22 +23,22 @@ def distinct_permutations(iterable, r=None):
 
     If *r* is given, only the *r*-length permutations are yielded.
 
-        >>> sorted(distinct_permutations([1, 0, 1], r=2))
+        >>> sorted(distinct_permutations_with_leftovers([1, 0, 1], r=2))
         [(0, 1), (1, 0), (1, 1)]
-        >>> sorted(distinct_permutations(range(3), r=2))
+        >>> sorted(distinct_permutations_with_leftovers(range(3), r=2))
         [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)]
 
     *iterable* need not be sortable, but note that using equal (``x == y``)
     but non-identical (``id(x) != id(y)``) elements may produce surprising
     behavior. For example, ``1`` and ``True`` are equal but non-identical:
 
-        >>> list(distinct_permutations([1, True, '3']))  # doctest: +SKIP
+        >>> list(distinct_permutations_with_leftovers([1, True, '3']))  # doctest: +SKIP
         [
             (1, True, '3'),
             (1, '3', True),
             ('3', 1, True)
         ]
-        >>> list(distinct_permutations([1, 2, '3']))  # doctest: +SKIP
+        >>> list(distinct_permutations_with_leftovers([1, 2, '3']))  # doctest: +SKIP
         [
             (1, 2, '3'),
             (1, '3', 2),
@@ -49,7 +53,7 @@ def distinct_permutations(iterable, r=None):
     def _full(A):
         while True:
             # Yield the permutation we have
-            yield tuple(A)
+            yield tuple(A) if not output_leftovers else (tuple(A), ())
 
             # Find the largest index i such that A[i] < A[i + 1]
             for i in range(size - 2, -1, -1):
@@ -78,7 +82,10 @@ def distinct_permutations(iterable, r=None):
 
         while True:
             # Yield the permutation we have
-            yield tuple(head)
+            if output_leftovers:
+                yield tuple(head), tuple(tail)
+            else:
+                yield tuple(head)
 
             # Starting from the right, find the first index of the head with
             # value smaller than the maximum value of the tail - call it i.
@@ -117,48 +124,52 @@ def distinct_permutations(iterable, r=None):
     except TypeError:
         sortable = False
 
-        indices_dict = defaultdict(list)
+        @total_ordering
+        class Wrapper(object):
+            def __init__(self, sorting_cue, payload):
+                # sorting_cue should be something for which comparisons and sorting work, as surrogate for the payload.
+                self.sorting_cue = sorting_cue
+                self.payload = payload
 
-        for item in items:
-            indices_dict[items.index(item)].append(item)
+            def __eq__(self, other):
+                return self.sorting_cue == other.sorting_cue
 
-        indices = [items.index(item) for item in items]
-        indices.sort()
+            def __lt__(self, other):
+                return self.sorting_cue < other.sorting_cue
 
-        equivalent_items = {k: cycle(v) for k, v in indices_dict.items()}
-
-        def permuted_items(permuted_indices):
-            return tuple(
-                next(equivalent_items[index]) for index in permuted_indices
-            )
+        items = list(Wrapper(items.index(item), item) for item in items)
+        items.sort() # TODO: It is important for the method below that items is sorted, so we sort here. However, it may be that by construction we are already sorted, in which case we could save time by removing this sort method. Or, indeed, we could change the way that the list is constructed so that it gets constructed.  However, for now we have belt and braces to avoid premature optimisation.
 
     size = len(items)
     if r is None:
         r = size
 
+    if not (0 <= r <= size):
+        # r was supplied negative, or supplied bigger than size, so there is nothing our iterator can/should return. Note that r==0 is a different case, handled elsewhere differently depending on whether output_leftovers = True or False.  We don't thow a value error as there are lots of combinatorial reasons why binomial coefficients (n,r) make sense (by taking a negative value) when r<0 or r>n.
+        return iter(())
+
     # functools.partial(_partial, ... )
     algorithm = _full if (r == size) else partial(_partial, r=r)
 
-    if 0 < r <= size:
-        if sortable:
-            return algorithm(items)
+    if sortable:
+        yield from algorithm(items) # HERE
+    else:
+        # Need to peel off the wrappers:
+        if output_leftovers:
+            for wrapped_items, wrapped_leftovers in algorithm(items):
+                yield tuple(wrapped_item.payload for wrapped_item in wrapped_items), tuple(wrapped_leftover.payload for wrapped_leftover in wrapped_leftovers)
         else:
-            return (
-                permuted_items(permuted_indices)
-                for permuted_indices in algorithm(indices)
-            )
+            for wrapped_items in algorithm(items):
+                yield tuple(wrapped_item.payload for wrapped_item in wrapped_items)
 
-    return iter(() if r else ((),))
-
-
-def tost():
+def demo():
     thing=[3,0,3]
     print("distinct perms of",thing, "are")
     expected_perms = [ (0,3,3), (3,0,3), (3,3,0) ]
-    for n, perm in enumerate(distinct_permutations(thing)):
+    for n, perm in enumerate(distinct_permutations_with_leftovers(thing)):
         print(f"Expected perm {expected_perms[n]} got perm {perm}.")
         assert expected_perms[n] == perm
 
 if __name__ == "__main__":
-    tost()
+    demo()
 

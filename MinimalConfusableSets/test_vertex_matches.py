@@ -1,24 +1,41 @@
+from vertex_matches import (
+    generate_canonical_vertex_matches,
+    generate_all_vertex_matches,
+    generate_all_vertex_match_signatures,
+    _smallest_odd_number_greater_than_or_equal_to,
+    generate_all_vertex_matches_given_equivalent_places,
+    generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A,
+    generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B,
+    generate_viable_vertex_match_matrices,
+)
 
-import vertex_matches
+from _vertex_matches import (
+    generate_all_useful_vertex_matches,
+    generate_all_vertex_matches_given_perming_places,
+    generate_all_useful_vertex_matches_given_perming_places,
+)
+
+from equivalent_places import Equivalent_Places
 from itertools import zip_longest
 
-# Canonical matches have an even number of +1 and and odd number of -1 entries, and others zero.
-# "Useful" canonical matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
+# Vertex matches have an even number of +1 and and odd number of -1 entries, and others zero. Their total number of entries is M, the numnber of bad bats.
+# The "signature" of a vertex match is how many ones, minus ones and zeros it contains.
+# "Useful" vertex matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
+# A "canonical" vertex match is one where all the ones come before all the minus ones which come before all the zeros WITHIN any positions which are otherwise equivalent. . E.g., of all position are equivalent, then (1,1,-1,-1,-1,0) is a canonical match.
 
-
-M0_all_canonical_matches_expected = [
+M0_all_vertex_matches_expected = [
 ]
 
-M1_all_canonical_matches_expected = [
+M1_all_vertex_matches_expected = [
     (-1,),
 ]
 
-M2_all_canonical_matches_expected = [
+M2_all_vertex_matches_expected = [
     ( 0,-1),
     (-1, 0),
 ]
 
-M3_all_canonical_matches_expected = [
+M3_all_vertex_matches_expected = [
     ( 0, 0,-1),
     ( 0,-1, 0),
     (-1, 0, 0),
@@ -27,8 +44,20 @@ M3_all_canonical_matches_expected = [
     (-1, 1, 1),
     (-1,-1,-1),
 ]
+M3_all_vertex_match_signatures_expected = [
+    ( 0,1,2), # for
+              # ( 0, 0,-1),
+              # ( 0,-1, 0),
+              # (-1, 0, 0),
+    (2,1,0), # for
+              # ( 1, 1,-1),
+              # ( 1,-1, 1),
+              # (-1, 1, 1),
+    (0,3,0), # for
+              # (-1,-1,-1),
+]
 
-M4_all_canonical_matches_expected = [
+M4_all_vertex_matches_expected = [
      ( 0, 0, 0,-1,),
      ( 0, 0,-1, 0,),
      ( 0,-1, 0, 0,),
@@ -53,7 +82,85 @@ M4_all_canonical_matches_expected = [
      (-1,-1,-1, 0,),
     ]
 
-k2M3_all_useful_canonical_matches_expected = [
+M4_left_pair_right_pair = [
+     #( 0, 0, 0,-1,),
+     ( 0, 0,-1, 0,),#
+     #( 0,-1, 0, 0,),
+     (-1, 0, 0, 0,),#
+
+     #( 0, 1, 1,-1,),
+     ( 0, 1,-1 ,1,),#
+     #( 0,-1, 1, 1,),
+     #( 1, 0, 1,-1,),
+     #( 1, 0,-1 ,1,),
+     (-1, 0, 1, 1,),
+     #( 1, 1, 0,-1,),
+     #( 1,-1, 0, 1,),
+     (-1, 1, 0, 1,),#
+     ( 1, 1,-1, 0,),#
+     #( 1,-1 ,1, 0,),
+     #(-1, 1, 1, 0,),
+
+     #( 0,-1,-1,-1,),
+     (-1, 0,-1,-1,),#
+     #(-1,-1, 0,-1,),
+     (-1,-1,-1, 0,),#
+    ]
+
+k2M4_all_useful_vertex_match_signatures_expected = [
+     #(0,1,3), # for
+     #         # ( 0, 0, 0,-1,),
+     #         # ( 0, 0,-1, 0,),
+     #         # ( 0,-1, 0, 0,),
+     #         # (-1, 0, 0, 0,),
+
+     (2,1,1), # for
+              # ( 0, 1, 1,-1,),
+              # ( 0, 1,-1 ,1,),
+              # ( 0,-1, 1, 1,),
+              # ( 1, 0, 1,-1,),
+              # ( 1, 0,-1 ,1,),
+              # (-1, 0, 1, 1,),
+              # ( 1, 1, 0,-1,),
+              # ( 1,-1, 0, 1,),
+              # (-1, 1, 0, 1,),
+              # ( 1, 1,-1, 0,),
+              # ( 1,-1 ,1, 0,),
+              # (-1, 1, 1, 0,),
+      (0,3,1), #for
+              # ( 0,-1,-1,-1,),
+              # (-1, 0,-1,-1,),
+              # (-1,-1, 0,-1,),
+              # (-1,-1,-1, 0,),
+    ]
+M4_all_vertex_match_signatures_expected = [
+     (0,1,3), # for
+              # ( 0, 0, 0,-1,),
+              # ( 0, 0,-1, 0,),
+              # ( 0,-1, 0, 0,),
+              # (-1, 0, 0, 0,),
+
+     (2,1,1), # for
+              # ( 0, 1, 1,-1,),
+              # ( 0, 1,-1 ,1,),
+              # ( 0,-1, 1, 1,),
+              # ( 1, 0, 1,-1,),
+              # ( 1, 0,-1 ,1,),
+              # (-1, 0, 1, 1,),
+              # ( 1, 1, 0,-1,),
+              # ( 1,-1, 0, 1,),
+              # (-1, 1, 0, 1,),
+              # ( 1, 1,-1, 0,),
+              # ( 1,-1 ,1, 0,),
+              # (-1, 1, 1, 0,),
+      (0,3,1), #for
+              # ( 0,-1,-1,-1,),
+              # (-1, 0,-1,-1,),
+              # (-1,-1, 0,-1,),
+              # (-1,-1,-1, 0,),
+    ]
+
+k2M3_all_useful_vertex_matches_expected = [
     # ( 0, 0,-1),
     # ( 0,-1, 0),
     # (-1, 0, 0),
@@ -62,7 +169,7 @@ k2M3_all_useful_canonical_matches_expected = [
     (-1, 1, 1),
     (-1,-1,-1),
 ]
-k2M4_all_useful_canonical_matches_expected = [
+k2M4_all_useful_vertex_matches_expected = [
      #( 0, 0, 0,-1,),
      #( 0, 0,-1, 0,),
      #( 0,-1, 0, 0,),
@@ -86,55 +193,55 @@ k2M4_all_useful_canonical_matches_expected = [
      (-1,-1, 0,-1,),
      (-1,-1,-1, 0,),
     ]
-k2M4_all_useful_canonical_matches_with_1_perming_places = [
+k2M4_all_useful_vertex_matches_with_1_perming_places = [
      #( 0, 0, 0,-1,),
      #( 0, 0,-1, 0,),
      #( 0,-1, 0, 0,),
      #(-1, 0, 0, 0,),
 
-     ( 0, 1, 1,-1,),
+     #( 0, 1, 1,-1,),
      #( 0, 1,-1 ,1,),
-     #( 0,-1, 1, 1,),
+     ( 0,-1, 1, 1,),
      #( 1, 0, 1,-1,),
      #( 1, 0,-1 ,1,),
-     #(-1, 0, 1, 1,),
+     (-1, 0, 1, 1,),
      #( 1, 1, 0,-1,),
-     #( 1,-1, 0, 1,),
+     ( 1,-1, 0, 1,),
      #(-1, 1, 0, 1,),
-     ( 1, 1,-1, 0,),
+     #( 1, 1,-1, 0,),
      #( 1,-1 ,1, 0,),
-     (-1, 1, 1, 0,),
+     #(-1, 1, 1, 0,),
 
      ( 0,-1,-1,-1,),
      #(-1, 0,-1,-1,),
      #(-1,-1, 0,-1,),
      (-1,-1,-1, 0,),
 ]
-k2M4_all_useful_canonical_matches_with_2_perming_places = [
+k2M4_all_useful_vertex_matches_with_2_perming_places = [
      #( 0, 0, 0,-1,),
      #( 0, 0,-1, 0,),
      #( 0,-1, 0, 0,),
      #(-1, 0, 0, 0,),
 
-     ( 0, 1, 1,-1,),
-     #( 0, 1,-1 ,1,),
+     #( 0, 1, 1,-1,),
+     ( 0, 1,-1 ,1,),
      ( 0,-1, 1, 1,),
-     ( 1, 0, 1,-1,),
-     #( 1, 0,-1 ,1,),
+     #( 1, 0, 1,-1,),
+     ( 1, 0,-1 ,1,),
      (-1, 0, 1, 1,),
      #( 1, 1, 0,-1,),
-     #( 1,-1, 0, 1,),
-     #(-1, 1, 0, 1,),
+     ( 1,-1, 0, 1,),
+     (-1, 1, 0, 1,),
      ( 1, 1,-1, 0,),
-     ( 1,-1 ,1, 0,),
-     (-1, 1, 1, 0,),
+     #( 1,-1 ,1, 0,),
+     #(-1, 1, 1, 0,),
 
      ( 0,-1,-1,-1,),
      (-1, 0,-1,-1,),
      #(-1,-1, 0,-1,),
      (-1,-1,-1, 0,),
 ]
-k3M4_all_useful_canonical_matches_expected = [
+k3M4_all_useful_vertex_matches_expected = [
      # ( 0, 0, 0,-1,),
      # ( 0, 0,-1, 0,),
      # ( 0,-1, 0, 0,),
@@ -197,92 +304,19 @@ def test_helper_functions():
             (5, 5),
             (5.0001, 7),
             ]:
-        z = vertex_matches.smallest_odd_number_greater_than_or_equal_to(x)
+        z = _smallest_odd_number_greater_than_or_equal_to(x)
         print(f"We hope that the smallest odd number greater than or equal to {x} is {y} and is also {z}")
         assert z==y
  
-    from vertex_matches import bi_range, bi_range_with_maxes, bi_range_with_maxes_crude
-
-    assert list(bi_range(4)) == [ (0,4), (1,3), (2,2), (3,1), (4,0), ]
-    assert list(bi_range(3)) == [ (0,3), (1,2), (2,1), (3,0), ]
-    assert list(bi_range(2)) == [ (0,2), (1,1), (2,0), ]
-    assert list(bi_range(1)) == [ (0,1), (1,0), ]
-    assert list(bi_range(0)) == [ (0,0), ]
-    assert list(bi_range(-1)) == [ ]
-    assert list(bi_range(-2)) == [ ]
-    assert list(bi_range(-3)) == [ ]
-
-    for brwm in (bi_range_with_maxes_crude, bi_range_with_maxes):
-        print("Using ",brwm)
-        assert list(brwm(-3, 0, 0)) == [ ]
-        assert list(brwm(-2, 0, 0)) == [ ]
-        assert list(brwm(-1, 0, 0)) == [ ]
-        assert list(brwm(0, 0, 0)) == [ (0,0), ]
-        assert list(brwm(0, 1, 0)) == [ (0,0), ]
-        assert list(brwm(0, 0, 3)) == [ (0,0), ]
-        assert list(brwm(0, 1, 3)) == [ (0,0), ]
-        assert list(brwm(4, 0, 0)) == [ ]
-        assert list(brwm(4, 1, 1)) == [ ]
-        assert list(brwm(4, -1, 4)) == [ ]
-        assert list(brwm(4, 4, -1)) == [ ]
-        assert list(brwm(4, -2, 4)) == [ ]
-        assert list(brwm(4, 4, -2)) == [ ]
-        assert list(brwm(4, 5, 1)) == [ (3,1), (4,0), ]
-        assert list(brwm(4, 2, 4)) == [ (0,4), (1,3), (2,2), ]
-        assert list(brwm(4, 1, 4)) == [ (0,4), (1,3), ]
-        assert list(brwm(4, 2, 3)) == [ (1,3), (2,2), ]
-        assert list(brwm(10, 2, 4)) == [ ]
-        assert list(brwm(10, 2, 5)) == [ ]
-        assert list(brwm(10, 2, 6)) == [ ]
-        assert list(brwm(10, 2, 7)) == [ ]
-        assert list(brwm(10, 2, 8)) == [ (2,8) ]
-        assert list(brwm(10, 2, 9)) == [ (1,9), (2,8), ]
-        assert list(brwm(10, 2, 10)) == [ (0,10), (1,9), (2,8), ]
-        assert list(brwm(10, 2, 11)) == [ (0,10), (1,9), (2,8), ]
-        assert list(brwm(10, 11, 2)) == [ (8,2), (9,1), (10,0), ]
-        assert list(brwm(10, 10, 2)) == [ (8,2), (9,1), (10,0), ]
-        assert list(brwm(10, 9, 2)) == [ (8,2), (9,1), ]
-        assert list(brwm(10, 8, 2)) == [ (8,2), ]
-        assert list(brwm(10, 7, 2)) == [ ]
-        assert list(brwm(10, 6, 2)) == [ ]
-        assert list(brwm(10, 5, 2)) == [ ]
-        assert list(brwm(10, 4, 2)) == [ ]
-
-
-def test_main_generators():
-
-
-    def set_perming_places(f, perming_places=0):
-        return lambda k, M: f(k=k, M=M, perming_places=perming_places)
-        
+def test_signatures():
     test_programme = [
-        (None, 0, vertex_matches.generate_all_canonical_matches, M0_all_canonical_matches_expected, "M0 all",),
-        (None, 1, vertex_matches.generate_all_canonical_matches, M1_all_canonical_matches_expected, "M1 all",),
-        (None, 2, vertex_matches.generate_all_canonical_matches, M2_all_canonical_matches_expected, "M2 all",),
-        (None, 3, vertex_matches.generate_all_canonical_matches, M3_all_canonical_matches_expected, "M3 all",),
-        (None, 4, vertex_matches.generate_all_canonical_matches, M4_all_canonical_matches_expected, "M4 all",),
-        (2, 3, vertex_matches.generate_all_useful_canonical_matches, k2M3_all_useful_canonical_matches_expected, "k2M3 useful",),
-        (2, 4, vertex_matches.generate_all_useful_canonical_matches, k2M4_all_useful_canonical_matches_expected, "k2M4 useful",),
-        (3, 4, vertex_matches.generate_all_useful_canonical_matches, k3M4_all_useful_canonical_matches_expected, "k3M4 useful",),
-
-        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=4), k2M4_all_useful_canonical_matches_expected, "k2M4 useful but testing perming_places=4}",),
-        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=4), list(vertex_matches.generate_all_useful_canonical_matches(k=2, M=4, permute=True)), "k2M4 useful but testing perming_places=4}",), # permute=True is like perming_places=M
-        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=3), list(vertex_matches.generate_all_useful_canonical_matches(k=2, M=4, permute=True)), "k2M4 useful but testing perming_places=3}",), # permute=True is also like perming_places=M-1
-        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=2), k2M4_all_useful_canonical_matches_with_2_perming_places, "k2M4 useful but testing perming_places=2}",),
-        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=1), k2M4_all_useful_canonical_matches_with_1_perming_places, "k2M4 useful but testing perming_places=1}",),
-        (2, 4, set_perming_places(vertex_matches.generate_all_useful_matches_given_perming_places, perming_places=0), list(vertex_matches.generate_all_useful_canonical_matches(k=2, M=4, permute=False)), "k2M4 useful but testing perming_places=0}",),
-
-        (2, 4, set_perming_places(vertex_matches.generate_all_matches_given_perming_places, perming_places=4), M4_all_canonical_matches_expected, "M4 but testing perming_places=4}",),
-        (2, 4, set_perming_places(vertex_matches.generate_all_matches_given_perming_places, perming_places=4), list(vertex_matches.generate_all_canonical_matches(k=2, M=4, permute=True)), "M4 but testing perming_places=4}",), # permute=True is like perming_places=M
-        (2, 4, set_perming_places(vertex_matches.generate_all_matches_given_perming_places, perming_places=3), list(vertex_matches.generate_all_canonical_matches(k=2, M=4, permute=True)), "M4 but testing perming_places=3}",), # permute=True is also like perming_places=M-1
-        (2, 4, set_perming_places(vertex_matches.generate_all_matches_given_perming_places, perming_places=0), list(vertex_matches.generate_all_canonical_matches(k=2, M=4, permute=False)), "M4 but testing perming_places=0}",),
-
+        (3, None, M3_all_vertex_match_signatures_expected, "M3 signatures"),
+        (4, None, M4_all_vertex_match_signatures_expected, "M4 signatures"),
+        (4, 2, k2M4_all_useful_vertex_match_signatures_expected, "k2M4 useful signatures"),
         ]
-
-    for k, M, gen, expected, name in test_programme:
-  
-        LHS = sorted(gen(k=k, M=M))
-        RHS = sorted(expected)
+    for M, k, expected_signature, name in test_programme:
+        LHS = sorted(list(generate_all_vertex_match_signatures(M=M, k=k)))
+        RHS = sorted(expected_signature)
 
         print(f"Test '{name}' has LHS and RHS:")
         print("[")
@@ -293,4 +327,293 @@ def test_main_generators():
         print()
 
         assert LHS==RHS
+
+def test_main_generators():
+
+    test_programme = [
+        (None, 0, generate_all_vertex_matches(M=0), M0_all_vertex_matches_expected, "M0 all",),
+        (None, 1, generate_all_vertex_matches(M=1), M1_all_vertex_matches_expected, "M1 all",),
+        (None, 2, generate_all_vertex_matches(M=2), M2_all_vertex_matches_expected, "M2 all",),
+        (None, 3, generate_all_vertex_matches(M=3), M3_all_vertex_matches_expected, "M3 all",),
+        (None, 4, generate_all_vertex_matches(M=4), M4_all_vertex_matches_expected, "M4 all",),
+        (2, 3, generate_all_useful_vertex_matches(k=2, M=3), k2M3_all_useful_vertex_matches_expected, "k2M3 useful",),
+        (2, 4, generate_all_useful_vertex_matches(k=2, M=4), k2M4_all_useful_vertex_matches_expected, "k2M4 useful",),
+        (3, 4, generate_all_useful_vertex_matches(k=3, M=4), k3M4_all_useful_vertex_matches_expected, "k3M4 useful",),
+
+        (2, 4, generate_all_useful_vertex_matches_given_perming_places(k=2, M=4,perming_places=4), k2M4_all_useful_vertex_matches_expected, "k2M4 useful but testing perming_places=4}",),
+        (2, 4, generate_all_useful_vertex_matches_given_perming_places(k=2, M=4, perming_places=4), list(generate_all_useful_vertex_matches(M=4, k=2, permute=True)), "k2M4 useful but testing perming_places=4}",), # permute=True is like perming_places=M
+        (2, 4, generate_all_useful_vertex_matches_given_perming_places(k=2, M=4, perming_places=3), list(generate_all_useful_vertex_matches(k=2, M=4, permute=True)), "k2M4 useful but testing perming_places=3}",), # permute=True is also like perming_places=M-1
+        (2, 4, generate_all_useful_vertex_matches_given_perming_places(k=2, M=4, perming_places=2), k2M4_all_useful_vertex_matches_with_2_perming_places, "k2M4 useful but testing perming_places=2}",),
+        (2, 4, generate_all_useful_vertex_matches_given_perming_places(k=2, M=4, perming_places=1), k2M4_all_useful_vertex_matches_with_1_perming_places, "k2M4 useful but testing perming_places=1}",),
+        (2, 4, generate_all_useful_vertex_matches_given_perming_places(k=2, M=4, perming_places=0), list(generate_all_useful_vertex_matches(M=4, k=2, permute=False)), "k2M4 useful but testing perming_places=0}",),
+
+        (None, 4, generate_all_vertex_matches_given_perming_places(M=4, perming_places=4), M4_all_vertex_matches_expected, "M4 but testing perming_places=4}",),
+        (None, 4, generate_all_vertex_matches_given_perming_places(M=4, perming_places=4), list(generate_all_vertex_matches(M=4, permute=True)), "M4 but testing perming_places=4}",), # permute=True is like perming_places=M
+        (None, 4, generate_all_vertex_matches_given_perming_places(M=4, perming_places=3), list(generate_all_vertex_matches(M=4, permute=True)), "M4 but testing perming_places=3}",), # permute=True is also like perming_places=M-1
+        (None, 4, generate_all_vertex_matches_given_perming_places(M=4, perming_places=0), list(generate_all_vertex_matches(M=4, permute=False)), "M4 but testing perming_places=0}",),
+
+
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(size=4, all_equivalent=True) ), list(generate_all_vertex_matches(M=4, permute=False)), "M4 but testing equivalent_places ALL",),
+        # which should be the same as
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,1,2,3,),    )) ), list(generate_all_vertex_matches_given_perming_places(M=4, perming_places=0)), "M4 but using equivalent_places to regenerate perming places 0",),
+        # which leads to this sequence:
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,),(1,2,3,),    )) ), list(generate_all_vertex_matches_given_perming_places(M=4, perming_places=1)), "M4 but using equivalent_places to regenerate perming places 1",),
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,),(1,),(2,3,),    )) ), list(generate_all_vertex_matches_given_perming_places(M=4, perming_places=2)), "M4 but using equivalent_places to regenerate perming places 2",),
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,),(1,),(2,),(3,),    )) ), list(generate_all_vertex_matches_given_perming_places(M=4, perming_places=3)), "M4 but equivalent_places to regenerate perming places 3",),
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,),(1,),(2,),(3,),    )) ), list(generate_all_vertex_matches_given_perming_places(M=4, perming_places=4)), "M4 but equivalent_places to regenerate perming places 4",),
+        # which should be the same as:
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(size=4, none_equivalent=True) ), list(generate_all_vertex_matches(M=4, permute=True)), "M4 but testing equivalent_places NONE",),
+
+        (None, 4, generate_all_vertex_matches_given_equivalent_places(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,1,),(2,3,),    )) ), M4_left_pair_right_pair, "M4 left pair right pair",),
+
+        (None, 10,
+     generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,7,),(1,4,5,6),(2,3,9,), (8,),  ))), 
+     generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,7,),(1,4,5,6),(2,3,9,), (8,),  ))), 
+      "Big 10 test.",),
+
+        ]
+
+    for k, M, gen, expected, name in test_programme:
+ 
+
+        gen = tuple(gen)
+        print(f"Test '{name}' has LHS and RHS:")
+        print(f"gen {gen}")
+        print(f"expected {expected}")
+
+        LHS = sorted(gen)
+        RHS = sorted(expected)
+
+        print("[")
+        for idx, (i,j) in enumerate(zip_longest(LHS,RHS)):
+            print(f"{idx+1}:  ({i} {'==' if i==j else '!='} {j}), ")
+        print("]")
+
+        print()
+
+        assert LHS==RHS
+
+def test_canonical_order():
+    # Output shoud be in order when permute=False
+    for gen in (
+          generate_canonical_vertex_matches(M=4, ),
+          generate_canonical_vertex_matches(M=6, ),
+          generate_canonical_vertex_matches(M=10, ),
+
+          generate_canonical_vertex_matches(M=4, k=2),
+          generate_canonical_vertex_matches(M=6, k=2),
+
+          generate_canonical_vertex_matches(M=4, k=3),
+          generate_canonical_vertex_matches(M=6, k=3),
+          generate_canonical_vertex_matches(M=7, k=3),
+
+          generate_canonical_vertex_matches(M=4, k=3, start=(-1,0,1,1)),
+          generate_canonical_vertex_matches(M=6, k=3, start=(-1,0,0,0,1,1)),
+          generate_canonical_vertex_matches(M=7, k=3, start=(0,1,1,1,1,1,1)),
+          ):
+        print("==================")
+        print("New test")
+        for vm in gen:
+            print(f"We hope that this tuple is in non-decreasing order: {vm}")
+            assert tuple(sorted(vm)) == vm
+    
+
+def test_order_stream():
+    
+    for gen in (
+          generate_all_vertex_matches(M=4),
+          generate_all_vertex_matches(M=6),
+          # WILL NOTE WORK: generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,7,),(1,4,5,6),(2,3,9,), (8,),  ))),
+          # WILL NOTE WORK: generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(equivalent_places = Equivalent_Places(equivalents_with_singletons=( (0,7,),(1,4,5,6),(2,3,9,), (8,),  ))),
+          ):
+        print(f"\n New Order Test")
+        last_signature, last_vertex_match = None, None
+        for vertex_match in gen:
+            signature = vertex_match.count(-1), vertex_match.count(0), vertex_match.count(+1)
+            print(f"order test saw signature={signature} and vm={vertex_match}")
+            # Only check_order progression when within a given signature:
+            if last_signature != None and signature == last_signature:
+                # Check_order!
+                assert last_vertex_match < vertex_match
+            last_signature, last_vertex_match = signature, vertex_match
+
+
+def test_start_vertex_match_signatures():
+     method_with_start = generate_all_vertex_match_signatures
+     method_without_start = generate_all_vertex_match_signatures
+    
+     test_programme = [
+       (10,2,(4,3,3)),
+       (20,2,(2,13,5)),
+       (20,2,(18,1,1)),
+     ]
+    
+     from itertools import chain
+     for M, k, start in test_programme:
+         print(f"================== Testing startup of vertex SIGNATURE generators with M={M}, k={k}, start={start} =======")
+         start_pos = None
+         for i, (lesters, itertoolss) in enumerate(zip_longest(method_with_start(M=M, k=k), method_without_start(M=M, k=k))):
+             print(f"{i}:         {lesters} {'==' if lesters==itertoolss else '!='} {itertoolss}")
+             if lesters == start and start_pos == None:
+                start_pos = i
+             assert lesters==itertoolss
+         print("Match confirmed!")
+         assert start_pos is not None
+         print(f"Start pos determined to be {start_pos}.")
+         for i, (lesters, itertoolss) in enumerate(zip_longest(chain(iter([None,]*start_pos),method_with_start(M=M, k=k, start=start)), method_without_start(M=M, k=k))):
+             if i < start_pos:
+                 print(f"{i}:         {lesters} ...  {itertoolss}")
+             else:
+                 print(f"{i}:         {lesters} {'==' if lesters==itertoolss else '!='} {itertoolss}")
+                 assert lesters==itertoolss
+
+                
+def test_start_vertex_matches():
+    
+     test_programme = [
+       (3,1,(-1,-1,-1)),
+       (6,3,(-1,0,1,1,1,1)),
+       (7,2,(-1,-1,-1,0,0,0,0)),
+       (7,2,(-1,0,0,0,0,1,1)),
+       (7,2,(-1,1,1,1,1,1,1)),
+     ]
+    
+     from itertools import chain
+     for M, k, start in test_programme:
+         for method_with_start, method_without_start in (
+                 (generate_canonical_vertex_matches, generate_canonical_vertex_matches),
+                 # TODO - UNCOMMENT WHEN START IMPLEMENTED FOR THESE! (generate_all_vertex_matches, generate_all_vertex_matches),
+             ):
+             print(f"================== Testing startup of vertex MATCH generators with M={M}, k={k}, start={start} =======")
+             start_pos = None
+             for i, (lesters, itertoolss) in enumerate(zip_longest(method_with_start(M=M, k=k), method_without_start(M=M, k=k))):
+                 print(f"{i}:         {lesters} {'==' if lesters==itertoolss else '!='} {itertoolss}")
+                 if lesters == start and start_pos == None:
+                    start_pos = i
+                 assert lesters==itertoolss
+             print("Match confirmed!")
+             assert start_pos is not None
+             print(f"Start pos determined to be {start_pos}.")
+             for i, (lesters, itertoolss) in enumerate(zip_longest(chain(iter([None,]*start_pos),method_with_start(M=M, k=k, start=start)), method_without_start(M=M, k=k))):
+                 if i < start_pos:
+                     print(f"{i}:         {lesters} ...  {itertoolss}")
+                 else:
+                     print(f"{i}:         {lesters} {'==' if lesters==itertoolss else '!='} {itertoolss}")
+                     assert lesters==itertoolss
+
+def test_start_vertex_matches_given_equivalent_places():
+    
+     test_programme = [
+       (Equivalent_Places(size=3, all_equivalent=True), None, (-1,-1,-1)),
+       (Equivalent_Places(size=3, all_equivalent=True), None, (-1,0,0)),
+       (Equivalent_Places(size=3, all_equivalent=True), None, (-1,1,1)),
+
+       (Equivalent_Places(size=3, all_equivalent=True), 1, (-1,-1,-1)),
+       (Equivalent_Places(size=6, all_equivalent=True), 3, (-1,0,1,1,1,1)),
+       (Equivalent_Places(size=7, all_equivalent=True), 2, (-1,-1,-1,0,0,0,0)),
+       (Equivalent_Places(size=7, all_equivalent=True), 2, (-1,0,0,0,0,1,1)),
+       (Equivalent_Places(size=7, all_equivalent=True), 2, (-1,1,1,1,1,1,1)),
+
+       (Equivalent_Places(size=3, equivalents_without_singletons=((0,2),)),         1, (-1,-1,-1)),
+       (Equivalent_Places(size=6, equivalents_without_singletons=((1,2), (3,4),)),  3, (-1,0,1,1,1,1)),
+       (Equivalent_Places(size=7, equivalents_without_singletons=((2,4,6),(1,3),)), 2, (-1,-1,-1,0,0,0,0)),
+       (Equivalent_Places(size=7, equivalents_without_singletons=((2,4,6),(1,3),)), 2, (-1,0,0,0,0,1,1)),
+       (Equivalent_Places(size=7, equivalents_without_singletons=((2,4,6),(1,3),)), 2, (-1,1,1,1,1,1,1)),
+
+       (Equivalent_Places(size=3, equivalents_without_singletons=((0,2),)),         None, (-1,-1,-1)),
+       (Equivalent_Places(size=6, equivalents_without_singletons=((1,2), (3,4),)),  None, (-1,0,1,1,1,1)),
+       (Equivalent_Places(size=7, equivalents_without_singletons=((2,4,6),(1,3),)), None, (-1,-1,-1,0,0,0,0)),
+       (Equivalent_Places(size=7, equivalents_without_singletons=((2,4,6),(1,3),)), None, (-1,0,0,0,0,1,1)),
+       (Equivalent_Places(size=7, equivalents_without_singletons=((2,4,6),(1,3),)), None, (-1,1,1,1,1,1,1)),
+
+       (Equivalent_Places(size=3, none_equivalent=True), 1, (-1,-1,-1)),
+       (Equivalent_Places(size=6, none_equivalent=True), 3, (-1,0,1,1,1,1)),
+       (Equivalent_Places(size=7, none_equivalent=True), 2, (-1,-1,-1,0,0,0,0)),
+       (Equivalent_Places(size=7, none_equivalent=True), 2, (-1,0,0,0,0,1,1)),
+       (Equivalent_Places(size=7, none_equivalent=True), 2, (-1,1,1,1,1,1,1)),
+
+       (Equivalent_Places(size=3, none_equivalent=True), None, (-1,-1,-1)),
+       (Equivalent_Places(size=6, none_equivalent=True), None, (-1,0,1,1,1,1)),
+       (Equivalent_Places(size=7, none_equivalent=True), None, (-1,-1,-1,0,0,0,0)),
+       (Equivalent_Places(size=7, none_equivalent=True), None, (-1,0,0,0,0,1,1)),
+       (Equivalent_Places(size=7, none_equivalent=True), None, (-1,1,1,1,1,1,1)),
+     ]
+    
+     from itertools import chain
+     for e_places, k, start in test_programme:
+         for method_with_start, method_without_start in (
+                 (generate_all_vertex_matches_given_equivalent_places, generate_all_vertex_matches_given_equivalent_places),
+                 # TODO UNCOMMENT WHEN start IMPLEMENTED FOR _A: (generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A, generate_all_vertex_matches_given_equivalent_places),
+                 (generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B, generate_all_vertex_matches_given_equivalent_places),
+             ):
+             print(f"================== Testing startup of vertex MATCH generators with e_places={e_places}, k={k}, start={start} =======")
+             start_pos = None
+             for i, (lesters, itertoolss) in enumerate(zip_longest(method_with_start(equivalent_places=e_places, k=k), method_without_start(equivalent_places=e_places, k=k))):
+                 print(f"{i}:         {lesters} {'==' if lesters==itertoolss else '!='} {itertoolss}")
+                 if lesters == start and start_pos == None:
+                    start_pos = i
+                 assert lesters==itertoolss
+             print("Match confirmed!")
+             assert start_pos is not None
+             print(f"Start pos determined to be {start_pos}.")
+             for i, (lesters, itertoolss) in enumerate(zip_longest(chain(iter([None,]*start_pos),method_with_start(equivalent_places=e_places, k=k, start=start)), method_without_start(equivalent_places=e_places, k=k))):
+                 if i < start_pos:
+                     print(f"{i}:         {lesters} ...  {itertoolss}")
+                 else:
+                     print(f"{i}:         {lesters} {'==' if lesters==itertoolss else '!='} {itertoolss}")
+                     assert lesters==itertoolss
+
+                    
+
+def test_matrice_some_other_way():
+    print("== Test of Matrix Generation =========")
+    import sympy as sp
+    def max_row_requirement(mat, max_rows):
+        return sp.shape(mat)[0] <= max_rows
+
+    def max_row_requirement(mat, max_rows):
+        return sp.shape(mat)[0] <= max_rows
+
+    for M,k in (
+        (2,2),
+        (3,2),
+        (5,2),
+        ):
+        from functools import partial
+
+        mat_gen_slow = generate_viable_vertex_match_matrices(
+            M=M,
+            k=k,
+            yield_matrix = partial(max_row_requirement, max_rows=4),
+            )
+
+        mat_gen_fast = generate_viable_vertex_match_matrices(
+            M=M,
+            k=k,
+            go_deeper = partial(max_row_requirement, max_rows=3),
+            )
+
+        print("=================================================")
+        print(f"Will check if two methods agree for M={M}, k={k}:")
+        print("Doing fast calc ...")
+        fast = tuple(mat_gen_fast)
+        print(f" ... len(fast)={len(fast)}.")
+        print("Doing slow calc ...")
+        slow = tuple(mat_gen_slow)
+        print(f" ... len(slow)={len(slow)}.")
+        assert fast == slow
+        print("Fast agreed with slow")
+
+        once = True
+        for i, mat in enumerate(fast):
+            if i<10 or i>len(fast)-10:
+                print(i, mat)
+            else:
+                if once:
+                    print(".....")
+                    once=False
+                continue
+        print("===========================================")
+
+
 

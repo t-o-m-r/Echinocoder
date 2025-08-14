@@ -1,0 +1,50 @@
+
+def test():
+
+    from bi_range import bi_range, bi_range_with_maxes, bi_range_with_maxes_crude
+
+    assert list(bi_range(4)) == [ (0,4), (1,3), (2,2), (3,1), (4,0), ]
+    assert list(bi_range(3)) == [ (0,3), (1,2), (2,1), (3,0), ]
+    assert list(bi_range(2)) == [ (0,2), (1,1), (2,0), ]
+    assert list(bi_range(1)) == [ (0,1), (1,0), ]
+    assert list(bi_range(0)) == [ (0,0), ]
+    assert list(bi_range(-1)) == [ ]
+    assert list(bi_range(-2)) == [ ]
+    assert list(bi_range(-3)) == [ ]
+
+    for brwm in (bi_range_with_maxes_crude, bi_range_with_maxes):
+        print("Using ",brwm)
+        assert list(brwm(-3, 0, 0)) == [ ]
+        assert list(brwm(-2, 0, 0)) == [ ]
+        assert list(brwm(-1, 0, 0)) == [ ]
+        assert list(brwm(0, 0, 0)) == [ (0,0), ]
+        assert list(brwm(0, 1, 0)) == [ (0,0), ]
+        assert list(brwm(0, 0, 3)) == [ (0,0), ]
+        assert list(brwm(0, 1, 3)) == [ (0,0), ]
+        assert list(brwm(4, 0, 0)) == [ ]
+        assert list(brwm(4, 1, 1)) == [ ]
+        assert list(brwm(4, -1, 4)) == [ ]
+        assert list(brwm(4, 4, -1)) == [ ]
+        assert list(brwm(4, -2, 4)) == [ ]
+        assert list(brwm(4, 4, -2)) == [ ]
+        assert list(brwm(4, 5, 1)) == [ (3,1), (4,0), ]
+        assert list(brwm(4, 2, 4)) == [ (0,4), (1,3), (2,2), ]
+        assert list(brwm(4, 1, 4)) == [ (0,4), (1,3), ]
+        assert list(brwm(4, 2, 3)) == [ (1,3), (2,2), ]
+        assert list(brwm(10, 2, 4)) == [ ]
+        assert list(brwm(10, 2, 5)) == [ ]
+        assert list(brwm(10, 2, 6)) == [ ]
+        assert list(brwm(10, 2, 7)) == [ ]
+        assert list(brwm(10, 2, 8)) == [ (2,8) ]
+        assert list(brwm(10, 2, 9)) == [ (1,9), (2,8), ]
+        assert list(brwm(10, 2, 10)) == [ (0,10), (1,9), (2,8), ]
+        assert list(brwm(10, 2, 11)) == [ (0,10), (1,9), (2,8), ]
+        assert list(brwm(10, 11, 2)) == [ (8,2), (9,1), (10,0), ]
+        assert list(brwm(10, 10, 2)) == [ (8,2), (9,1), (10,0), ]
+        assert list(brwm(10, 9, 2)) == [ (8,2), (9,1), ]
+        assert list(brwm(10, 8, 2)) == [ (8,2), ]
+        assert list(brwm(10, 7, 2)) == [ ]
+        assert list(brwm(10, 6, 2)) == [ ]
+        assert list(brwm(10, 5, 2)) == [ ]
+        assert list(brwm(10, 4, 2)) == [ ]
+

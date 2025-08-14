@@ -1,15 +1,22 @@
 #import itertools
+import sympy as sp
 import math
-from distinct_permutations import distinct_permutations
+from more_itertools import distinct_permutations
+from distinct_partitions_with_start import distinct_partitions_with_start as distinct_partitions
+from bi_range import bi_range_with_maxes
+from equivalent_places import Equivalent_Places
+from functools import partial
 
 """
-Canonical matches have an even number of +1 and and odd number of -1 entries, and others zero.
+Vertex matches have an even number of +1 and and odd number of -1 entries, and others zero. Their total number of entries is M, the numnber of bad bats.
 
-"Useful" canonical matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
+"Useful" vertex matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
 
-Sometimes it is not worth permuting canonical matches over every bad bat because other matches in the existing context may not yet have broken any symmetries between the bats.  WLOG we choose to put the entries which are deemed to have already broken symmetry FIRST.  And the argument "perming_places" describes how many such spaces there are.
-E.g.: perming_places=2 means that the first two position (i.e. pos 0 and pos 1) have broken some symmetry and permutations on them are relevant, whereas permutations on pos 2 and above are irrelevant.
-E.g. if one listed all distinct permutations of the letters "Speedo" for "perming_places=2" one would want these (in which the "." is not actually part of the string but has been inserted to help guide the eye so that you can see that only the first two letters explore all perms wile after the dot there is no perming.  Note that there are 4*4+5 = 21 of these:
+A "canonical" vertex match is one where the elements in the tuple never decrease reading left to right. E.g., if all position are equivalent, then (1,1,-1,-1,-1,0) is a canonical match.
+
+Sometimes it is not worth permuting vertex matches over every bad bat because other matches in the existing context may not yet have broken any symmetries between the bats.
+
+E.g. if the first two places are different to each other (and to any other place) but the last four places are all equivalent to each other, then one need only consider these orderings of the letters "Speedo" in that context:
 
     Sp.eedo
     Se.pedo
@@ -38,221 +45,458 @@ E.g. if one listed all distinct permutations of the letters "Speedo" for "permin
     od.Spee
 """
 
+def _smallest_odd_number_greater_than_or_equal_to(x):
+    return 2*math.ceil((x+1)/2)-1 
 
-def smallest_odd_number_greater_than_or_equal_to(x):
-  return 2*math.ceil((x+1)/2)-1 
-
-def bi_range(n):
+def generate_all_vertex_match_signatures(
+    M, #number of bad bats
+    k = None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
+    start = None
+    ):
     """
-    Whereas range(n) iterates over 0,1,2,3,...,n-1 ... bi_range(n) iterates over non-negative pairs of integers which sum to n.
-    The first integer grows, while the second integer shrinks.
-    For example, range(4) would iterate over
-        (0,4), (1,3), (2,2), (3,1), (4,0).
+    The signature of a vertex match is how many ones, minus ones and zeros it has.
+    We yield triplets of numbers having the order (number_ones, number_minus_ones, number_zeros).
+
+    If suplied and not None, start must be a tuple containing a signature which the method would ordinarily generate, and as a consequence the generator will start here.
+
+    Vertex matches have M entries in total, comprising an even number of +1 and and odd number of -1 entries, and others zero.
+
+    "Useful" vertex matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
     """
-    for i in range(n+1):
-        yield i, n-i
 
-def bi_range_with_maxes_crude(n, max_first, max_second):
-    """
-    Whereas range(n) iterates over 0,1,2,3,...,n-1 ... bi_range(n) iterates over non-negative pairs of integers which sum to n.
-    The first integer grows, while the second integer shrinks.
-    The first integer may not exceed max_first, while the second may not exceed max_second.
-    For example, range(4, 2,3) would iterate over
-         (1,3), (2,2)
-    which starts at the max_second contraint, and goes to the max_first constraint.
-    If the sum of both maxes is less than the total n, there will be no valid iterator positions. So:
-    """
-   
-    for i in range(n+1):
-       if i>max_first or n-i>max_second:
-           continue # TODO! Slow Fix!
-       yield i, n-i
+    if start is not None:
+        starting = True
+        if len(start) != 3:
+            raise ValueError(f"len(start) should equal 3 but is {len(start)}. start={start}.")
+        if sum(start) != M:
+            raise ValueError(f"sum(start) should equal {M} but is {sum(start)}. start={start}.")
+        if True in ((int(c) != c or c<0) for c in start):
+            raise ValueError(f"start should be a tuple of non-negative integers but start={start}.")
 
-def bi_range_with_maxes(n, max_first, max_second):
-    """
-    Whereas range(n) iterates over 0,1,2,3,...,n-1 ... bi_range(n) iterates over non-negative pairs of integers which sum to n.
-    The first integer grows, while the second integer shrinks.
-    The first integer may not exceed max_first, while the second may not exceed max_second.
-    For example, range(5, 2,3) would iterate over
-         (1,3), (2,2)
-    which starts at the max_second contraint, and goes to the max_first constraint.
-    If the sum of both maxes is less than the total n, there will be no valid iterator positions. So:
+        start_ones, start_minus_ones, _ = start
+    else:
+        starting = False
 
-    0 <= a <= A
-    0 <= b <= B
-    0 <= a+b = N
+    for number_of_ones in range(start_ones if starting else 0, M+1, 2):
 
-    so 
+        if starting:
+            start_for_number_of_minus_ones = start_minus_ones
+        else:
+            if k is not None:
+                # In this case we need 
+                #         number_of_ones + number_of_minus_ones > k  and   number_of_minus_ones >= 1
+                # so
+                #         number_of_minus_ones > k - number_of_ones   and number_of_minus_ones >= 1
+                # so
+                #         number_of_minus_ones >= k - number_of_ones + 1 and number_of_minus_ones >=1
+                # so
+                #         number_of_minus_ones >= max(k - number_of_ones + 1, 1)
+                start_for_number_of_minus_ones =  max(1, _smallest_odd_number_greater_than_or_equal_to(k - number_of_ones + 1))
+            else:
+                start_for_number_of_minus_ones = 1
 
-    0 <= a <= A
-    0 <= N-a <= B
+        for number_of_minus_ones in range(start_for_number_of_minus_ones, M+1-number_of_ones, 2):
+            # In an alternative (but slower) implementation, one could always have start_for_number_of_minus_ones=1 but then 
+            # uncomment the next two lines:
+            # if k is not None and (number_of_ones + number_of_minus_ones <= k):
+            #      continue
+            number_of_zeros = M-number_of_ones-number_of_minus_ones
+            if starting:
+                assert (number_of_ones, number_of_minus_ones, number_of_zeros) == start
+                starting = False
+            yield number_of_ones, number_of_minus_ones, number_of_zeros
+    assert starting == False
 
-    so
-
-    0 <= a <= A
-    0 >= a-N >= -B
-
-    so
-
-    0 <= a <= A
-    N >= a >= N-B
-
-    so
-
-    0 <= a <= A
-    N-B <= a <= N
-
-    so
-
-    max(0, N-B) <= a <= min(A,N)
-
-    """
-  
-    if n<0 or max_first<0 or max_second<0:
-        # No valid iterator positions can be returned.
-        return
-    
-    for a in range(max(0, n-max_second), min(max_first, n)+1):
-        yield a, n-a
-
-
-def generate_all_useful_canonical_matches(
-        k, # k=dimension of space
-        M, #number of bad bats
-        permute = True,
+def generate_canonical_vertex_matches(
+        M, # M=number of bad bats
+        k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
+        start = None,
         ):
-        yield from generate_all_canonical_matches(k=k, M=M, show_only_useful_matches = True, permute=permute)
+        """
+        M should be a non-negative integer. It specifies how long each generated tuple will
+        be. (The number of bad bats!)
 
+        k, if not None, should be the dimension of space.  Supply k if you want to generate
+        only the useful matches for that spatial dimension.
 
-def generate_all_canonical_matches(
-        k, # k=dimension of space
-        M, #number of bad bats
-        show_only_useful_matches = False,
+        This method generates all tuples with the following properties:
+
+           * the tuple has length M,
+           * the tuple has an even number of ones,
+           * the tuple has an odd number of minus ones,
+           * the tuple is composed only of ones, minus ones and zeros,
+           * if k is not None, then the tuple shall have AT LEAST k+1 non-zero entries, and
+           * the tuple is in canonical form (i.e. sorted into non-decreasing order).
+        
+        If start is supplied (which must be something which the stream would ordinarily output) 
+        the generator should start from there instead of starting at the beginnning.
+        """
+        return generate_all_vertex_matches(M=M, k=k, permute=False, start=start)
+
+def generate_all_vertex_matches(
+        M, # M=number of bad bats
+        k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         permute = True,
+        start = None,
         ):
+        """
+        M should be a non-negative integer. It specifies how long each generated tuple wil
+        be. (The number of bad bats!)
 
-        for number_of_ones in range(0, M+1, 2):
+        k, if not None, should be the dimension of space.  Supply k if you want to generate only
+        the useful matches for that spatial dimension.
+
+        This method generates all tuples with the following properties:
+
+           * the tuple has length M,
+           * the tuple has an even number of ones,
+           * the tuple has an odd number of minus ones,
+           * the tuple is composed only of ones, minus ones and zeros, and
+           * if k is not None, then the tuple shall have AT LEAST k+1 non-zero entries.
+        
+        By default, each tuple is yielded in every possible distinct ordering of its elements.
+        However, this perming can be disabled by setting permute=False. This will result in each
+        tuple being yielded once only in a canonical form (ie. all minus ones followed by all zeros
+        followed by all ones). Note canonical form is also sorted into non-decreasing order!
+
+        If start is supplied (which must be something which the stream would ordinarily output) 
+        the generator should start from there instead of starting at the beginnning.
+        At present non-none start is only implemented for permute=False, so you will get an exception
+        if you try to use it with permute=True.
+        """
+
+        if permute and start is not None:
+            raise NotImplementedError("Sorry, we don't yet implement start when permute=True")
+
+        if start is not None:
+            start_signature = start.count(1), start.count(-1), start.count(0)
+
+        for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_vertex_match_signatures(M, k=k, start=start_signature if (start is not None) else None):
+
             ones = (1,)*number_of_ones
+            minus_ones = (-1,)*number_of_minus_ones
+            zeros = (0,)*number_of_zeros
 
-            if show_only_useful_matches:
-                # In this case we need 
-                #         number_of_ones + number_of_minus_ones > k  and   number_of_minus_ones >= 1
-                # so
-                #         number_of_minus_ones > k - number_of_ones   and number_of_minus_ones >= 1
-                # so
-                #         number_of_minus_ones >= k - number_of_ones + 1 and number_of_minus_ones >=1
-                # so
-                #         number_of_minus_ones >= max(k - number_of_ones + 1, 1)
-                start_for_number_of_minus_ones =  max(1, smallest_odd_number_greater_than_or_equal_to(k - number_of_ones + 1))
+            tup = minus_ones + zeros + ones # Note numerical order!
+
+            if permute:
+                if start is not None:
+                    raise NotImplementedError("Sorry, we don't yet implement start when permute=True")
+                for match in distinct_permutations(tup):
+                    yield match
             else:
-                start_for_number_of_minus_ones = 1
-            for number_of_minus_ones in range(start_for_number_of_minus_ones, M+1-number_of_ones, 2):
-                # In alternative (but slower) implementation, one could always have start_for_number_of_minus_ones=1 but then 
-                # uncomment the next two lines:
-                # if show_only_useful_matches and (number_of_ones + number_of_minus_ones <= k):
-                #      continue
-                minus_ones = (-1,)*number_of_minus_ones
-                number_of_zeros= M-number_of_ones-number_of_minus_ones
-                zeros = (0,)*number_of_zeros
+                yield tup
 
-                if permute:
-                    for match in distinct_permutations( ones + minus_ones + zeros):
-                        yield match
-                else:
-                    yield ones + minus_ones + zeros
+def generate_all_useful_vertex_matches(
+    M, # M=number of bad bats
+    k, # k=dimension of space 
+    permute = True,
+    start = None,
+    ):
+    return generate_all_vertex_matches(M=M, k=k, permute=permute, start=start)
 
-def generate_all_useful_matches_given_perming_places(
-        k, # k=dimension of space
-        M, # number of bad bats
-        perming_places = 0, # permutations take place within the first "perming_places" places, otherwise not.
-        ):
-    yield from generate_all_matches_given_perming_places(k=k, M=M, show_only_useful_matches = True, perming_places=perming_places)
+def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(
+    equivalent_places : Equivalent_Places,
+    # M=None, # M = number of bad bats. (Can be derived from equivalent_places, so no longer supplied)
+    k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
+    start=None,
+    ):
+
+    if start is not None:
+        raise NotImplementedError
+
+    M = equivalent_places.size
+    if int(M) != M or M<0:
+        raise RuntimeError("Equivalent_Places is not behaving!")
+
+    if M==0:
+        return
+
+    assert M>0
+
+    ##############################################
+    def _generate_dicts_for(e_places, signature):
+        # Caller must guarantee e_places is non-empty, M>0 and signature consistent with e_places
+        tot = sum(signature)
+        assert e_places
+        number_of_ones, number_of_minus_ones, number_of_zeros = signature
+        assert tot == sum(len(e_place) for e_place in e_places)
     
-def generate_all_matches_given_perming_places(
-        k, # k=dimension of space
-        M, # number of bad bats
-        show_only_useful_matches = False,
-        perming_places = 0, # permutations take place within the first "perming_places" places, otherwise not.
+        perming_places = len(e_places[0])
+        non_perming_places = tot - perming_places
+    
+        # Recursion will stop when non_perming_places reaches 0 .... which should be the same as wheb e_places is length 1.
+        # Let's check the above statement.
+        assert (non_perming_places > 0 and len(e_places) > 1) or (non_perming_places == 0 and len(e_places)==1)
+    
+        for perming_ones, non_perming_ones in bi_range_with_maxes(number_of_ones, max_first=perming_places, max_second=non_perming_places):
+            for perming_minus_ones, non_perming_minus_ones in bi_range_with_maxes(number_of_minus_ones, max_first = perming_places-perming_ones, max_second=non_perming_places - non_perming_ones):
+                perming_zeros = perming_places - (perming_ones + perming_minus_ones)
+                non_perming_zeros = number_of_zeros - perming_zeros
+    
+    
+                assert perming_zeros >=0
+                assert non_perming_zeros >=0
+    
+                perming_part = (-1,)*perming_minus_ones + (0,)*perming_zeros + (1,)*perming_ones # Note numerical order!
+                assert len(perming_part) == len(e_places[0])
+    
+                perming_part_dict = dict(zip(e_places[0], perming_part))
+    
+                if non_perming_places == 0:
+                    yield perming_part_dict
+                else:
+                    new_signature = (non_perming_ones, non_perming_minus_ones, non_perming_zeros)
+                    for non_perming_part_dict in _generate_dicts_for(e_places[1:], new_signature):
+                       yield perming_part_dict | non_perming_part_dict
+    ##############################################
+
+    e_places = equivalent_places._equivalent_places_with_singletons
+    for signature in generate_all_vertex_match_signatures(M,k=k):
+
+        for d in _generate_dicts_for(e_places, signature):
+            yield tuple(d[i] for i in range(M))
+
+def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(
+        equivalent_places : Equivalent_Places,
+        # M=None, # M = number of bad bats. (Can be derived from equivalent_places, so no longer supplied)
+        k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
+        start=None,
         ):
 
-        if M<0:
-            raise ValueError(f"M should be a non-negative integer but is {M}.")
+    M = equivalent_places.size
+    if int(M) != M or M<0:
+        raise RuntimeError("Equivalent_Places is not behaving!")
 
-        if perming_places<0 or perming_places>M:
-            raise ValueError(f"perming_places should be in [0,{M}]  but is {perming_places}.")
+    if M==0:
+        return
 
-        non_perming_places = M-perming_places
+    assert M>0
 
-        for number_of_ones in range(0, M+1, 2):
-            #ones = (1,)*number_of_ones
+    e_places = equivalent_places._equivalent_places_with_singletons
+    splitting = tuple( len(group) for group in e_places )
 
-            if show_only_useful_matches:
-                # In this case we need 
-                #         number_of_ones + number_of_minus_ones > k  and   number_of_minus_ones >= 1
-                # so
-                #         number_of_minus_ones > k - number_of_ones   and number_of_minus_ones >= 1
-                # so
-                #         number_of_minus_ones >= k - number_of_ones + 1 and number_of_minus_ones >=1
-                # so
-                #         number_of_minus_ones >= max(k - number_of_ones + 1, 1)
-                start_for_number_of_minus_ones =  max(1, smallest_odd_number_greater_than_or_equal_to(k - number_of_ones + 1))
-            else:
-                start_for_number_of_minus_ones = 1
-            for number_of_minus_ones in range(start_for_number_of_minus_ones, M+1-number_of_ones, 2):
-                # In alternative (but slower) implementation, one could always have start_for_number_of_minus_ones=1 but then 
-                # uncomment the next two lines:
-                # if show_only_useful_matches and (number_of_ones + number_of_minus_ones <= k):
-                #      continue
-                #minus_ones = (-1,)*number_of_minus_ones
-                number_of_zeros= M-number_of_ones-number_of_minus_ones
-                #zeros = (0,)*number_of_zeros
+    starting = start is not None
 
-                for perming_ones, non_perming_ones in bi_range_with_maxes(number_of_ones, max_first=perming_places, max_second=non_perming_places):
-                    for perming_minus_ones, non_perming_minus_ones in bi_range_with_maxes(number_of_minus_ones, max_first = perming_places-perming_ones, max_second=non_perming_places - non_perming_ones):
-                        perming_zeros = perming_places - (perming_ones + perming_minus_ones)
-                        non_perming_zeros = number_of_zeros - perming_zeros
+    # As vertex_matches (below) are canonical, they are sorted, so:
+    start_vertex_match = tuple(sorted(start)) if starting else None
 
-                        assert perming_zeros >=0
-                        assert non_perming_zeros >=0
+    start_partition = None
+    if starting:
+        #raise NotImplementedError()
 
-                        perming_part = (1,)*perming_ones + (-1,)*perming_minus_ones + (0,)*perming_zeros
-                        non_perming_part = (1,)*non_perming_ones + (-1,)*non_perming_minus_ones + (0,)*non_perming_zeros
+        """
+        The intial canonical vertex_match might be, say
 
-                        for perm in distinct_permutations(perming_part):
-                            yield perm + non_perming_part
+              start_vertex_match=(-1,0,0,1,1)
 
+        and if the equivalent places were 
 
-if __name__ == "__main__":
+              e_places=((1,3,4),(0,),(2,))
+
+        then we would have
+
+              splitting = (3,1,1)
+
+        and so could concevably have encountered the partition
+
+               partition = ( (-1,0,1), (1,), (0,) )
+
+        which would have pushed
+
+            (-1,0,1) into pos(1,3,4)
+            (1,) into pos(0,) and
+            (0,) into pos(2,)
+
+        resulting in the following yield:
+
+            y = (1,-1,0,0,1).
+
+        When constructing the starting_partition our job would be:
+
+            GIVEN y, e_places, splitting and start_vertex_match, FIND partition.
+
+        How can we do this?
+        """
+        start_partition = tuple( tuple( start[pos] for pos in pos_group  )  for pos_group in e_places ) 
+
+    # Now start the actual iteration:
+
+    workspace = [None]*M
+
+    for vertex_match in generate_canonical_vertex_matches(M=M, k=k, start=start_vertex_match):
+        for partition in distinct_partitions(vertex_match, splitting, start=start_partition if starting else None):
+            starting = False # This is important! We only start once.
+
+            # That's all the looking done. We now just need to fill in the workspace ....
+            assert len(partition) == len(e_places)
+            for payload_group, pos_group in zip(partition, e_places):
+                assert len(payload_group) == len(pos_group)
+                for payload, pos in zip(payload_group, pos_group):
+                    assert 0 <= pos < M
+                    assert payload in (+1, -1, 0)
+                    workspace[pos] = payload
+            # .... OK the workspace is now filled so:
+
+            yield tuple(workspace)
+
+def generate_all_vertex_matches_given_equivalent_places(
+        equivalent_places : Equivalent_Places,
+        # M=None, # M = number of bad bats. (Can be derived from equivalent_places, so no longer supplied)
+        k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
+        start=None
+        ):
+    #return generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(equivalent_places, k=k, start=start)
+    return generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(equivalent_places, k=k, start=start)
+
+def generate_viable_vertex_match_matrices(
+    M, # M = number of bad bats. 
+    k, # k=dimension of space.
+    go_deeper    = None, # If present, then the branch topped by matrix "mat" is only explored more deeply if go_deeper(mat) is True. Does not affect whether mat itself is yielded.
+    yield_matrix = None, # If present, then the matrix "mat" is only yielded if if yield_matrix(mat) is True.  If not yielded, further branch exploration is suppressed. Note that, other things being equal, and if it is physically possibl, it is better to use "go_deeper" (with or without yield_matrix) than "yield_matrix" alone.
+    ):
+    """
+    Generate sympy.Matrix objects which represent constraints on lattice alignments of red/blue vertices. 
+    Uses depth-first traversal of rows.
+    
+    To abort the current branch after yielding a given matrix, the user may send True to the generator.
+
+    Alteratively, the user may specify which matrices and branches should be explored by supplying one or both of the yield_matrix and go_deeper arguments.
+
+    It is far better to kill a branch before generating its daughter matrixes than to kill a branch by killing/vetoing each daughter matrix.  This, if it is possible to do so, it is far better to use "go_deeper" (with or without  "yield_matrix") to kill a whole branch in one test, than to use only "yield_matrix".
+    """
+
+    # TODO: consider making prefix a SymPy matrix natively, so that we are not always converting, and can more easily get different views. Maybe this would speed somet hings up??
+    def dfs(prefix, start_row):
+        # "prefix" is a list or rows, each of which is a tuple. 
+        # "mat" is a Sympy representation of prefix.
+
+        # Yield the current matrix (if prefix is non-empty)
+        if prefix:
+            mat = sp.Matrix(prefix)
+
+            if yield_matrix is not None and not yield_matrix(mat):
+                return # Skip deeper exploration without yielding mat due to internally discovered test failure
+
+            user_aborted_this_branch = (yield mat)
+
+            if user_aborted_this_branch or (go_deeper is not None and not go_deeper(mat)):
+                return  # Skip deeper exploration
+
+            columns_of_mat_as_tuples = [tuple(mat.col(i)) for i in range(mat.cols)]  # as tuples so that they will be hashable and thus usable as dictionary keys
+            e_places = Equivalent_Places(exemplar = columns_of_mat_as_tuples)
+        else:
+            e_places = Equivalent_Places(size=M, all_equivalent=True)
+        #print(f"-------\nFor prefix = ")
+        #for rrr in prefix:
+        #   print("    ",rrr)
+        #print(f"using e_places = {e_places}")
+
+        # Start the rows at the given start_row:
+        row_gen = generate_all_vertex_matches_given_equivalent_places(equivalent_places = e_places, k=k, start=start_row)
+
+        for row in row_gen:
+            # Avoid repeating the start_row itself at the top of recursion
+            if start_row is not None and row == start_row:
+                continue
+            # Recurse with the new row appended to prefix
+            yield from dfs(prefix + [row], row)
+
+    # Start with no prefix and no lower bound
+    yield from dfs([], None)
+
+def demo():
+    M=10
+    print(f"All ***SIGNATURES*** given M={M} bad bats are:")
+    for i, match in enumerate(generate_all_vertex_match_signatures(k=None, M=M)):
+       print(f"   {i+1}:    {match}")
+    print()
+
+    M=10
+    start=(0,3,7)
+    print(f"The ***SIGNATURES*** starting at {start} given M={M} bad bats are:")
+    for i, match in enumerate(generate_all_vertex_match_signatures(k=None, M=M, start=start)):
+       print(f"   {i+1}:    {match}")
+    print()
+
+    M=10
+    start=(4,3,3)
+    print(f"The ***SIGNATURES*** starting at {start} given M={M} bad bats are:")
+    for i, match in enumerate(generate_all_vertex_match_signatures(k=None, M=M, start=start)):
+       print(f"   {i+1}:    {match}")
+    print()
+
     M=4
     print(f"All matches given M={M} bad bats are:")
-    for i, match in enumerate(generate_all_canonical_matches(k=None, M=M)):
+    for i, match in enumerate(generate_all_vertex_matches(k=None, M=M)):
        print(f"   {i+1}:    {match}")
     print()
 
     k=2
-    print(f"All USEFUL matches in k={k} dimensions, given M={M} bad bats are:")
-    for i,match in enumerate(generate_all_useful_canonical_matches(k=k, M=M)):
+
+    print(f"All useful matches in k={k} dimensions, given M={M} bad bats, but ignoring permutations are:")
+    for i,match in enumerate(generate_all_vertex_matches(k=k, M=M, permute=False)):
        print(f"   {i+1}:    {match}")
     print()
 
-    print(f"All matches in k={k} dimensions, given M={M} bad bats, but ignoring permutations are:")
-    for i,match in enumerate(generate_all_canonical_matches(k=k, M=M, permute=False)):
-       print(f"   {i+1}:    {match}")
-    print()
 
-    print(f"All USEFUL matches in k={k} dimensions, given M={M} bad bats, but ignoring permutations are:")
-    for i,match in enumerate(generate_all_useful_canonical_matches(k=k, M=M, permute=False)):
-       print(f"   {i+1}:    {match}")
-    print()
 
-    for perming_places in range(5):
-        print(f"All matches in k={k} dimensions, given M={M} bad bats, for perming_places={perming_places}")
-        for i,match in enumerate(generate_all_matches_given_perming_places(k=k, M=M, perming_places=perming_places)):
+    for equivalent_places in ( Equivalent_Places(size=M, none_equivalent=True), ):
+        print(f"All USEFUL matches in k={k} dimensions, given M={M} bad bats, for equivalent_places={equivalent_places}")
+        for i,match in enumerate(generate_all_vertex_matches_given_equivalent_places(k=k, equivalent_places=equivalent_places)):
            print(f"   {i+1}:    {match}")
         print()
 
-    for perming_places in range(5):
-        print(f"All USEFUL matches in k={k} dimensions, given M={M} bad bats, for perming_places={perming_places}")
-        for i,match in enumerate(generate_all_useful_matches_given_perming_places(k=k, M=M, perming_places=perming_places)):
+    for equivalent_places in ( Equivalent_Places(size=M, none_equivalent=True), ):
+        print(f"All matches given M={M} bad bats, for equivalent_places={equivalent_places}")
+        for i,match in enumerate(generate_all_vertex_matches_given_equivalent_places(k=None, equivalent_places=equivalent_places)):
            print(f"   {i+1}:    {match}")
         print()
+
+    print("timing tests are now in timing_tests.py")
+
+
+
+
+
+    print("== Test of Matrix Generation =========")
+    def max_row_requirement(mat, max_rows):
+        return sp.shape(mat)[0] <= max_rows
+
+    mat_gen_slow = generate_viable_vertex_match_matrices(
+        M=5,
+        k=2,
+        yield_matrix = partial(max_row_requirement, max_rows=4),
+        ) 
+
+    mat_gen_fast = generate_viable_vertex_match_matrices(
+        M=5,
+        k=2,
+        go_deeper = partial(max_row_requirement, max_rows=3),
+        ) 
+
+    print("Will check if two methods agree:")
+    print("Doing fast calc ...")
+    fast = tuple(mat_gen_fast)
+    print(f" ... len(fast)={len(fast)}.")
+    print("Doing slow calc ...")
+    slow = tuple(mat_gen_slow)
+    print(f" ... len(slow)={len(slow)}.")
+    assert fast == slow
+    print("Fast agreed with slow")
+
+    once = True
+    for i, mat in enumerate(fast):
+        if i<10 or i>len(fast)-10:
+            print(i, mat)
+        else:
+            if once:
+                print(".....")
+                once=False
+            continue
+
+    print("===========================================")
+
+
+if __name__ == "__main__":
+    demo()
