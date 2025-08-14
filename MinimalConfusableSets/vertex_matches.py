@@ -193,7 +193,7 @@ def generate_all_useful_vertex_matches(
     permute = True,
     start = None,
     ):
-    yield from generate_all_vertex_matches(M=M, k=k, permute=permute, start=start)
+    return generate_all_vertex_matches(M=M, k=k, permute=permute, start=start)
 
 def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(
     equivalent_places : Equivalent_Places,
