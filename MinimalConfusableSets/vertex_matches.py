@@ -508,6 +508,8 @@ def tom_demo():
     def max_row_requirement(mat, max_rows):
         return sp.shape(mat)[0] <= max_rows
 
+
+
     mat_gen = generate_viable_vertex_match_matrices(
         M=5,
         k=2,
@@ -523,5 +525,6 @@ def tom_demo():
 if __name__ == "__main__":
     #demo()
     tom_demo()
+
 
 
