@@ -158,7 +158,15 @@ def generate_all_vertex_matches(
         However, this perming can be disabled by setting permute=False. This will result in each
         tuple being yielded once only in a canonical form (ie. all minus ones followed by all zeros
         followed by all ones). Note canonical form is also sorted into non-decreasing order!
+
+        If start is supplied (which must be something which the stream would ordinarily output) 
+        the generator should start from there instead of starting at the beginnning.
+        At present non-none start is only implemented for permute=False, so you will get an exception
+        if you try to use it with permute=True.
         """
+
+        if permute and start is not None:
+            raise NotImplementedError("Sorry, we don't yet implement start when permute=True")
 
         if start is not None:
             start_signature = start.count(1), start.count(-1), start.count(0)
