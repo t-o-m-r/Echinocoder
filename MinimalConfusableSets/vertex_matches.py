@@ -523,7 +523,7 @@ def tom_demo():
 
 
 if __name__ == "__main__":
-    #demo()
+    demo()
     tom_demo()
 
 
