@@ -115,6 +115,7 @@ def generate_all_vertex_matches(
         M, # M=number of bad bats
         k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         permute = True,
+        start = None,
         ):
         """
         M should be a non-negative integer. It specifies how long each generated tuple will be. (The number of bad bats!)
@@ -131,6 +132,9 @@ def generate_all_vertex_matches(
         
         By default, each tuple is yielded in every possible distinct ordering of its elements. However, this perming can be disabled by setting permute=False. This will result in each tuple being yielded once only in a canonical form (all ones followed by all minus ones followed by all zeros).
         """
+
+        if start is not None:
+            raise NotImplementedError()
 
         for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_vertex_match_signatures(M, k=k):
 
@@ -151,15 +155,20 @@ def generate_all_useful_vertex_matches(
     M, # M=number of bad bats
     k, # k=dimension of space 
     permute = True,
+    start = None,
     ):
-    yield from generate_all_vertex_matches(M=M, k=k, permute=permute)
+    yield from generate_all_vertex_matches(M=M, k=k, permute=permute, start=start)
 
 #DONE
 def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(
     equivalent_places : Equivalent_Places,
     # M=None, # M = number of bad bats. (Can be derived from equivalent_places, so no longer supplied)
     k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
+    start=None,
     ):
+
+    if start is not None:
+        raise NotImplementedError
 
     M = equivalent_places.size
     if int(M) != M or M<0:
@@ -220,7 +229,11 @@ def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(
         equivalent_places : Equivalent_Places,
         # M=None, # M = number of bad bats. (Can be derived from equivalent_places, so no longer supplied)
         k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
+        start=None,
         ):
+
+    if start is not None:
+        raise NotImplementedError
 
     M = equivalent_places.size
     if int(M) != M or M<0:
@@ -252,9 +265,10 @@ def generate_all_vertex_matches_given_equivalent_places(
         equivalent_places : Equivalent_Places,
         # M=None, # M = number of bad bats. (Can be derived from equivalent_places, so no longer supplied)
         k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
+        start=None
         ):
-    #return generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(equivalent_places, k=k)
-    return generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(equivalent_places, k=k)
+    #return generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(equivalent_places, k=k, start=start)
+    return generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(equivalent_places, k=k, start=start)
 
 #DONE
 def generate_viable_vertex_match_matrices(
@@ -288,8 +302,8 @@ def generate_viable_vertex_match_matrices(
 
         # Start the rows at the given start_row
         # row_gen = rows_factory(start_row)
-        # TODO: FIX TEMPORARY 
-        row_gen = generate_all_vertex_matches_given_equivalent_places(equivalent_places=Equivalent_Places(size=M, all_equivalent=True), k=k, )
+        # TODO: FIX TEMPORARY. (1) start is not implemented, (2) as equivalent places will change, rows may have a different order, so not clear how to maintain ranking. :( THIS COULD BE SHOW STOPPER.
+        row_gen = generate_all_vertex_matches_given_equivalent_places(equivalent_places=Equivalent_Places(size=M, all_equivalent=True), k=k, start=start_row)
 
         for row in row_gen:
             # Avoid repeating the start_row itself at the top of recursion
