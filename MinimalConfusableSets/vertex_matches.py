@@ -380,8 +380,8 @@ def generate_viable_vertex_match_matrices(
 
         # Start the rows at the given start_row
         # row_gen = rows_factory(start_row)
-        # TODO: FIX TEMPORARY. (1) start is not implemented, (2) as equivalent places will change, rows may have a different order, so not clear how to maintain ranking. :( THIS COULD BE SHOW STOPPER.
-        row_gen = generate_all_vertex_matches_given_equivalent_places(equivalent_places=Equivalent_Places(size=M, all_equivalent=True), k=k, )# start=start_row)
+        # TODO: FIX TEMPORARY. (1) the Equivalent_Places is currently wrongly generated.  (2) I have not checked that equivalent places getting more complex never removes start_row from the more complex iterator. 
+        row_gen = generate_all_vertex_matches_given_equivalent_places(equivalent_places=Equivalent_Places(size=M, all_equivalent=True), k=k, start=start_row)
 
         for row in row_gen:
             # Avoid repeating the start_row itself at the top of recursion
@@ -452,9 +452,9 @@ def demo():
         return sp.shape(mat)[0] >= max_rows
 
     mat_gen = generate_viable_vertex_match_matrices(
-        M=3,
+        M=6,
         k=2,
-        veto_branch = partial(veto_branch, max_rows=6),
+        veto_branch = None, #partial(veto_branch, max_rows=6),
         ) 
 
 
