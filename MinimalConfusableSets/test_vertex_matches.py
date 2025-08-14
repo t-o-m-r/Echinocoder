@@ -478,11 +478,11 @@ def test_start_vertex_matches():
      ]
     
      from itertools import chain
-     for method_with_start, method_without_start in (
-         (generate_canonical_vertex_matches, generate_canonical_vertex_matches),
-         # TODO - UNCOMMENT WHEN START IMPLEMENTED FOR THESE! (generate_all_vertex_matches, generate_all_vertex_matches),
-         ):
-         for M, k, start in test_programme:
+     for M, k, start in test_programme:
+         for method_with_start, method_without_start in (
+                 (generate_canonical_vertex_matches, generate_canonical_vertex_matches),
+                 # TODO - UNCOMMENT WHEN START IMPLEMENTED FOR THESE! (generate_all_vertex_matches, generate_all_vertex_matches),
+             ):
              print(f"================== Testing startup of vertex MATCH generators with M={M}, k={k}, start={start} =======")
              start_pos = None
              for i, (lesters, itertoolss) in enumerate(zip_longest(method_with_start(M=M, k=k), method_without_start(M=M, k=k))):
@@ -494,6 +494,56 @@ def test_start_vertex_matches():
              assert start_pos is not None
              print(f"Start pos determined to be {start_pos}.")
              for i, (lesters, itertoolss) in enumerate(zip_longest(chain(iter([None,]*start_pos),method_with_start(M=M, k=k, start=start)), method_without_start(M=M, k=k))):
+                 if i < start_pos:
+                     print(f"{i}:         {lesters} ...  {itertoolss}")
+                 else:
+                     print(f"{i}:         {lesters} {'==' if lesters==itertoolss else '!='} {itertoolss}")
+                     assert lesters==itertoolss
+
+def test_start_vertex_matches_given_equivalent_places():
+    
+     test_programme = [
+       (Equivalent_Places(size=3, all_equivalent=True), None, (-1,-1,-1)),
+       (Equivalent_Places(size=3, all_equivalent=True), None, (0,0,0)),
+       (Equivalent_Places(size=3, all_equivalent=True), None, (0,1,1)),
+
+       (Equivalent_Places(size=3, all_equivalent=True), 1,(-1,-1,-1)),
+       (Equivalent_Places(size=6, all_equivalent=True), 3,(-1,0,1,1,1,1)),
+       (Equivalent_Places(size=7, all_equivalent=True), 2,(-1,-1,-1,0,0,0,0)),
+       (Equivalent_Places(size=7, all_equivalent=True), 2,(-1,0,0,0,0,1,1)),
+       (Equivalent_Places(size=7, all_equivalent=True), 2,(-1,1,1,1,1,1,1)),
+
+       (Equivalent_Places(size=3, equivalents_without_singletons=((0,2),)), 1,(-1,-1,-1)),
+       (Equivalent_Places(size=6, equivalents_without_singletons=((1,2), (3,4),)), 3,(-1,0,1,1,1,1)),
+       (Equivalent_Places(size=7, equivalents_without_singletons=((2,4,6),(1,4),)), 2,(-1,-1,-1,0,0,0,0)),
+       (Equivalent_Places(size=7, equivalents_without_singletons=((2,4,6),(1,4),)), 2,(-1,0,0,0,0,1,1)),
+       (Equivalent_Places(size=7, equivalents_without_singletons=((2,4,6),(1,4),)), 2,(-1,1,1,1,1,1,1)),
+
+       (Equivalent_Places(size=3, none_equivalent=True), 1,(-1,-1,-1)),
+       (Equivalent_Places(size=6, none_equivalent=True), 3,(-1,0,1,1,1,1)),
+       (Equivalent_Places(size=7, none_equivalent=True), 2,(-1,-1,-1,0,0,0,0)),
+       (Equivalent_Places(size=7, none_equivalent=True), 2,(-1,0,0,0,0,1,1)),
+       (Equivalent_Places(size=7, none_equivalent=True), 2,(-1,1,1,1,1,1,1)),
+     ]
+    
+     from itertools import chain
+     for e_places, k, start in test_programme:
+         for method_with_start, method_without_start in (
+                 (generate_all_vertex_matches_given_equivalent_places, generate_all_vertex_matches_given_equivalent_places),
+                 # TODO UNCOMMENT WHEN start IMPLEMENTED FOR _A: (generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A, generate_all_vertex_matches_given_equivalent_places),
+                 (generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B, generate_all_vertex_matches_given_equivalent_places),
+             ):
+             print(f"================== Testing startup of vertex MATCH generators with e_places={e_places}, k={k}, start={start} =======")
+             start_pos = None
+             for i, (lesters, itertoolss) in enumerate(zip_longest(method_with_start(equivalent_places=e_places, k=k), method_without_start(equivalent_places=e_places, k=k))):
+                 print(f"{i}:         {lesters} {'==' if lesters==itertoolss else '!='} {itertoolss}")
+                 if lesters == start and start_pos == None:
+                    start_pos = i
+                 assert lesters==itertoolss
+             print("Match confirmed!")
+             assert start_pos is not None
+             print(f"Start pos determined to be {start_pos}.")
+             for i, (lesters, itertoolss) in enumerate(zip_longest(chain(iter([None,]*start_pos),method_with_start(equivalent_places=e_places, k=k, start=start)), method_without_start(equivalent_places=e_places, k=k))):
                  if i < start_pos:
                      print(f"{i}:         {lesters} ...  {itertoolss}")
                  else:
