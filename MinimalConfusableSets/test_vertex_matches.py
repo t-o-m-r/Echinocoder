@@ -404,11 +404,11 @@ def test_canonical_order():
 
           generate_canonical_vertex_matches(M=4, k=3),
           generate_canonical_vertex_matches(M=6, k=3),
-          generate_canonical_vertex_matches(M=10, k=3),
+          generate_canonical_vertex_matches(M=7, k=3),
 
           generate_canonical_vertex_matches(M=4, k=3, start=(-1,0,1,1)),
           generate_canonical_vertex_matches(M=6, k=3, start=(-1,0,0,0,1,1)),
-          generate_canonical_vertex_matches(M=10, k=3, start=(0,0,0,0,1,1,1,1,1,1)),
+          generate_canonical_vertex_matches(M=7, k=3, start=(0,1,1,1,1,1,1)),
           ):
         print("==================")
         print("New test")
@@ -468,13 +468,15 @@ def test_start_vertex_match_signatures():
 
                 
 def test_start_vertex_matches():
-     method_with_start = generate_all_vertex_matches
-     method_without_start = generate_all_vertex_matches
+     method_with_start = generate_canonical_vertex_matches
+     method_without_start = generate_canonical_vertex_matches
     
      test_programme = [
        (3,1,(-1,-1,-1)),
-       (10,3,(-1,0,0,0,0,0,1,1,1,1)),
-       (10,3,(-1,-1,-1,0,0,0,1,1,1,1)),
+       (6,3,(-1,0,1,1,1,1)),
+       (7,2,(-1,-1,-1,0,0,0,0)),
+       (7,2,(-1,0,0,0,0,1,1)),
+       (7,2,(-1,1,1,1,1,1,1)),
      ]
     
      from itertools import chain

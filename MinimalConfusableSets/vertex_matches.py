@@ -161,9 +161,9 @@ def generate_all_vertex_matches(
         """
 
         if start is not None:
-            raise NotImplementedError()
+            start_signature = start.count(1), start.count(-1), start.count(0)
 
-        for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_vertex_match_signatures(M, k=k):
+        for number_of_ones, number_of_minus_ones, number_of_zeros in generate_all_vertex_match_signatures(M, k=k, start=start_signature if (start is not None) else None):
 
             ones = (1,)*number_of_ones
             minus_ones = (-1,)*number_of_minus_ones
@@ -172,6 +172,8 @@ def generate_all_vertex_matches(
             tup = minus_ones + zeros + ones # Note numerical order!
 
             if permute:
+                if start is not None:
+                    raise NotImplementedError("Sorry, we don't yet implement start when permute=True")
                 for match in distinct_permutations(tup):
                     yield match
             else:
