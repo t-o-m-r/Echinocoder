@@ -2,7 +2,7 @@
 import sympy as sp
 import math
 from more_itertools import distinct_permutations
-from distinct_partitions import distinct_partitions
+from distinct_partitions_with_start import distinct_partitions_with_start as distinct_partitions
 from bi_range import bi_range_with_maxes
 from equivalent_places import Equivalent_Places
 from functools import partial

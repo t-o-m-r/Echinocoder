@@ -6,7 +6,7 @@ from vertex_matches import (
 )
 
 from distinct_permutations_with_leftovers import distinct_permutations_with_leftovers as distinct_permutations
-from distinct_partitions import distinct_partitions
+from distinct_partitions_with_start import distinct_partitions_with_start as distinct_partitions
 from bi_range import bi_range_with_maxes
 from equivalent_places import Equivalent_Places
 
