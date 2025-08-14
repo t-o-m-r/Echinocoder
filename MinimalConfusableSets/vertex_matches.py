@@ -278,17 +278,55 @@ def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(
 
     starting = start is not None
 
-    # Need to find initial vertex_match and initial partition.
-    
     # As vertex_matches (below) are canonical, they are sorted, so:
     start_vertex_match = tuple(sorted(start)) if starting else None
+
+    start_partition = None
+    if starting:
+        #raise NotImplementedError()
+
+        """
+        The intial canonical vertex_match might be, say
+
+              start_vertex_match=(-1,0,0,1,1)
+
+        and if the equivalent places were 
+
+              e_places=((1,3,4),(0,),(2,))
+
+        then we would have
+
+              splitting = (3,1,1)
+
+        and so could concevably have encountered the partition
+
+               partition = ( (-1,0,1), (1,), (0,) )
+
+        which would have pushed
+
+            (-1,0,1) into pos(1,3,4)
+            (1,) into pos(0,) and
+            (0,) into pos(2,)
+
+        resulting in the following yield:
+
+            y = (1,-1,0,0,1).
+
+        When constructing the starting_partition our job would be:
+
+            GIVEN y, e_places, splitting and start_vertex_match, FIND partition.
+
+        How can we do this?
+        """
+        start_partition = tuple( tuple( start[pos] for pos in pos_group  )  for pos_group in e_places ) 
 
     # Now start the actual iteration:
 
     workspace = [None]*M
 
     for vertex_match in generate_canonical_vertex_matches(M=M, k=k, start=start_vertex_match):
-        for partition in distinct_partitions(vertex_match, splitting):
+        for partition in distinct_partitions(vertex_match, splitting, start=start_partition if starting else None):
+            starting = False # This is important! We only start once.
 
             # That's all the looking done. We now just need to fill in the workspace ....
             assert len(partition) == len(e_places)

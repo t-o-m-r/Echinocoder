@@ -98,6 +98,8 @@ class Equivalent_Places:
                   "b" : (2,3,),
                  } # Dictionary for "Cabbage"
                  equivalents_with_singletons = d.values() = [ (1,4,), (2,4,), (0,), (5,), (6,) ] # (or similar).
+
+        Be warned that are are few checks for valididy of the inputs. E.g. [ (1,3),(3,4) ] is an invalid form for equivalents_without_singletons as 3 occurs twice. Bit nothng will check for this.
         """
         if size is not None and none_equivalent==True:
             self._equivalent_places_with_singletons = tuple( (i,) for i in range(size) ) # No places are equivalent (i.e all are different). # Way 1 # TODO: remove in long term

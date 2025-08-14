@@ -70,7 +70,7 @@ def distinct_partitions_with_start(iterable, splitting, validate_splitting=True,
         total = sum(splitting)
         if total != len(items):
             raise ValueError(
-                f"len(items) ({len(items)}) != sum(splitting) ({total})"
+                f"len(items) ({len(items)}) != sum(splitting) ({total}) when items={items} and splitting={splitting}."
             )
 
     if len(splitting) == 1:
