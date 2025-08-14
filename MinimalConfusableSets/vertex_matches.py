@@ -107,7 +107,7 @@ def generate_all_vertex_match_signatures(
             yield number_of_ones, number_of_minus_ones, number_of_zeros
     assert starting == False
 
-def generate_all_canonical_vertex_matches(
+def generate_canonical_vertex_matches(
         M, # M=number of bad bats
         k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         start = None,
@@ -279,7 +279,7 @@ def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(
 
     workspace = [None]*M
 
-    for vertex_match in generate_all_vertex_matches(M=M, k=k, permute=False):
+    for vertex_match in generate_canonical_vertex_matches(M=M, k=k):
         for partition in distinct_partitions(vertex_match, splitting):
 
             # That's all the looking done. We now just need to fill in the workspace ....

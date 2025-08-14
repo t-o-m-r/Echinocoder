@@ -1,5 +1,5 @@
 from vertex_matches import (
-    generate_all_canonical_vertex_matches,
+    generate_canonical_vertex_matches,
     generate_all_vertex_matches,
     generate_all_vertex_match_signatures,
     _smallest_odd_number_greater_than_or_equal_to,
@@ -395,20 +395,20 @@ def test_main_generators():
 def test_canonical_order():
     # Output shoud be in order when permute=False
     for gen in (
-          generate_all_canonical_vertex_matches(M=4, ),
-          generate_all_canonical_vertex_matches(M=6, ),
-          generate_all_canonical_vertex_matches(M=10, ),
+          generate_canonical_vertex_matches(M=4, ),
+          generate_canonical_vertex_matches(M=6, ),
+          generate_canonical_vertex_matches(M=10, ),
 
-          generate_all_canonical_vertex_matches(M=4, k=2),
-          generate_all_canonical_vertex_matches(M=6, k=2),
+          generate_canonical_vertex_matches(M=4, k=2),
+          generate_canonical_vertex_matches(M=6, k=2),
 
-          generate_all_canonical_vertex_matches(M=4, k=3),
-          generate_all_canonical_vertex_matches(M=6, k=3),
-          generate_all_canonical_vertex_matches(M=10, k=3),
+          generate_canonical_vertex_matches(M=4, k=3),
+          generate_canonical_vertex_matches(M=6, k=3),
+          generate_canonical_vertex_matches(M=10, k=3),
 
-#          generate_all_canonical_vertex_matches(M=4, k=3, start=(-1,0,1,1)),
-#          generate_all_canonical_vertex_matches(M=6, k=3, start=(-1,0,0,0,1,1)),
-#          generate_all_canonical_vertex_matches(M=10, k=3, start=(0,0,0,0,1,1,1,1,1,1)),
+          generate_canonical_vertex_matches(M=4, k=3, start=(-1,0,1,1)),
+          generate_canonical_vertex_matches(M=6, k=3, start=(-1,0,0,0,1,1)),
+          generate_canonical_vertex_matches(M=10, k=3, start=(0,0,0,0,1,1,1,1,1,1)),
           ):
         print("==================")
         print("New test")
