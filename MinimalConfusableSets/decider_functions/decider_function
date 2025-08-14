@@ -101,9 +101,9 @@ def check_collapse_random(A,num_trials=1000,tol=1e-12,):
 def prepare_B(k, M, method, iters, learning_rate, power, sample, spread):
     """
     method: 
-        - electrostatic [RECOMMENDED] (slow, well spaced out bad bats, lower k (0-8), lower M (0-100)):
+        - electrostatic [RECOMMENDED] (slower, well spaced out bad bats, lower k (0-8), lower M (0-100)):
             
-            -> iters (default=500): number of charged particle movement steps towards eqm
+            -> iters (default=500++ faster than I thought): number of charged particle movement steps towards eqm
             -> learning_rate (=0.01): strength of response of charge to its neighbours (low for high mass charge)
             -> power (=2): 2 for coulomb's law
         
