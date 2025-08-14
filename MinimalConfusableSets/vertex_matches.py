@@ -352,37 +352,48 @@ def generate_all_vertex_matches_given_equivalent_places(
 def generate_viable_vertex_match_matrices(
     M, # M = number of bad bats. 
     k, # k=dimension of space.
-    veto_branch = None,
+    go_deeper    = None, # If present, then the branch topped by matrix "mat" is only explored more deeply if go_deeper(mat) is True. Does not affect whether mat itself is yielded.
+    yield_matrix = None, # If present, then the matrix "mat" is only yielded if if yield_matrix(mat) is True.  If not yielded, further branch exploration is suppressed. Note that, other things being equal, and if it is physically possibl, it is better to use "go_deeper" (with or without yield_matrix) than "yield_matrix" alone.
     ):
     """
-    Generate sympy.Matrix objects from a depth-first traversal of rows.
+    Generate sympy.Matrix objects which represent constraints on lattice alignments of red/blue vertices. 
+    Uses depth-first traversal of rows.
     
-    rows_factory: callable taking `start_row` or None, returning a generator of rows >= start_row.
-    M: number of columns per row.
-   
     To abort the current branch after yielding a given matrix, the user may send True to the generator.
 
-    Alteratively, if the user would prefer that the branch be aborted prior to yielding the matrix, they should supply the generator with a function "veto_matrix_yield" which takes a matrix as a single input. If it returns True, the current branch will be aborted without a yield. Think of this as an "internal" abort rather than an "external" abort with the send True mechanism.
+    Alteratively, the user may specify which matrices and branches should be explored by supplying one or both of the yield_matrix and go_deeper arguments.
+
+    It is far better to kill a branch before generating its daughter matrixes than to kill a branch by killing/vetoing each daughter matrix.  This, if it is possible to do so, it is far better to use "go_deeper" (with or without  "yield_matrix") to kill a whole branch in one test, than to use only "yield_matrix".
     """
 
+    # TODO: consider making prefix a SymPy matrix natively, so that we are not always converting, and can more easily get different views. Maybe this would speed somet hings up??
     def dfs(prefix, start_row):
+        # "prefix" is a list or rows, each of which is a tuple. 
+        # "mat" is a Sympy representation of prefix.
 
         # Yield the current matrix (if prefix is non-empty)
         if prefix:
             mat = sp.Matrix(prefix)
 
-            if veto_branch is not None and veto_branch(mat):
+            if yield_matrix is not None and not yield_matrix(mat):
                 return # Skip deeper exploration without yielding mat due to internally discovered test failure
 
             user_aborted_this_branch = (yield mat)
-            if user_aborted_this_branch:
+
+            if user_aborted_this_branch or (go_deeper is not None and not go_deeper(mat)):
                 return  # Skip deeper exploration
 
-        # Start the rows at the given start_row
-        # row_gen = rows_factory(start_row)
-        # TODO: FIX TEMPORARY. (1) the Equivalent_Places is currently wrongly generated.  (2) I have not checked that equivalent places getting more complex never removes start_row from the more complex iterator. 
-        fix
-        row_gen = generate_all_vertex_matches_given_equivalent_places(equivalent_places=Equivalent_Places(size=M, all_equivalent=True), k=k, start=start_row)
+            columns_of_mat_as_tuples = [tuple(mat.col(i)) for i in range(mat.cols)]  # as tuples so that they will be hashable and thus usable as dictionary keys
+            e_places = Equivalent_Places(exemplar = columns_of_mat_as_tuples)
+        else:
+            e_places = Equivalent_Places(size=M, all_equivalent=True)
+        #print(f"-------\nFor prefix = ")
+        #for rrr in prefix:
+        #   print("    ",rrr)
+        #print(f"using e_places = {e_places}")
+
+        # Start the rows at the given start_row:
+        row_gen = generate_all_vertex_matches_given_equivalent_places(equivalent_places = e_places, k=k, start=start_row)
 
         for row in row_gen:
             # Avoid repeating the start_row itself at the top of recursion
@@ -448,19 +459,45 @@ def demo():
 
 
 
-    print("===========================================")
-    def veto_branch(mat, max_rows):
-        return sp.shape(mat)[0] >= max_rows
+    print("== Test of Matrix Generation =========")
+    def max_row_requirement(mat, max_rows):
+        return sp.shape(mat)[0] <= max_rows
 
-    mat_gen = generate_viable_vertex_match_matrices(
-        M=6,
+    def max_row_requirement(mat, max_rows):
+        return sp.shape(mat)[0] <= max_rows
+
+    mat_gen_slow = generate_viable_vertex_match_matrices(
+        M=5,
         k=2,
-        veto_branch = None, #partial(veto_branch, max_rows=6),
+        yield_matrix = partial(max_row_requirement, max_rows=4),
         ) 
 
+    mat_gen_fast = generate_viable_vertex_match_matrices(
+        M=5,
+        k=2,
+        go_deeper = partial(max_row_requirement, max_rows=3),
+        ) 
 
-    for i, mat in enumerate(mat_gen):
-        print(i, mat)
+    print("Will check if two methods agree:")
+    print("Doing fast calc ...")
+    fast = tuple(mat_gen_fast)
+    print(f" ... len(fast)={len(fast)}.")
+    print("Doing slow calc ...")
+    slow = tuple(mat_gen_slow)
+    print(f" ... len(slow)={len(slow)}.")
+    assert fast == slow
+    print("Fast agreed with slow")
+
+    once = True
+    for i, mat in enumerate(fast):
+        if i<10 or i>len(fast)-10:
+            print(i, mat)
+        else:
+            if once:
+                print(".....")
+                once=False
+            continue
+
     print("===========================================")
 
 

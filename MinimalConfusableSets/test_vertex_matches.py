@@ -6,6 +6,7 @@ from vertex_matches import (
     generate_all_vertex_matches_given_equivalent_places,
     generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A,
     generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B,
+    generate_viable_vertex_match_matrices,
 )
 
 from _vertex_matches import (
@@ -563,5 +564,56 @@ def test_start_vertex_matches_given_equivalent_places():
                      assert lesters==itertoolss
 
                     
+
+def test_matrice_some_other_way():
+    print("== Test of Matrix Generation =========")
+    import sympy as sp
+    def max_row_requirement(mat, max_rows):
+        return sp.shape(mat)[0] <= max_rows
+
+    def max_row_requirement(mat, max_rows):
+        return sp.shape(mat)[0] <= max_rows
+
+    for M,k in (
+        (2,2),
+        (3,2),
+        (5,2),
+        ):
+        from functools import partial
+
+        mat_gen_slow = generate_viable_vertex_match_matrices(
+            M=M,
+            k=k,
+            yield_matrix = partial(max_row_requirement, max_rows=4),
+            )
+
+        mat_gen_fast = generate_viable_vertex_match_matrices(
+            M=M,
+            k=k,
+            go_deeper = partial(max_row_requirement, max_rows=3),
+            )
+
+        print("=================================================")
+        print(f"Will check if two methods agree for M={M}, k={k}:")
+        print("Doing fast calc ...")
+        fast = tuple(mat_gen_fast)
+        print(f" ... len(fast)={len(fast)}.")
+        print("Doing slow calc ...")
+        slow = tuple(mat_gen_slow)
+        print(f" ... len(slow)={len(slow)}.")
+        assert fast == slow
+        print("Fast agreed with slow")
+
+        once = True
+        for i, mat in enumerate(fast):
+            if i<10 or i>len(fast)-10:
+                print(i, mat)
+            else:
+                if once:
+                    print(".....")
+                    once=False
+                continue
+        print("===========================================")
+
 
 

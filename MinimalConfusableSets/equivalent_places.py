@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 class Equivalent_Places:
     """
         When generating matches, some match places maye be equivalent in the present context,
@@ -77,11 +79,20 @@ class Equivalent_Places:
 
         """
 
-    def  __init__(self, size=None, all_equivalent=False, none_equivalent=False, equivalents_with_singletons=None, equivalents_without_singletons=None):
+    def  __init__(self,
+                  size = None,
+                  all_equivalent = False,
+                  none_equivalent = False,
+                  equivalents_with_singletons = None,
+                  equivalents_without_singletons = None,
+                  exemplar = None,
+                 ):
         """ Initialise in ONE of the following ways.  Any other initialisation is an error.
 
            (1) specify size (non-negative int) and all_equivalent=True
+
            (2) specify size (non-negative int) and none_equivalent=True
+
            (3) specify equivalents_with_singletons like this (Way 1 above) for "Cabbage": # TODO: Remove this option in the long term
                  d = {
                   "a" : (1,4,),
@@ -90,17 +101,30 @@ class Equivalent_Places:
                   "g" : (5,),
                   "e" : (6,)
                  } # Dictionary for "Cabbage"
-                 equivalents_with_singletons = d.values() = [ (1,4,), (2,4,), (0,), (5,), (6,) ] # (or similar).
+                 equivalents_with_singletons = d.values() = [ (1,4,), (2,3,), (0,), (5,), (6,) ] # (or similar).
                  Note that size can (and will) be deduced from this input. You can optionally specifiy size to allow an inconsistency check.
+
            (4) specify size and equivalents_without_singletons like this (Way 2 above) for "Cabbage":
                  d = {
                   "a" : (1,4,),
                   "b" : (2,3,),
                  } # Dictionary for "Cabbage"
-                 equivalents_with_singletons = d.values() = [ (1,4,), (2,4,), (0,), (5,), (6,) ] # (or similar).
+                 equivalents_with_singletons = d.values() = [ (1,4,), (2,3,), (0,), (5,), (6,) ] # (or similar).
+
+           (5) specify exemplar. E.g. exemplar="Cabbage" would have the same effect as initialising with
+               equivalents_with_singletons = [ (1,4,), (2,3,), (0,), (5,), (6,) ].
 
         Be warned that are are few checks for valididy of the inputs. E.g. [ (1,3),(3,4) ] is an invalid form for equivalents_without_singletons as 3 occurs twice. Bit nothng will check for this.
         """
+        if exemplar is not None:
+            self.size = len(exemplar)
+            d = defaultdict(list)
+            for i, item in enumerate(exemplar):
+                d[item].append(i)
+            self._equivalent_places_with_singletons = tuple( tuple(bits) for bits in d.values() )
+            self._equivalent_places_without_singletons = tuple( tuple(bits) for bits in d.values() if len(bits) > 1 )
+            return
+
         if size is not None and none_equivalent==True:
             self._equivalent_places_with_singletons = tuple( (i,) for i in range(size) ) # No places are equivalent (i.e all are different). # Way 1 # TODO: remove in long term
             self._equivalent_places_without_singletons = tuple() # No places are equivalent (i.e All are different). # Way 2
@@ -137,17 +161,30 @@ def demo():
 
     all_3  = Equivalent_Places(size=3, all_equivalent=True)
     none_4 = Equivalent_Places(size=4, none_equivalent=True)
+
     mid_5a = Equivalent_Places(        equivalents_with_singletons    = ( (1,2), (3,0), (4,),       ))
     mid_5b = Equivalent_Places(size=5, equivalents_without_singletons = ( (1,2), (3,0),             ))
 
     mid_6a = Equivalent_Places(        equivalents_with_singletons    = ( (1,2), (5,0), (4,), (3,), ))
     mid_6b = Equivalent_Places(size=6, equivalents_without_singletons = ( (1,2), (5,0),             ))
+
+    cabbage = Equivalent_Places(size=6, exemplar = "Cabbage", )
+    lst = Equivalent_Places(size=6, exemplar = ['c','a','b','b','a','g','e'], )
+    tup = Equivalent_Places(size=6, exemplar = ('c','a','b','b','a','g','e'), )
+    #### Should throw: it  = Equivalent_Places(size=6, exemplar = iter(('c','a','b','b','a','g','e')), )
+
+
+
     print("All 3",all_3)
     print("None 4", none_4)
     print("Mid_5a",mid_5a)
     print("Mid 5b", mid_5b)
     print("Mid_6a",mid_6a)
     print("Mid 6b", mid_6b)
+    print("cabbage", cabbage)
+    print("['c','a','b','b','a','g','e']", lst)
+    print("('c','a','b','b','a','g','e')", tup)
+    #### print("iter('c','a','b','b','a','g','e')", it)
     
 if __name__ == "__main__":
     demo()
