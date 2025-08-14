@@ -7,7 +7,6 @@ from bi_range import bi_range_with_maxes
 from equivalent_places import Equivalent_Places
 from functools import partial
 
-#DONE
 """
 Vertex matches have an even number of +1 and and odd number of -1 entries, and others zero. Their total number of entries is M, the numnber of bad bats.
 
@@ -46,11 +45,9 @@ E.g. if the first two places are different to each other (and to any other place
     od.Spee
 """
 
-#DONE
 def _smallest_odd_number_greater_than_or_equal_to(x):
     return 2*math.ceil((x+1)/2)-1 
 
-#DONE
 def generate_all_vertex_match_signatures(
     M, #number of bad bats
     k = None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
@@ -110,7 +107,6 @@ def generate_all_vertex_match_signatures(
             yield number_of_ones, number_of_minus_ones, number_of_zeros
     assert starting == False
 
-#DONE
 def generate_all_vertex_matches(
         M, # M=number of bad bats
         k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
@@ -150,7 +146,6 @@ def generate_all_vertex_matches(
             else:
                 yield tup
 
-#DONE
 def generate_all_useful_vertex_matches(
     M, # M=number of bad bats
     k, # k=dimension of space 
@@ -159,7 +154,6 @@ def generate_all_useful_vertex_matches(
     ):
     yield from generate_all_vertex_matches(M=M, k=k, permute=permute, start=start)
 
-#DONE
 def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(
     equivalent_places : Equivalent_Places,
     # M=None, # M = number of bad bats. (Can be derived from equivalent_places, so no longer supplied)
@@ -222,16 +216,12 @@ def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(
         for d in _generate_dicts_for(e_places, signature):
             yield tuple(d[i] for i in range(M))
 
-#DONE
 def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(
         equivalent_places : Equivalent_Places,
         # M=None, # M = number of bad bats. (Can be derived from equivalent_places, so no longer supplied)
         k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
         start=None,
         ):
-
-    if start is not None:
-        raise NotImplementedError
 
     M = equivalent_places.size
     if int(M) != M or M<0:
@@ -249,6 +239,7 @@ def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(
 
     for vertex_match in generate_all_vertex_matches(M=M, k=k, permute=False):
         for partition in distinct_partitions(vertex_match, splitting):
+
             # That's all the looking done. We now just need to fill in the workspace ....
             assert len(partition) == len(e_places)
             for payload_group, pos_group in zip(partition, e_places):
@@ -258,9 +249,9 @@ def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(
                     assert payload in (+1, -1, 0)
                     workspace[pos] = payload
             # .... OK the workspace is now filled so:
+
             yield tuple(workspace)
 
-#DONE
 def generate_all_vertex_matches_given_equivalent_places(
         equivalent_places : Equivalent_Places,
         # M=None, # M = number of bad bats. (Can be derived from equivalent_places, so no longer supplied)
@@ -270,7 +261,6 @@ def generate_all_vertex_matches_given_equivalent_places(
     #return generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(equivalent_places, k=k, start=start)
     return generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(equivalent_places, k=k, start=start)
 
-#DONE
 def generate_viable_vertex_match_matrices(
     M, # M = number of bad bats. 
     k, # k=dimension of space.

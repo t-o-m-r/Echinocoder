@@ -10,7 +10,6 @@ from distinct_partitions import distinct_partitions
 from bi_range import bi_range_with_maxes
 from equivalent_places import Equivalent_Places
 
-#DONE
 def generate_all_useful_vertex_matches(
     M, # M=number of bad bats
     k, # k=dimension of space 
@@ -19,7 +18,6 @@ def generate_all_useful_vertex_matches(
     yield from generate_all_vertex_matches(M=M, k=k, permute=permute)
 
 
-#DONE
 def generate_all_useful_vertex_matches_given_perming_places(
         M, # M=number of bad bats
         k, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
@@ -27,7 +25,6 @@ def generate_all_useful_vertex_matches_given_perming_places(
         ):
     yield from generate_all_vertex_matches_given_perming_places(M, k=k, perming_places=perming_places)
 
-#DONE
 def generate_all_vertex_matches_given_perming_places(
         M, # M=number of bad bats
         k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
