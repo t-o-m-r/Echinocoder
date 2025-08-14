@@ -1,7 +1,7 @@
 #import itertools
 import sympy as sp
 import math
-from distinct_permutations_with_leftovers import distinct_permutations_with_leftovers as distinct_permutations
+from more_itertools import distinct_permutations
 from distinct_partitions import distinct_partitions
 from bi_range import bi_range_with_maxes
 from equivalent_places import Equivalent_Places
@@ -216,10 +216,8 @@ def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_A(
                        yield perming_part_dict | non_perming_part_dict
     ##############################################
 
-
     e_places = equivalent_places._equivalent_places_with_singletons
     for signature in generate_all_vertex_match_signatures(M,k=k):
-
 
         for d in _generate_dicts_for(e_places, signature):
             yield tuple(d[i] for i in range(M))
@@ -251,6 +249,7 @@ def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(
 
     for vertex_match in generate_all_vertex_matches(M=M, k=k, permute=False):
         for partition in distinct_partitions(vertex_match, splitting):
+            # That's all the looking done. We now just need to fill in the workspace ....
             assert len(partition) == len(e_places)
             for payload_group, pos_group in zip(partition, e_places):
                 assert len(payload_group) == len(pos_group)
@@ -258,6 +257,7 @@ def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(
                     assert 0 <= pos < M
                     assert payload in (+1, -1, 0)
                     workspace[pos] = payload
+            # .... OK the workspace is now filled so:
             yield tuple(workspace)
 
 #DONE
@@ -303,7 +303,7 @@ def generate_viable_vertex_match_matrices(
         # Start the rows at the given start_row
         # row_gen = rows_factory(start_row)
         # TODO: FIX TEMPORARY. (1) start is not implemented, (2) as equivalent places will change, rows may have a different order, so not clear how to maintain ranking. :( THIS COULD BE SHOW STOPPER.
-        row_gen = generate_all_vertex_matches_given_equivalent_places(equivalent_places=Equivalent_Places(size=M, all_equivalent=True), k=k, start=start_row)
+        row_gen = generate_all_vertex_matches_given_equivalent_places(equivalent_places=Equivalent_Places(size=M, all_equivalent=True), k=k, )# start=start_row)
 
         for row in row_gen:
             # Avoid repeating the start_row itself at the top of recursion

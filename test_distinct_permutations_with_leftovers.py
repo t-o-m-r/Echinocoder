@@ -238,7 +238,6 @@ def test_order():
         first = True
         for perm in gen:
             print(f"order test saw perm={perm}")
-            # Only check_order progression when within a given signature:
             if not first:
                 # Check_order!
                 assert last_perm < perm
