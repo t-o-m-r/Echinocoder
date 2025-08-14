@@ -1,4 +1,3 @@
-
 from vertex_matches import (
     generate_all_vertex_matches,
     generate_all_vertex_match_signatures,
@@ -412,6 +411,33 @@ def test_order():
             last_signature, last_vertex_match = signature, vertex_match
 
 
+def test_start():
+     method_with_start = generate_all_vertex_match_signatures
+     method_without_start = generate_all_vertex_match_signatures
+    
+     test_programme = [
+       (10,2,(4,3,3)),
+       (20,2,(2,13,5)),
+       (20,2,(18,1,1)),
+     ]
+    
+     from itertools import chain
+     for M, k, start in test_programme:
+         start_pos = None
+         for i, (lesters, itertoolss) in enumerate(zip_longest(method_with_start(M=M, k=k), method_without_start(M=M, k=k))):
+             print(f"{i}:         {lesters} {'==' if lesters==itertoolss else '!='} {itertoolss}")
+             if lesters == start and start_pos == None:
+                start_pos = i
+             assert lesters==itertoolss
+         print("Match confirmed!")
+         assert start_pos is not None
+         print(f"Start pos determined to be {start_pos}.")
+         for i, (lesters, itertoolss) in enumerate(zip_longest(chain(iter([None,]*start_pos),method_with_start(M=M, k=k, start=start)), method_without_start(M=M, k=k))):
+             if i < start_pos:
+                 print(f"{i}:         {lesters} ...  {itertoolss}")
+             else:
+                 print(f"{i}:         {lesters} {'==' if lesters==itertoolss else '!='} {itertoolss}")
+                 assert lesters==itertoolss
 
                 
 
