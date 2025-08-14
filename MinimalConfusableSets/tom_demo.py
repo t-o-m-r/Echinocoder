@@ -1,4 +1,5 @@
 import sympy as sp
+from functools import partial
 from vertex_matches import generate_viable_vertex_match_matrices
 
 def demo():
