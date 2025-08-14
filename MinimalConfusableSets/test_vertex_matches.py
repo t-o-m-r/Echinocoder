@@ -1,4 +1,5 @@
 from vertex_matches import (
+    generate_all_canonical_vertex_matches,
     generate_all_vertex_matches,
     generate_all_vertex_match_signatures,
     _smallest_odd_number_greater_than_or_equal_to,
@@ -391,7 +392,32 @@ def test_main_generators():
 
         assert LHS==RHS
 
-def test_order():
+def test_canonical_order():
+    # Output shoud be in order when permute=False
+    for gen in (
+          generate_all_canonical_vertex_matches(M=4, ),
+          generate_all_canonical_vertex_matches(M=6, ),
+          generate_all_canonical_vertex_matches(M=10, ),
+
+          generate_all_canonical_vertex_matches(M=4, k=2),
+          generate_all_canonical_vertex_matches(M=6, k=2),
+
+          generate_all_canonical_vertex_matches(M=4, k=3),
+          generate_all_canonical_vertex_matches(M=6, k=3),
+          generate_all_canonical_vertex_matches(M=10, k=3),
+
+#          generate_all_canonical_vertex_matches(M=4, k=3, start=(-1,0,1,1)),
+#          generate_all_canonical_vertex_matches(M=6, k=3, start=(-1,0,0,0,1,1)),
+#          generate_all_canonical_vertex_matches(M=10, k=3, start=(0,0,0,0,1,1,1,1,1,1)),
+          ):
+        print("==================")
+        print("New test")
+        for vm in gen:
+            print(f"We hope that this tuple is in non-decreasing order: {vm}")
+            assert tuple(sorted(vm)) == vm
+    
+
+def test_order_stream():
     
     for gen in (
           generate_all_vertex_matches(M=4),
@@ -411,7 +437,7 @@ def test_order():
             last_signature, last_vertex_match = signature, vertex_match
 
 
-def test_start():
+def test_start_vertex_match_signatures():
      method_with_start = generate_all_vertex_match_signatures
      method_without_start = generate_all_vertex_match_signatures
     
@@ -423,6 +449,37 @@ def test_start():
     
      from itertools import chain
      for M, k, start in test_programme:
+         print(f"================== Testing startup of vertex SIGNATURE generators with M={M}, k={k}, start={start} =======")
+         start_pos = None
+         for i, (lesters, itertoolss) in enumerate(zip_longest(method_with_start(M=M, k=k), method_without_start(M=M, k=k))):
+             print(f"{i}:         {lesters} {'==' if lesters==itertoolss else '!='} {itertoolss}")
+             if lesters == start and start_pos == None:
+                start_pos = i
+             assert lesters==itertoolss
+         print("Match confirmed!")
+         assert start_pos is not None
+         print(f"Start pos determined to be {start_pos}.")
+         for i, (lesters, itertoolss) in enumerate(zip_longest(chain(iter([None,]*start_pos),method_with_start(M=M, k=k, start=start)), method_without_start(M=M, k=k))):
+             if i < start_pos:
+                 print(f"{i}:         {lesters} ...  {itertoolss}")
+             else:
+                 print(f"{i}:         {lesters} {'==' if lesters==itertoolss else '!='} {itertoolss}")
+                 assert lesters==itertoolss
+
+                
+def test_start_vertex_matches():
+     method_with_start = generate_all_vertex_matches
+     method_without_start = generate_all_vertex_matches
+    
+     test_programme = [
+       (3,1,(-1,-1,-1)),
+       (10,3,(-1,0,0,0,0,0,1,1,1,1)),
+       (10,3,(-1,-1,-1,0,0,0,1,1,1,1)),
+     ]
+    
+     from itertools import chain
+     for M, k, start in test_programme:
+         print(f"================== Testing startup of vertex MATCH generators with M={M}, k={k}, start={start} =======")
          start_pos = None
          for i, (lesters, itertoolss) in enumerate(zip_longest(method_with_start(M=M, k=k), method_without_start(M=M, k=k))):
              print(f"{i}:         {lesters} {'==' if lesters==itertoolss else '!='} {itertoolss}")

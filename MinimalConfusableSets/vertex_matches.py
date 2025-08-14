@@ -54,8 +54,8 @@ def generate_all_vertex_match_signatures(
     start = None
     ):
     """
-    The signature of a caonoical match is how many ones, minus ones and zeros it has.
-    We yield triplets of numbers in that order.
+    The signature of a vertex match is how many ones, minus ones and zeros it has.
+    We yield triplets of numbers having the order (number_ones, number_minus_ones, number_zeros).
 
     If suplied and not None, start must be a tuple containing a signature which the method would ordinarily generate, and as a consequence the generator will start here.
 
@@ -107,6 +107,32 @@ def generate_all_vertex_match_signatures(
             yield number_of_ones, number_of_minus_ones, number_of_zeros
     assert starting == False
 
+def generate_all_canonical_vertex_matches(
+        M, # M=number of bad bats
+        k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
+        start = None,
+        ):
+        """
+        M should be a non-negative integer. It specifies how long each generated tuple will
+        be. (The number of bad bats!)
+
+        k, if not None, should be the dimension of space.  Supply k if you want to generate
+        only the useful matches for that spatial dimension.
+
+        This method generates all tuples with the following properties:
+
+           * the tuple has length M,
+           * the tuple has an even number of ones,
+           * the tuple has an odd number of minus ones,
+           * the tuple is composed only of ones, minus ones and zeros,
+           * if k is not None, then the tuple shall have AT LEAST k+1 non-zero entries, and
+           * the tuple is in canonical form (i.e. sorted into non-decreasing order).
+        
+        If start is supplied (which must be something which the stream would ordinarily output) 
+        the generator should start from there instead of starting at the beginnning.
+        """
+        return generate_all_vertex_matches(M=M, k=k, permute=False, start=start)
+
 def generate_all_vertex_matches(
         M, # M=number of bad bats
         k=None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
@@ -114,9 +140,11 @@ def generate_all_vertex_matches(
         start = None,
         ):
         """
-        M should be a non-negative integer. It specifies how long each generated tuple will be. (The number of bad bats!)
+        M should be a non-negative integer. It specifies how long each generated tuple wil
+        be. (The number of bad bats!)
 
-        k, if not None, should be the dimension of space.  Supply k if you want to generate only the useful matches for that spatial dimension.
+        k, if not None, should be the dimension of space.  Supply k if you want to generate only
+        the useful matches for that spatial dimension.
 
         This method generates all tuples with the following properties:
 
@@ -126,7 +154,10 @@ def generate_all_vertex_matches(
            * the tuple is composed only of ones, minus ones and zeros, and
            * if k is not None, then the tuple shall have AT LEAST k+1 non-zero entries.
         
-        By default, each tuple is yielded in every possible distinct ordering of its elements. However, this perming can be disabled by setting permute=False. This will result in each tuple being yielded once only in a canonical form (all ones followed by all minus ones followed by all zeros).
+        By default, each tuple is yielded in every possible distinct ordering of its elements.
+        However, this perming can be disabled by setting permute=False. This will result in each
+        tuple being yielded once only in a canonical form (ie. all minus ones followed by all zeros
+        followed by all ones). Note canonical form is also sorted into non-decreasing order!
         """
 
         if start is not None:
@@ -233,7 +264,18 @@ def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(
     assert M>0
 
     e_places = equivalent_places._equivalent_places_with_singletons
-    splitting = tuple( len(group) for group in e_places ) 
+    splitting = tuple( len(group) for group in e_places )
+
+    if start is not None:
+        starting = True
+        # Need to find initial vertex_match and initial partition.
+
+        # The vertex_matches from the non-permuting "generate_all_vertex_matches below, should be in
+        # canonical order (i.e. the -1s come before the 0s which come before the 1s. So
+        start_vertex_match = tuple(sorted(start))
+
+    else:
+        starting = False
 
     workspace = [None]*M
 
