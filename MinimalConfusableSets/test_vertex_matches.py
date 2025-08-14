@@ -504,8 +504,8 @@ def test_start_vertex_matches_given_equivalent_places():
     
      test_programme = [
        (Equivalent_Places(size=3, all_equivalent=True), None, (-1,-1,-1)),
-       (Equivalent_Places(size=3, all_equivalent=True), None, (0,0,0)),
-       (Equivalent_Places(size=3, all_equivalent=True), None, (0,1,1)),
+       (Equivalent_Places(size=3, all_equivalent=True), None, (-1,0,0)),
+       (Equivalent_Places(size=3, all_equivalent=True), None, (-1,1,1)),
 
        (Equivalent_Places(size=3, all_equivalent=True), 1,(-1,-1,-1)),
        (Equivalent_Places(size=6, all_equivalent=True), 3,(-1,0,1,1,1,1)),

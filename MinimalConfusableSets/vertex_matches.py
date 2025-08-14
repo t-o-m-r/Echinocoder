@@ -276,20 +276,18 @@ def generate_all_vertex_matches_given_equivalent_places_IMPLEMENTATION_B(
     e_places = equivalent_places._equivalent_places_with_singletons
     splitting = tuple( len(group) for group in e_places )
 
-    if start is not None:
-        starting = True
-        # Need to find initial vertex_match and initial partition.
+    starting = start is not None
 
-        # The vertex_matches from the non-permuting "generate_all_vertex_matches below, should be in
-        # canonical order (i.e. the -1s come before the 0s which come before the 1s. So
-        start_vertex_match = tuple(sorted(start))
+    # Need to find initial vertex_match and initial partition.
+    
+    # As vertex_matches (below) are canonical, they are sorted, so:
+    start_vertex_match = tuple(sorted(start)) if starting else None
 
-    else:
-        starting = False
+    # Now start the actual iteration:
 
     workspace = [None]*M
 
-    for vertex_match in generate_canonical_vertex_matches(M=M, k=k):
+    for vertex_match in generate_canonical_vertex_matches(M=M, k=k, start=start_vertex_match):
         for partition in distinct_partitions(vertex_match, splitting):
 
             # That's all the looking done. We now just need to fill in the workspace ....
