@@ -381,6 +381,7 @@ def generate_viable_vertex_match_matrices(
         # Start the rows at the given start_row
         # row_gen = rows_factory(start_row)
         # TODO: FIX TEMPORARY. (1) the Equivalent_Places is currently wrongly generated.  (2) I have not checked that equivalent places getting more complex never removes start_row from the more complex iterator. 
+        fix
         row_gen = generate_all_vertex_matches_given_equivalent_places(equivalent_places=Equivalent_Places(size=M, all_equivalent=True), k=k, start=start_row)
 
         for row in row_gen:
