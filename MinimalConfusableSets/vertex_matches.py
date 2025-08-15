@@ -353,7 +353,11 @@ def generate_all_vertex_matches_given_equivalent_places(
 def generate_viable_vertex_match_matrices(
     M, # M = number of bad bats. 
     k, # k=dimension of space.
-    remove_obvious_collapses_and_also_return_rre = True,
+    remove_obvious_collapses = True, # Discards matrices whose RRE form have a row with betwen 1 and k non-zero elements. (Nb: ihis setting forces rre to be calcualted.)
+    return_mat = False,
+    return_rre = False,
+    return_hashable_rre = False,
+    remove_duplicates_via_hash = False, # Making this true could crash your program via memory usage. Beware!  This setting forces rre to be calculated -- so no harm in also choosing to return it.
     go_deeper    = None, # If present, then the branch topped by matrix "mat" is only explored more deeply if go_deeper(mat) is True. Does not affect whether mat itself is yielded.
     yield_matrix = None, # If present, then the matrix "mat" is only yielded if if yield_matrix(mat) is True.  If not yielded, further branch exploration is suppressed. Note that, other things being equal, and if it is physically possibl, it is better to use "go_deeper" (with or without yield_matrix) than "yield_matrix" alone.
     ):
@@ -368,6 +372,18 @@ def generate_viable_vertex_match_matrices(
     It is far better to kill a branch before generating its daughter matrixes than to kill a branch by killing/vetoing each daughter matrix.  This, if it is possible to do so, it is far better to use "go_deeper" (with or without  "yield_matrix") to kill a whole branch in one test, than to use only "yield_matrix".
     """
 
+    calculate_hashable_rre_early = remove_duplicates_via_hash
+    calculate_hashable_rre_late = return_hashable_rre and not calculate_hashable_rre_early
+
+    calculate_rre_early = calculate_hashable_rre_early or remove_obvious_collapses
+    calculate_rre_late = return_rre and not calculate_rre_early
+
+    hashable_rre_seen = set()
+
+    def calc_rre(mat):
+        rre, _ = mat.rref()
+        return strip_zero_rows(rre)
+
     # TODO: consider making prefix a SymPy matrix natively, so that we are not always converting, and can more easily get different views. Maybe this would speed somet hings up??
     def dfs(prefix, start_row):
         # "prefix" is a list or rows, each of which is a tuple. 
@@ -377,27 +393,49 @@ def generate_viable_vertex_match_matrices(
         if prefix:
             mat = sp.Matrix(prefix)
 
-            if remove_obvious_collapses_and_also_return_rre:
-                # Do our own standard checks:
-                rre, _ = mat.rref()
+            if calculate_rre_early:
+                rre = calc_rre(mat)
  
+            if remove_obvious_collapses:
+                assert calculate_rre_early
                 if some_row_causes_collapse(rre, k):
                     # Some row causes collapse!
-                    # Skip deeper evaluation:
-                    return 
+                    # Skip deeper evaluation or return of it!
+                    return
 
-                # Let's now strip the zero rows and make the R-rre hashable
-                rre = sp.ImmutableMatrix(strip_zero_rows(rre))
+            if calculate_hashable_rre_early:
+                hashable_rre = sp.ImmutableMatrix(rre)
 
-                # Our own standard checks are complete! Now allow externa user checks on mat. (TODO -- allow user to check RRE too?)
+            if remove_duplicates_via_hash:
+                assert calculate_hashable_rre_early
+                if hashable_rre in hashable_rre_seen:
+                    # We already saw this one, so don't need to produce it again!
+                    # Skip deeper evaluation or return of it!
+                    return
+                else:
+                    # record that we have seen this item:
+                    hashable_rre_seen.add(hashable_rre) # Note this is a sort of voluntary memory leak. Users use this at their own risk!
+
+            # Our own standard checks are complete! Now allow external user checks on mat. (TODO -- allow user to check RRE too?)
 
             if yield_matrix is not None and not yield_matrix(mat):
-                return # Skip deeper exploration without yielding mat due to internally discovered test failure
+                return # Skip deeper exploration without yielding mat as the user's pre-yield test is not passed.
 
-            if remove_obvious_collapses_and_also_return_rre:
-                user_aborted_this_branch = (yield mat, rre)
-            else:
-                user_aborted_this_branch = (yield mat)
+            # At this point we know we have to return things, so finish any late computations, if required:
+            if calculate_rre_late:
+                rre = calc_rre(mat)
+            if calculate_hashable_rre_late:
+                hashable_rre = sp.ImmutableMatrix(rre)
+
+            ans = []
+            if return_mat:
+                ans.append(mat)
+            if return_rre:
+                ans.append(rre)
+            if return_hashable_rre:
+                ans.append(hashable_rre)
+
+            user_aborted_this_branch = (yield ans)
 
             if user_aborted_this_branch or (go_deeper is not None and not go_deeper(mat)):
                 return  # Skip deeper exploration
@@ -406,10 +444,6 @@ def generate_viable_vertex_match_matrices(
             e_places = Equivalent_Places(exemplar = columns_of_mat_as_tuples)
         else:
             e_places = Equivalent_Places(size=M, all_equivalent=True)
-        #print(f"-------\nFor prefix = ")
-        #for rrr in prefix:
-        #   print("    ",rrr)
-        #print(f"using e_places = {e_places}")
 
         # Start the rows at the given start_row:
         row_gen = generate_all_vertex_matches_given_equivalent_places(equivalent_places = e_places, k=k, start=start_row)
@@ -518,4 +552,10 @@ def demo():
 
 
 if __name__ == "__main__":
-    demo()
+    M=7
+    k=2
+    print(f"All useful matches in k={k} dimensions, given M={M} bad bats, but ignoring permutations are:")
+    for i,match in enumerate(generate_all_vertex_matches(k=k, M=M, permute=False)):
+       print(f"   {i+1}:    {match}")
+    print()
+    #demo()
