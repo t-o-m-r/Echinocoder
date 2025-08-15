@@ -548,6 +548,19 @@ def test_canonical_order():
             assert tuple(sorted(vm)) == vm
     
 
+def test_canonical_order_stream():
+   
+    for M in range(1,15):
+        for k in range(0,5):
+          print(f"\nNew CANONICAL vertex match ORDER Test for M={M} and k={k}.")
+          last_match = None
+          for match in generate_canonical_vertex_matches(M=M, k=k):
+            print(f"  order test saw match={match}")
+            if last_match != None:
+                # Check_order!
+                assert last_match < match
+            last_match = match
+
 def test_order_stream():
     
     for gen in (
@@ -561,7 +574,7 @@ def test_order_stream():
         for vertex_match in gen:
             signature = vertex_match.count(-1), vertex_match.count(0), vertex_match.count(+1)
             print(f"order test saw signature={signature} and vm={vertex_match}")
-            # Only check_order progression when within a given signature:
+            # Only check_order progression when within a given signature due to perms:
             if last_signature != None and signature == last_signature:
                 # Check_order!
                 assert last_vertex_match < vertex_match

@@ -78,6 +78,9 @@ def generate_all_vertex_match_signatures(
     we know that e+o+z = M so we can just calculate z from z = M - (e+o) at the end.
 
     The next few lines of code implements the above.
+
+    We choose to generate the signatures in the order such that a canonical vertex match (i.e. a tuple like (-1,0,0,0,1,1,1,1)
+    in which the elements are non-decreasing) which represents each signature would come out in ascending tuple order.
     """
 
     total_among_pairs = 2*((M-1)//2)
@@ -101,6 +104,7 @@ def generate_all_vertex_match_signatures(
         starting = False
 
     if k is None:
+        # This is the k->minus_infinity limit of the "k is not None" case below.
         for o_among_pairs in range(start_o_among_pairs if starting else total_among_pairs, -1, -2):
             for z_among_pairs in range(start_z_among_pairs if starting else total_among_pairs - o_among_pairs, -1, -2):
                 starting = False
