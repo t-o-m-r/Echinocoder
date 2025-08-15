@@ -6,6 +6,7 @@ from distinct_partitions_with_start import distinct_partitions_with_start as dis
 from bi_range import bi_range_with_maxes
 from equivalent_places import Equivalent_Places
 from functools import partial
+from sympy_tools import some_row_causes_collapse, strip_zero_rows
 
 """
 Vertex matches have an even number of +1 and and odd number of -1 entries, and others zero. Their total number of entries is M, the numnber of bad bats.
@@ -352,6 +353,7 @@ def generate_all_vertex_matches_given_equivalent_places(
 def generate_viable_vertex_match_matrices(
     M, # M = number of bad bats. 
     k, # k=dimension of space.
+    remove_obvious_collapses_and_also_return_rre = True,
     go_deeper    = None, # If present, then the branch topped by matrix "mat" is only explored more deeply if go_deeper(mat) is True. Does not affect whether mat itself is yielded.
     yield_matrix = None, # If present, then the matrix "mat" is only yielded if if yield_matrix(mat) is True.  If not yielded, further branch exploration is suppressed. Note that, other things being equal, and if it is physically possibl, it is better to use "go_deeper" (with or without yield_matrix) than "yield_matrix" alone.
     ):
@@ -375,10 +377,27 @@ def generate_viable_vertex_match_matrices(
         if prefix:
             mat = sp.Matrix(prefix)
 
+            if remove_obvious_collapses_and_also_return_rre:
+                # Do our own standard checks:
+                rre, _ = mat.rref()
+ 
+                if some_row_causes_collapse(rre, k):
+                    # Some row causes collapse!
+                    # Skip deeper evaluation:
+                    return 
+
+                # Let's now strip the zero rows and make the R-rre hashable
+                rre = sp.ImmutableMatrix(strip_zero_rows(rre))
+
+                # Our own standard checks are complete! Now allow externa user checks on mat. (TODO -- allow user to check RRE too?)
+
             if yield_matrix is not None and not yield_matrix(mat):
                 return # Skip deeper exploration without yielding mat due to internally discovered test failure
 
-            user_aborted_this_branch = (yield mat)
+            if remove_obvious_collapses_and_also_return_rre:
+                user_aborted_this_branch = (yield mat, rre)
+            else:
+                user_aborted_this_branch = (yield mat)
 
             if user_aborted_this_branch or (go_deeper is not None and not go_deeper(mat)):
                 return  # Skip deeper exploration
