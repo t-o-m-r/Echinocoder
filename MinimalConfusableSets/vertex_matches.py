@@ -52,7 +52,7 @@ def _smallest_odd_number_greater_than_or_equal_to(x):
 def generate_all_vertex_match_signatures(
     M, #number of bad bats
     k = None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
-    start = None
+    start = None,
     ):
     """
     The signature of a vertex match is how many ones, minus ones and zeros it has.
@@ -65,8 +65,24 @@ def generate_all_vertex_match_signatures(
     "Useful" vertex matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
     """
 
+    # Am abbreviating number_of_ones as "e" as there are an Even number of them.
+    # Am abbreviating number_of_minus_ones as "o" as there are an Odd number of them.
+    # Am abbreviating number_of_zeros as "z".
+
+    """ 
+    All signatures have at least one "minus 1". We will break it out and add it back in only at the very end (see (*)).
+    In addition:
+    There is a 'free for all' region of the signature where minus ones come in paris, ones come in pairs and zeros come in pairs.
+    This region has a total of 2*((M-1)//2) digits, with a totally unconstrained composition (other than that all are in pairs).
+    Finally, there is also an extra packing zero when M is even ... however we don't really need to think much about this as 
+    we know that e+o+z = M so we can just calculate z from z = M - (e+o) at the end.
+
+    The next few lines of code implements the above.
+    """
+
+    total_among_pairs = 2*((M-1)//2)
+
     if start is not None:
-        starting = True
         if len(start) != 3:
             raise ValueError(f"len(start) should equal 3 but is {len(start)}. start={start}.")
         if sum(start) != M:
@@ -74,39 +90,35 @@ def generate_all_vertex_match_signatures(
         if True in ((int(c) != c or c<0) for c in start):
             raise ValueError(f"start should be a tuple of non-negative integers but start={start}.")
 
-        start_ones, start_minus_ones, _ = start
+        start_e, start_o, start_z = start
+
+        # Work backwards to start of e_among_pairs and start of z_among_pairs by reverse engineering yield line:
+        start_e_among_pairs = start_e
+        start_o_among_pairs = start_o - 1 # See (*) above and (*) below.
+        start_z_among_pairs = total_among_pairs - start_e_among_pairs - start_o_among_pairs
+        starting = True
     else:
         starting = False
 
-    for number_of_ones in range(start_ones if starting else 0, M+1, 2):
-
-        if starting:
-            start_for_number_of_minus_ones = start_minus_ones
-        else:
-            if k is not None:
-                # In this case we need 
-                #         number_of_ones + number_of_minus_ones > k  and   number_of_minus_ones >= 1
-                # so
-                #         number_of_minus_ones > k - number_of_ones   and number_of_minus_ones >= 1
-                # so
-                #         number_of_minus_ones >= k - number_of_ones + 1 and number_of_minus_ones >=1
-                # so
-                #         number_of_minus_ones >= max(k - number_of_ones + 1, 1)
-                start_for_number_of_minus_ones =  max(1, _smallest_odd_number_greater_than_or_equal_to(k - number_of_ones + 1))
-            else:
-                start_for_number_of_minus_ones = 1
-
-        for number_of_minus_ones in range(start_for_number_of_minus_ones, M+1-number_of_ones, 2):
-            # In an alternative (but slower) implementation, one could always have start_for_number_of_minus_ones=1 but then 
-            # uncomment the next two lines:
-            # if k is not None and (number_of_ones + number_of_minus_ones <= k):
-            #      continue
-            number_of_zeros = M-number_of_ones-number_of_minus_ones
-            if starting:
-                assert (number_of_ones, number_of_minus_ones, number_of_zeros) == start
+    if k is None:
+        for e_among_pairs in range(start_e_among_pairs if starting else 0, total_among_pairs+1, 2):
+            for z_among_pairs in range(start_z_among_pairs if starting else 0, total_among_pairs+1 - e_among_pairs, 2):
                 starting = False
-            yield number_of_ones, number_of_minus_ones, number_of_zeros
-    assert starting == False
+                o_among_pairs = total_among_pairs - e_among_pairs - z_among_pairs
+                e, o = e_among_pairs, o_among_pairs + 1 # (*) There is always one extra o.
+                z = M - (e+o)
+                yield e,o,z
+    else:
+        for e_among_pairs in range(start_e_among_pairs if starting else 0, total_among_pairs+1, 2):
+            for z_among_pairs in range(start_z_among_pairs if starting else 0, total_among_pairs+1 - e_among_pairs, 2):
+                starting = False
+                o_among_pairs = total_among_pairs - e_among_pairs - z_among_pairs
+                e, o = e_among_pairs, o_among_pairs + 1 # (*) There is always one extra o.
+                if e+o <= k:
+                    continue # Valid and efficient as o is decreasing (because z is increasing).
+                z = M - (e+o)
+                yield e,o,z
+
 
 def generate_canonical_vertex_matches(
         M, # M=number of bad bats
@@ -556,6 +568,8 @@ if __name__ == "__main__":
     k=2
     print(f"All useful matches in k={k} dimensions, given M={M} bad bats, but ignoring permutations are:")
     for i,match in enumerate(generate_all_vertex_matches(k=k, M=M, permute=False)):
+       print(f"   {i+1}:    {match}")
+    for i,match in enumerate(generate_all_vertex_match_signatures(k=k, M=M)):
        print(f"   {i+1}:    {match}")
     print()
     #demo()
