@@ -101,24 +101,23 @@ def generate_all_vertex_match_signatures(
         starting = False
 
     if k is None:
-        for e_among_pairs in range(start_e_among_pairs if starting else 0, total_among_pairs+1, 2):
-            for z_among_pairs in range(start_z_among_pairs if starting else 0, total_among_pairs+1 - e_among_pairs, 2):
+        for o_among_pairs in range(start_o_among_pairs if starting else total_among_pairs, -1, -2):
+            for z_among_pairs in range(start_z_among_pairs if starting else total_among_pairs - o_among_pairs, -1, -2):
                 starting = False
-                o_among_pairs = total_among_pairs - e_among_pairs - z_among_pairs
+                e_among_pairs = total_among_pairs - o_among_pairs - z_among_pairs
                 e, o = e_among_pairs, o_among_pairs + 1 # (*) There is always one extra o.
                 z = M - (e+o)
                 yield e,o,z
     else:
-        for e_among_pairs in range(start_e_among_pairs if starting else 0, total_among_pairs+1, 2):
-            for z_among_pairs in range(start_z_among_pairs if starting else 0, total_among_pairs+1 - e_among_pairs, 2):
+        if k % 2:
+            k = k+1 # This correction ensures z_among_pairs starts at an even number (and in fact the correct number!).
+        for o_among_pairs in range(start_o_among_pairs if starting else total_among_pairs, -1, -2):
+            for z_among_pairs in range(start_z_among_pairs if starting else min(total_among_pairs - o_among_pairs, total_among_pairs - k), -1, -2):
                 starting = False
-                o_among_pairs = total_among_pairs - e_among_pairs - z_among_pairs
+                e_among_pairs = total_among_pairs - o_among_pairs - z_among_pairs
                 e, o = e_among_pairs, o_among_pairs + 1 # (*) There is always one extra o.
-                if e+o <= k:
-                    continue # Valid and efficient as o is decreasing (because z is increasing).
                 z = M - (e+o)
                 yield e,o,z
-
 
 def generate_canonical_vertex_matches(
         M, # M=number of bad bats
@@ -564,8 +563,9 @@ def demo():
 
 
 if __name__ == "__main__":
-    M=7
-    k=2
+    M=7 #16 #7
+    k=2 # 5 #2
+    k=3 # 5 #2
     print(f"All useful matches in k={k} dimensions, given M={M} bad bats, but ignoring permutations are:")
     for i,match in enumerate(generate_all_vertex_matches(k=k, M=M, permute=False)):
        print(f"   {i+1}:    {match}")

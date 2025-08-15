@@ -44,16 +44,125 @@ M3_all_vertex_matches_expected = [
     (-1, 1, 1),
     (-1,-1,-1),
 ]
+k5M8_all_vertex_match_signatures_expected = [
+     (0, 7, 1),
+     #(0, 5, 3),
+     #(0, 3, 5),
+     #(0, 1, 7),
+
+     (2, 5, 1),
+     #(2, 3, 3),
+     #(2, 1, 5),
+
+     (4, 3, 1),
+     #(4, 1, 3),
+
+     (6, 1, 1),
+]
+k4M8_all_vertex_match_signatures_expected = [
+     (0, 7, 1),
+     (0, 5, 3),
+     #(0, 3, 5),
+     #(0, 1, 7),
+
+     (2, 5, 1),
+     (2, 3, 3),
+     #(2, 1, 5),
+
+     (4, 3, 1),
+     (4, 1, 3),
+
+     (6, 1, 1),
+]
+k3M8_all_vertex_match_signatures_expected = [
+     (0, 7, 1),
+     (0, 5, 3),
+     #(0, 3, 5),
+     #(0, 1, 7),
+
+     (2, 5, 1),
+     (2, 3, 3),
+     #(2, 1, 5),
+
+     (4, 3, 1),
+     (4, 1, 3),
+
+     (6, 1, 1),
+]
+k2M8_all_vertex_match_signatures_expected = [
+     (0, 7, 1),
+     (0, 5, 3),
+     (0, 3, 5),
+     #(0, 1, 7),
+
+     (2, 5, 1),
+     (2, 3, 3),
+     (2, 1, 5),
+
+     (4, 3, 1),
+     (4, 1, 3),
+
+     (6, 1, 1),
+]
+k5M7_all_vertex_match_signatures_expected = [
+     (0, 7, 0),
+     #(0, 5, 2),
+     #(0, 3, 4),
+     #(0, 1, 6),
+
+     (2, 5, 0),
+     #(2, 3, 2),
+     #(2, 1, 4),
+
+     (4, 3, 0),
+     #(4, 1, 2),
+
+     (6, 1, 0),
+]
+k4M7_all_vertex_match_signatures_expected = [
+     (0, 7, 0),
+     (0, 5, 2),
+     #(0, 3, 4),
+     #(0, 1, 6),
+
+     (2, 5, 0),
+     (2, 3, 2),
+     #(2, 1, 4),
+
+     (4, 3, 0),
+     (4, 1, 2),
+
+     (6, 1, 0),
+]
+k3M7_all_vertex_match_signatures_expected = [
+     (0, 7, 0),
+     (0, 5, 2),
+     #(0, 3, 4),
+     #(0, 1, 6),
+
+     (2, 5, 0),
+     (2, 3, 2),
+     #(2, 1, 4),
+
+     (4, 3, 0),
+     (4, 1, 2),
+
+     (6, 1, 0),
+]
 k2M7_all_vertex_match_signatures_expected = [
-     (0, 3, 4), #(-1, -1, -1, 0, 0, 0, 0),
-     (0, 5, 2), #(-1, -1, -1, -1, -1, 0, 0),
-     (0, 7, 0), #(-1, -1, -1, -1, -1, -1, -1),
-     (2, 1, 4), #(-1, 0, 0, 0, 0, 1, 1),
-     (2, 3, 2), #(-1, -1, -1, 0, 0, 1, 1),
-     (2, 5, 0), #(-1, -1, -1, -1, -1, 1, 1),
-     (4, 1, 2), #(-1, 0, 0, 1, 1, 1, 1),
-     (4, 3, 0), #(-1, -1, -1, 1, 1, 1, 1),
-     (6, 1, 0), #(-1, 1, 1, 1, 1, 1, 1),
+     (0, 7, 0),
+     (0, 5, 2),
+     (0, 3, 4),
+     #(0, 1, 6),
+
+     (2, 5, 0),
+     (2, 3, 2),
+     (2, 1, 4),
+
+     (4, 3, 0),
+     (4, 1, 2),
+
+     (6, 1, 0),
 ]
 M3_all_vertex_match_signatures_expected = [
     ( 0,1,2), # for
@@ -324,7 +433,16 @@ def test_signatures():
         (3, None, M3_all_vertex_match_signatures_expected, "M3 signatures"),
         (4, None, M4_all_vertex_match_signatures_expected, "M4 signatures"),
         (4, 2, k2M4_all_useful_vertex_match_signatures_expected, "k2M4 useful signatures"),
+
         (7, 2, k2M7_all_vertex_match_signatures_expected, "k2M7 useful signatures"),
+        (7, 3, k3M7_all_vertex_match_signatures_expected, "k3M7 useful signatures"),
+        (7, 4, k4M7_all_vertex_match_signatures_expected, "k4M7 useful signatures"),
+        (7, 5, k5M7_all_vertex_match_signatures_expected, "k5M7 useful signatures"),
+
+        (8, 2, k2M8_all_vertex_match_signatures_expected, "k2M8 useful signatures"),
+        (8, 3, k3M8_all_vertex_match_signatures_expected, "k3M8 useful signatures"),
+        (8, 4, k4M8_all_vertex_match_signatures_expected, "k4M8 useful signatures"),
+        (8, 5, k5M8_all_vertex_match_signatures_expected, "k5M8 useful signatures"),
         ]
     for M, k, expected_signature, name in test_programme:
         LHS = sorted(list(generate_all_vertex_match_signatures(M=M, k=k)))
