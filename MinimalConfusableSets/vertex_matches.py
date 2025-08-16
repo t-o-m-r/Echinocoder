@@ -1,4 +1,3 @@
-#import itertools
 import sympy as sp
 import math
 from more_itertools import distinct_permutations
@@ -63,25 +62,31 @@ def generate_all_vertex_match_signatures(
     Vertex matches have M entries in total, comprising an even number of +1 and and odd number of -1 entries, and others zero.
 
     "Useful" vertex matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
-    """
 
-    # Am abbreviating number_of_ones as "e" as there are an Even number of them.
-    # Am abbreviating number_of_minus_ones as "o" as there are an Odd number of them.
-    # Am abbreviating number_of_zeros as "z".
+    We choose to generate the signatures in the order such that a canonical vertex match (i.e. a tuple like (-1,0,0,0,1,1,1,1)
+    in which the elements are non-decreasing) which represents each signature would come out in ascending tuple order.
 
-    """ 
+    IMPLEMENTATION:
+
     All signatures have at least one "minus 1". We will break it out and add it back in only at the very end (see (*)).
-    In addition:
-    There is a 'free for all' region of the signature where minus ones come in paris, ones come in pairs and zeros come in pairs.
+    In addition, there is a 'free for all' region of the signature where minus ones come in paris, ones come in pairs and zeros come in pairs.
     This region has a total of 2*((M-1)//2) digits, with a totally unconstrained composition (other than that all are in pairs).
     Finally, there is also an extra packing zero when M is even ... however we don't really need to think much about this as 
     we know that e+o+z = M so we can just calculate z from z = M - (e+o) at the end.
 
     The next few lines of code implements the above.
 
-    We choose to generate the signatures in the order such that a canonical vertex match (i.e. a tuple like (-1,0,0,0,1,1,1,1)
-    in which the elements are non-decreasing) which represents each signature would come out in ascending tuple order.
+    NOTATION:
+
+    We abbreviate the number_of_ones as "e" as there are an Even number of them.
+    We abbreviate the number_of_minus_ones as "o" as there are an Odd number of them.
+    We abbreviate the number_of_zeros as "z".
     """
+
+    # if False: # Uncomment to use old method for testing purposes
+    #    import _vertex_matches
+    #    yield from _vertex_matches._old_generate_all_vertex_match_signatures(M=M, k=k, start=start)
+    #    return
 
     total_among_pairs = 2*((M-1)//2)
 
