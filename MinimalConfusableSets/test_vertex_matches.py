@@ -13,6 +13,7 @@ from _vertex_matches import (
     generate_all_useful_vertex_matches,
     generate_all_vertex_matches_given_perming_places,
     generate_all_useful_vertex_matches_given_perming_places,
+    _old_generate_all_vertex_match_signatures,
 )
 
 from equivalent_places import Equivalent_Places
@@ -429,6 +430,10 @@ def test_helper_functions():
         assert z==y
  
 def test_signatures():
+  for method in (
+                generate_all_vertex_match_signatures,
+                _old_generate_all_vertex_match_signatures,
+                ):
     test_programme = [
         (3, None, M3_all_vertex_match_signatures_expected, "M3 signatures"),
         (4, None, M4_all_vertex_match_signatures_expected, "M4 signatures"),
@@ -445,7 +450,7 @@ def test_signatures():
         (8, 5, k5M8_all_vertex_match_signatures_expected, "k5M8 useful signatures"),
         ]
     for M, k, expected_signature, name in test_programme:
-        LHS = sorted(list(generate_all_vertex_match_signatures(M=M, k=k)))
+        LHS = sorted(list(method(M=M, k=k)))
         RHS = sorted(expected_signature)
 
         print(f"Test '{name}' has LHS and RHS:")
@@ -582,8 +587,10 @@ def test_order_stream():
 
 
 def test_start_vertex_match_signatures():
-     method_with_start = generate_all_vertex_match_signatures
-     method_without_start = generate_all_vertex_match_signatures
+  for method_with_start, method_without_start in (
+       (generate_all_vertex_match_signatures, generate_all_vertex_match_signatures), 
+       (_old_generate_all_vertex_match_signatures, _old_generate_all_vertex_match_signatures), 
+    ):
     
      test_programme = [
        (10,2,(4,3,3)),
