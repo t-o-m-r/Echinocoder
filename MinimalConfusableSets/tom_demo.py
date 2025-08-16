@@ -79,6 +79,8 @@ def demo(M_and_k_tuple=None):
             #(13,4),
             #(15,4),
         ):
+        print()
+        print()
         print( "====================================================================")
         print(f"For M={M} and k={k} the not obviously bad vertex match matrices are:")
         print( "--------------------------------------------------------------------")
@@ -100,16 +102,14 @@ def demo(M_and_k_tuple=None):
             # yield_matrix = partial(matrix_is_not_definitely_bad, k=k),
             debug = debug,
             )
-        
+       
+        number_enumerated = 0
         for i, (mat,rre) in enumerate(mat_gen):
             print(f"    {i} raw={mat}, rre={rre}")
-        
-        number_enumerated = i+1
-        print(f"There were {number_enumerated} found.")
+            number_enumerated += 1
 
+        print(f"There were {number_enumerated} found for M={M} and k={k}.")
         print("====================================================================")
-        print()
-        print()
 
 if __name__ == "__main__":
     import sys
