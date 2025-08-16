@@ -380,6 +380,7 @@ def generate_viable_vertex_match_matrices(
     remove_duplicates_via_hash = False, # Making this true could crash your program via memory usage. Beware!  This setting forces rre to be calculated -- so no harm in also choosing to return it.
     go_deeper    = None, # If present, then the branch topped by matrix "mat" is only explored more deeply if go_deeper(mat) is True. Does not affect whether mat itself is yielded.
     yield_matrix = None, # If present, then the matrix "mat" is only yielded if if yield_matrix(mat) is True.  If not yielded, further branch exploration is suppressed. Note that, other things being equal, and if it is physically possibl, it is better to use "go_deeper" (with or without yield_matrix) than "yield_matrix" alone.
+    debug = False,
     ):
     """
     Generate sympy.Matrix objects which represent constraints on lattice alignments of red/blue vertices. 
@@ -419,6 +420,7 @@ def generate_viable_vertex_match_matrices(
             if remove_obvious_collapses:
                 assert calculate_rre_early
                 if some_row_causes_collapse(rre, k):
+                    if debug: print(f"VETO as row collapse in {rre}")
                     # Some row causes collapse!
                     # Skip deeper evaluation or return of it!
                     return
@@ -429,6 +431,7 @@ def generate_viable_vertex_match_matrices(
             if remove_duplicates_via_hash:
                 assert calculate_hashable_rre_early
                 if hashable_rre in hashable_rre_seen:
+                    if debug: print(f"VETO as already seen {rre}")
                     # We already saw this one, so don't need to produce it again!
                     # Skip deeper evaluation or return of it!
                     return
