@@ -1,4 +1,3 @@
-#import itertools
 import sympy as sp
 import math
 from more_itertools import distinct_permutations
@@ -6,6 +5,7 @@ from distinct_partitions_with_start import distinct_partitions_with_start as dis
 from bi_range import bi_range_with_maxes
 from equivalent_places import Equivalent_Places
 from functools import partial
+from sympy_tools import some_row_causes_collapse, strip_zero_rows
 
 """
 Vertex matches have an even number of +1 and and odd number of -1 entries, and others zero. Their total number of entries is M, the numnber of bad bats.
@@ -51,7 +51,7 @@ def _smallest_odd_number_greater_than_or_equal_to(x):
 def generate_all_vertex_match_signatures(
     M, #number of bad bats
     k = None, # k=dimension of space (supply k if you want to calculate only useful matches, otherwise omit)
-    start = None
+    start = None,
     ):
     """
     The signature of a vertex match is how many ones, minus ones and zeros it has.
@@ -62,10 +62,35 @@ def generate_all_vertex_match_signatures(
     Vertex matches have M entries in total, comprising an even number of +1 and and odd number of -1 entries, and others zero.
 
     "Useful" vertex matches have at least k+1 non-zero entries (because all sums of <=k linearly dependent non-zero things in k-dimes are non-zero).
+
+    We choose to generate the signatures in the order such that a canonical vertex match (i.e. a tuple like (-1,0,0,0,1,1,1,1)
+    in which the elements are non-decreasing) which represents each signature would come out in ascending tuple order.
+
+    IMPLEMENTATION:
+
+    All signatures have at least one "minus 1". We will break it out and add it back in only at the very end (see (*)).
+    In addition, there is a 'free for all' region of the signature where minus ones come in paris, ones come in pairs and zeros come in pairs.
+    This region has a total of 2*((M-1)//2) digits, with a totally unconstrained composition (other than that all are in pairs).
+    Finally, there is also an extra packing zero when M is even ... however we don't really need to think much about this as 
+    we know that e+o+z = M so we can just calculate z from z = M - (e+o) at the end.
+
+    The next few lines of code implements the above.
+
+    NOTATION:
+
+    We abbreviate the number_of_ones as "e" as there are an Even number of them.
+    We abbreviate the number_of_minus_ones as "o" as there are an Odd number of them.
+    We abbreviate the number_of_zeros as "z".
     """
 
+    # if False: # Uncomment to use old method for testing purposes
+    #    import _vertex_matches
+    #    yield from _vertex_matches._old_generate_all_vertex_match_signatures(M=M, k=k, start=start)
+    #    return
+
+    total_among_pairs = 2*((M-1)//2)
+
     if start is not None:
-        starting = True
         if len(start) != 3:
             raise ValueError(f"len(start) should equal 3 but is {len(start)}. start={start}.")
         if sum(start) != M:
@@ -73,39 +98,35 @@ def generate_all_vertex_match_signatures(
         if True in ((int(c) != c or c<0) for c in start):
             raise ValueError(f"start should be a tuple of non-negative integers but start={start}.")
 
-        start_ones, start_minus_ones, _ = start
+        start_e, start_o, start_z = start
+
+        # Work backwards to start of e_among_pairs and start of z_among_pairs by reverse engineering yield line:
+        start_e_among_pairs = start_e
+        start_o_among_pairs = start_o - 1 # See (*) above and (*) below.
+        start_z_among_pairs = total_among_pairs - start_e_among_pairs - start_o_among_pairs
+        starting = True
     else:
         starting = False
 
-    for number_of_ones in range(start_ones if starting else 0, M+1, 2):
-
-        if starting:
-            start_for_number_of_minus_ones = start_minus_ones
-        else:
-            if k is not None:
-                # In this case we need 
-                #         number_of_ones + number_of_minus_ones > k  and   number_of_minus_ones >= 1
-                # so
-                #         number_of_minus_ones > k - number_of_ones   and number_of_minus_ones >= 1
-                # so
-                #         number_of_minus_ones >= k - number_of_ones + 1 and number_of_minus_ones >=1
-                # so
-                #         number_of_minus_ones >= max(k - number_of_ones + 1, 1)
-                start_for_number_of_minus_ones =  max(1, _smallest_odd_number_greater_than_or_equal_to(k - number_of_ones + 1))
-            else:
-                start_for_number_of_minus_ones = 1
-
-        for number_of_minus_ones in range(start_for_number_of_minus_ones, M+1-number_of_ones, 2):
-            # In an alternative (but slower) implementation, one could always have start_for_number_of_minus_ones=1 but then 
-            # uncomment the next two lines:
-            # if k is not None and (number_of_ones + number_of_minus_ones <= k):
-            #      continue
-            number_of_zeros = M-number_of_ones-number_of_minus_ones
-            if starting:
-                assert (number_of_ones, number_of_minus_ones, number_of_zeros) == start
+    if k is None:
+        # This is the k->minus_infinity limit of the "k is not None" case below.
+        for o_among_pairs in range(start_o_among_pairs if starting else total_among_pairs, -1, -2):
+            for z_among_pairs in range(start_z_among_pairs if starting else total_among_pairs - o_among_pairs, -1, -2):
                 starting = False
-            yield number_of_ones, number_of_minus_ones, number_of_zeros
-    assert starting == False
+                e_among_pairs = total_among_pairs - o_among_pairs - z_among_pairs
+                e, o = e_among_pairs, o_among_pairs + 1 # (*) There is always one extra o.
+                z = M - (e+o)
+                yield e,o,z
+    else:
+        if k % 2:
+            k = k+1 # This correction ensures z_among_pairs starts at an even number (and in fact the correct number!).
+        for o_among_pairs in range(start_o_among_pairs if starting else total_among_pairs, -1, -2):
+            for z_among_pairs in range(start_z_among_pairs if starting else min(total_among_pairs - o_among_pairs, total_among_pairs - k), -1, -2):
+                starting = False
+                e_among_pairs = total_among_pairs - o_among_pairs - z_among_pairs
+                e, o = e_among_pairs, o_among_pairs + 1 # (*) There is always one extra o.
+                z = M - (e+o)
+                yield e,o,z
 
 def generate_canonical_vertex_matches(
         M, # M=number of bad bats
@@ -352,8 +373,14 @@ def generate_all_vertex_matches_given_equivalent_places(
 def generate_viable_vertex_match_matrices(
     M, # M = number of bad bats. 
     k, # k=dimension of space.
+    remove_obvious_collapses = True, # Discards matrices whose RRE form have a row with betwen 1 and k non-zero elements. (Nb: ihis setting forces rre to be calcualted.)
+    return_mat = False,
+    return_rre = False,
+    return_hashable_rre = False,
+    remove_duplicates_via_hash = False, # Making this true could crash your program via memory usage. Beware!  This setting forces rre to be calculated -- so no harm in also choosing to return it.
     go_deeper    = None, # If present, then the branch topped by matrix "mat" is only explored more deeply if go_deeper(mat) is True. Does not affect whether mat itself is yielded.
     yield_matrix = None, # If present, then the matrix "mat" is only yielded if if yield_matrix(mat) is True.  If not yielded, further branch exploration is suppressed. Note that, other things being equal, and if it is physically possibl, it is better to use "go_deeper" (with or without yield_matrix) than "yield_matrix" alone.
+    debug = False,
     ):
     """
     Generate sympy.Matrix objects which represent constraints on lattice alignments of red/blue vertices. 
@@ -366,6 +393,18 @@ def generate_viable_vertex_match_matrices(
     It is far better to kill a branch before generating its daughter matrixes than to kill a branch by killing/vetoing each daughter matrix.  This, if it is possible to do so, it is far better to use "go_deeper" (with or without  "yield_matrix") to kill a whole branch in one test, than to use only "yield_matrix".
     """
 
+    calculate_hashable_rre_early = remove_duplicates_via_hash
+    calculate_hashable_rre_late = return_hashable_rre and not calculate_hashable_rre_early
+
+    calculate_rre_early = calculate_hashable_rre_early or remove_obvious_collapses
+    calculate_rre_late = return_rre and not calculate_rre_early
+
+    hashable_rre_seen = set()
+
+    def calc_rre(mat):
+        rre, _ = mat.rref()
+        return strip_zero_rows(rre)
+
     # TODO: consider making prefix a SymPy matrix natively, so that we are not always converting, and can more easily get different views. Maybe this would speed somet hings up??
     def dfs(prefix, start_row):
         # "prefix" is a list or rows, each of which is a tuple. 
@@ -375,10 +414,51 @@ def generate_viable_vertex_match_matrices(
         if prefix:
             mat = sp.Matrix(prefix)
 
-            if yield_matrix is not None and not yield_matrix(mat):
-                return # Skip deeper exploration without yielding mat due to internally discovered test failure
+            if calculate_rre_early:
+                rre = calc_rre(mat)
+ 
+            if remove_obvious_collapses:
+                assert calculate_rre_early
+                if some_row_causes_collapse(rre, k):
+                    if debug: print(f"VETO as row collapse in {rre}")
+                    # Some row causes collapse!
+                    # Skip deeper evaluation or return of it!
+                    return
 
-            user_aborted_this_branch = (yield mat)
+            if calculate_hashable_rre_early:
+                hashable_rre = sp.ImmutableMatrix(rre)
+
+            if remove_duplicates_via_hash:
+                assert calculate_hashable_rre_early
+                if hashable_rre in hashable_rre_seen:
+                    if debug: print(f"VETO as already seen {rre}")
+                    # We already saw this one, so don't need to produce it again!
+                    # Skip deeper evaluation or return of it!
+                    return
+                else:
+                    # record that we have seen this item:
+                    hashable_rre_seen.add(hashable_rre) # Note this is a sort of voluntary memory leak. Users use this at their own risk!
+
+            # Our own standard checks are complete! Now allow external user checks on mat. (TODO -- allow user to check RRE too?)
+
+            if yield_matrix is not None and not yield_matrix(mat):
+                return # Skip deeper exploration without yielding mat as the user's pre-yield test is not passed.
+
+            # At this point we know we have to return things, so finish any late computations, if required:
+            if calculate_rre_late:
+                rre = calc_rre(mat)
+            if calculate_hashable_rre_late:
+                hashable_rre = sp.ImmutableMatrix(rre)
+
+            ans = []
+            if return_mat:
+                ans.append(mat)
+            if return_rre:
+                ans.append(rre)
+            if return_hashable_rre:
+                ans.append(hashable_rre)
+
+            user_aborted_this_branch = (yield ans)
 
             if user_aborted_this_branch or (go_deeper is not None and not go_deeper(mat)):
                 return  # Skip deeper exploration
@@ -387,10 +467,6 @@ def generate_viable_vertex_match_matrices(
             e_places = Equivalent_Places(exemplar = columns_of_mat_as_tuples)
         else:
             e_places = Equivalent_Places(size=M, all_equivalent=True)
-        #print(f"-------\nFor prefix = ")
-        #for rrr in prefix:
-        #   print("    ",rrr)
-        #print(f"using e_places = {e_places}")
 
         # Start the rows at the given start_row:
         row_gen = generate_all_vertex_matches_given_equivalent_places(equivalent_places = e_places, k=k, start=start_row)
@@ -499,4 +575,13 @@ def demo():
 
 
 if __name__ == "__main__":
-    demo()
+    M=7 #16 #7
+    k=2 # 5 #2
+    k=3 # 5 #2
+    print(f"All useful matches in k={k} dimensions, given M={M} bad bats, but ignoring permutations are:")
+    for i,match in enumerate(generate_all_vertex_matches(k=k, M=M, permute=False)):
+       print(f"   {i+1}:    {match}")
+    for i,match in enumerate(generate_all_vertex_match_signatures(k=k, M=M)):
+       print(f"   {i+1}:    {match}")
+    print()
+    #demo()

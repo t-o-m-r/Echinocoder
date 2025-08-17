@@ -13,6 +13,7 @@ from _vertex_matches import (
     generate_all_useful_vertex_matches,
     generate_all_vertex_matches_given_perming_places,
     generate_all_useful_vertex_matches_given_perming_places,
+    _old_generate_all_vertex_match_signatures,
 )
 
 from equivalent_places import Equivalent_Places
@@ -43,6 +44,126 @@ M3_all_vertex_matches_expected = [
     ( 1,-1, 1),
     (-1, 1, 1),
     (-1,-1,-1),
+]
+k5M8_all_vertex_match_signatures_expected = [
+     (0, 7, 1),
+     #(0, 5, 3),
+     #(0, 3, 5),
+     #(0, 1, 7),
+
+     (2, 5, 1),
+     #(2, 3, 3),
+     #(2, 1, 5),
+
+     (4, 3, 1),
+     #(4, 1, 3),
+
+     (6, 1, 1),
+]
+k4M8_all_vertex_match_signatures_expected = [
+     (0, 7, 1),
+     (0, 5, 3),
+     #(0, 3, 5),
+     #(0, 1, 7),
+
+     (2, 5, 1),
+     (2, 3, 3),
+     #(2, 1, 5),
+
+     (4, 3, 1),
+     (4, 1, 3),
+
+     (6, 1, 1),
+]
+k3M8_all_vertex_match_signatures_expected = [
+     (0, 7, 1),
+     (0, 5, 3),
+     #(0, 3, 5),
+     #(0, 1, 7),
+
+     (2, 5, 1),
+     (2, 3, 3),
+     #(2, 1, 5),
+
+     (4, 3, 1),
+     (4, 1, 3),
+
+     (6, 1, 1),
+]
+k2M8_all_vertex_match_signatures_expected = [
+     (0, 7, 1),
+     (0, 5, 3),
+     (0, 3, 5),
+     #(0, 1, 7),
+
+     (2, 5, 1),
+     (2, 3, 3),
+     (2, 1, 5),
+
+     (4, 3, 1),
+     (4, 1, 3),
+
+     (6, 1, 1),
+]
+k5M7_all_vertex_match_signatures_expected = [
+     (0, 7, 0),
+     #(0, 5, 2),
+     #(0, 3, 4),
+     #(0, 1, 6),
+
+     (2, 5, 0),
+     #(2, 3, 2),
+     #(2, 1, 4),
+
+     (4, 3, 0),
+     #(4, 1, 2),
+
+     (6, 1, 0),
+]
+k4M7_all_vertex_match_signatures_expected = [
+     (0, 7, 0),
+     (0, 5, 2),
+     #(0, 3, 4),
+     #(0, 1, 6),
+
+     (2, 5, 0),
+     (2, 3, 2),
+     #(2, 1, 4),
+
+     (4, 3, 0),
+     (4, 1, 2),
+
+     (6, 1, 0),
+]
+k3M7_all_vertex_match_signatures_expected = [
+     (0, 7, 0),
+     (0, 5, 2),
+     #(0, 3, 4),
+     #(0, 1, 6),
+
+     (2, 5, 0),
+     (2, 3, 2),
+     #(2, 1, 4),
+
+     (4, 3, 0),
+     (4, 1, 2),
+
+     (6, 1, 0),
+]
+k2M7_all_vertex_match_signatures_expected = [
+     (0, 7, 0),
+     (0, 5, 2),
+     (0, 3, 4),
+     #(0, 1, 6),
+
+     (2, 5, 0),
+     (2, 3, 2),
+     (2, 1, 4),
+
+     (4, 3, 0),
+     (4, 1, 2),
+
+     (6, 1, 0),
 ]
 M3_all_vertex_match_signatures_expected = [
     ( 0,1,2), # for
@@ -309,13 +430,27 @@ def test_helper_functions():
         assert z==y
  
 def test_signatures():
+  for method in (
+                generate_all_vertex_match_signatures,
+                _old_generate_all_vertex_match_signatures,
+                ):
     test_programme = [
         (3, None, M3_all_vertex_match_signatures_expected, "M3 signatures"),
         (4, None, M4_all_vertex_match_signatures_expected, "M4 signatures"),
         (4, 2, k2M4_all_useful_vertex_match_signatures_expected, "k2M4 useful signatures"),
+
+        (7, 2, k2M7_all_vertex_match_signatures_expected, "k2M7 useful signatures"),
+        (7, 3, k3M7_all_vertex_match_signatures_expected, "k3M7 useful signatures"),
+        (7, 4, k4M7_all_vertex_match_signatures_expected, "k4M7 useful signatures"),
+        (7, 5, k5M7_all_vertex_match_signatures_expected, "k5M7 useful signatures"),
+
+        (8, 2, k2M8_all_vertex_match_signatures_expected, "k2M8 useful signatures"),
+        (8, 3, k3M8_all_vertex_match_signatures_expected, "k3M8 useful signatures"),
+        (8, 4, k4M8_all_vertex_match_signatures_expected, "k4M8 useful signatures"),
+        (8, 5, k5M8_all_vertex_match_signatures_expected, "k5M8 useful signatures"),
         ]
     for M, k, expected_signature, name in test_programme:
-        LHS = sorted(list(generate_all_vertex_match_signatures(M=M, k=k)))
+        LHS = sorted(list(method(M=M, k=k)))
         RHS = sorted(expected_signature)
 
         print(f"Test '{name}' has LHS and RHS:")
@@ -418,6 +553,19 @@ def test_canonical_order():
             assert tuple(sorted(vm)) == vm
     
 
+def test_canonical_order_stream():
+   
+    for M in range(1,15):
+        for k in range(0,5):
+          print(f"\nNew CANONICAL vertex match ORDER Test for M={M} and k={k}.")
+          last_match = None
+          for match in generate_canonical_vertex_matches(M=M, k=k):
+            print(f"  order test saw match={match}")
+            if last_match != None:
+                # Check_order!
+                assert last_match < match
+            last_match = match
+
 def test_order_stream():
     
     for gen in (
@@ -431,7 +579,7 @@ def test_order_stream():
         for vertex_match in gen:
             signature = vertex_match.count(-1), vertex_match.count(0), vertex_match.count(+1)
             print(f"order test saw signature={signature} and vm={vertex_match}")
-            # Only check_order progression when within a given signature:
+            # Only check_order progression when within a given signature due to perms:
             if last_signature != None and signature == last_signature:
                 # Check_order!
                 assert last_vertex_match < vertex_match
@@ -439,8 +587,10 @@ def test_order_stream():
 
 
 def test_start_vertex_match_signatures():
-     method_with_start = generate_all_vertex_match_signatures
-     method_without_start = generate_all_vertex_match_signatures
+  for method_with_start, method_without_start in (
+       (generate_all_vertex_match_signatures, generate_all_vertex_match_signatures), 
+       (_old_generate_all_vertex_match_signatures, _old_generate_all_vertex_match_signatures), 
+    ):
     
      test_programme = [
        (10,2,(4,3,3)),
