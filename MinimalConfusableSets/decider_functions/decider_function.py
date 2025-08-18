@@ -129,15 +129,21 @@ def check_collapse_random(A, num_trials=1000, tol=1e-12):
     return bool(good.any())
 
 
-def test_independance(B): 
-    M = np.shape(B)[1]
-    k = np.shape(B)[0]
+def test_independance(B, k, M): 
     tol = 1e-12
-    matrices =  itertools.combinations(B, k)
-    for matrix in matrices: 
-        det = np.linalg.det(matrix)
-        if abs(det) < tol: 
-            return False 
+    
+    if k == 1 and M >= 2: 
+        return False 
+    
+    else: 
+    
+        for combo in itertools.combinations(range(M), k):
+            matrix = B[list(combo), :]   # shape (k, k)
+            det = np.linalg.det(matrix)
+            if abs(det) < tol:
+                return False
+    
+    return True
             
 
 def prepare_B(k, M, method, iters, learning_rate, power, sample, spread):
@@ -167,13 +173,13 @@ def prepare_B(k, M, method, iters, learning_rate, power, sample, spread):
     
     if method == "sobol":
         B = generate_sobol(M, k, sample, spread)
-        if test_independance(B) == False: 
-            print("ERROR: BAD BATS NOT LIN IND. RERUN.")
+        if test_independance(B, k, M) == False: 
+            print("ERROR WITH BAD BATS")
     
     elif method == "electrostatic":
         B = generate_electrostatic(M, k, iters, learning_rate, power)
-        if test_independance(B) == False: 
-            print("ERROR: BAD BATS NOT LIN IND. RERUN.")
+        if test_independance(B, k, M) == False: 
+            print("ERROR WITH BAD BATS")
     else:
         raise ValueError(f"unknown method='{method}' (use 'sobol' or 'electrostatic')")
     
