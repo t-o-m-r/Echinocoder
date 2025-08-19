@@ -4,7 +4,7 @@ from vertex_matches import generate_viable_vertex_match_matrices
 from decider_function import prepare_B, decide_collapse
 
 k = 2
-M = 5
+M = 4
 
 def demo():
     print("== Test of Matrix Generation =========")

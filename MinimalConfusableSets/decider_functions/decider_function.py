@@ -129,40 +129,46 @@ def check_collapse_random(A, num_trials=1000, tol=1e-12):
     return bool(good.any())
 
             
-def prepare_B(k, M, method, iters, learning_rate, power, sample, spread):
+def is_all_kwise_lin_ind(B, k, tol=1e-12):
+    M = B.shape[0]
+    for combo in itertools.combinations(range(M), k):
+        matrix = B[list(combo), :]  # shape (k, k)
+        det = np.linalg.det(matrix)
+        if abs(det) < tol:
+            return False
+    return True
+
+def prepare_B(k, M, method, iters, learning_rate, power, sample, spread, tol=1e-12):
     """
     method: 
         - electrostatic [RECOMMENDED] (slow, well spaced out bad bats, lower k (0-8), lower M (0-100)):
-            
             -> iters (default=500): number of charged particle movement steps towards eqm
             -> learning_rate (=0.01): strength of response of charge to its neighbours (low for high mass charge)
             -> power (=2): 2 for coulomb's law
-        
         - sobol (fast, less well spaced out bad bats, higher k, higher M):  
-             
-                If m is a power of 2, it uses Sobol's well balanced random_base2 method. 
-             Else: 
-                 -> sample = std: uses STANDARD sobol random(m) method, which may reduce balance
-                 -> sample = rr: uses random_base2 method to generate 2^q ≥ m vectors,
-                              then RANDOMLY REMOVES excess vectors to obtain exactly m.
-                     
-             We need the unit vectors to be spaced out on the unit sphere, not the positive
-             orthant: 
-                   -> spread = lin: uses a LINEAR function 2 * vectors - 1. Bias towards 
-                                 (hyper)cube corners
-                   -> spread = gauss: uses a GAUSSIAN function. Hypothesised less bias. 
-                                       
+            If m is a power of 2, it uses Sobol's well balanced random_base2 method. 
+            Else: 
+                -> sample = std: uses STANDARD sobol random(m) method, which may reduce balance
+                -> sample = rr: uses random_base2 method to generate 2^q ≥ m vectors,
+                                then RANDOMLY REMOVES excess vectors to obtain exactly m.
+            We need the unit vectors to be spaced out on the unit sphere, not the positive
+            orthant: 
+                -> spread = lin: uses a LINEAR function 2 * vectors - 1. Bias towards 
+                                (hyper)cube corners
+                -> spread = gauss: uses a GAUSSIAN function. Hypothesised less bias. 
     """
-    
-    if method == "sobol":
-        B = generate_sobol(M, k, sample, spread)
-    
-    elif method == "electrostatic":
-        B = generate_electrostatic(M, k, iters, learning_rate, power)
-   
-    else:
-        raise ValueError(f"unknown method='{method}' (use 'sobol' or 'electrostatic')")
-    
+    while True:
+        if method == "sobol":
+            B = generate_sobol(M, k, sample, spread)
+        elif method == "electrostatic":
+            B = generate_electrostatic(M, k, iters, learning_rate, power)
+        else:
+            raise ValueError(f"unknown method='{method}' (use 'sobol' or 'electrostatic')")
+        
+        if is_all_kwise_lin_ind(B, k, tol):
+            break
+        else:
+            print("Bad bats ere regenerated as were not k-wise lin ind")
     return B
 
 
@@ -172,26 +178,26 @@ def decide_collapse(L: sp.Matrix, B: np.ndarray, num_trials, tol) -> bool:
     False if collapse or nullity=0 (so no need to find nullspace).
     """
     A = construct_A(L, B)
-    return check_collapse_random(A, num_trials, tol)
+    return bool(check_collapse_random(A, num_trials, tol))
 
 
 
-    
-    
- 
 
 
-        
-        
-        
-        
-        
-        
-        
-        
 
-   
- 
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
